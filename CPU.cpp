@@ -14,7 +14,7 @@ CPU::~CPU()
 void control (int instNum) //generates the control signals, receives the instruction number
 {	
 	switch (instNum)
-		case 1:   //add
+	{	case 1:   //add
 			ALUOp=0;
 			break;
 		case 2:   //addi
@@ -65,6 +65,6 @@ void control (int instNum) //generates the control signals, receives the instruc
 			jumpReg= true;
 			regWrite= false;
 			break;
-
+	}
 
 }
