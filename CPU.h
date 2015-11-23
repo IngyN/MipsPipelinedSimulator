@@ -1,6 +1,7 @@
 #ifndef CPU_h
 #define CPU_h
-#include "Instruction.cpp"   // to be added 
+#include "Instruction.h"   // to be added 
+
 
 class CPU
 {
