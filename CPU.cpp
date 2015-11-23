@@ -11,9 +11,9 @@ CPU::~CPU()
 {
 }
 
-void control (int instNum) //generates the control signals, receives the instruction number
+void CPU:: control () //generates the control signals
 {	
-	switch (instNum)
+	switch (Inst.num)
 	{	case 1:   //add
 			ALUOp=0;
 			break;
@@ -65,6 +65,44 @@ void control (int instNum) //generates the control signals, receives the instruc
 			jumpReg= true;
 			regWrite= false;
 			break;
+		default:
+			ALUOp=4; //invalid 
 	}
+}
 
+void CPU:: execute()
+{
+	int secoperand;  //imm or data from reg
+	if (Inst.num == 2 || Inst.num == 4 || Inst.num==5 ) //addi or lw or sw, the sec operand is the immediate
+		secoperand= buffer2[3];
+	else 
+		secoperand= buffer2[2];
+	switch (ALUOp)
+	{
+	case 0:   //add  
+		ALUResult= buffer2[1]+secoperand;  
+		break;
+	case 1:   //sub
+		ALUResult= buffer2[1]-secoperand;
+		if (Inst.num==6 && ALUResult<=0)  //ble
+			zeroflag=1;
+		break;
+	case 2:   //xor
+		ALUResult= buffer2[1]^secoperand;
+		break;
+	case 3:   //slt
+		if (buffer2[1]<secoperand)
+			ALUResult= 1;
+		else 
+			ALUResult=0;
+		break;
+	default:
+		ALUResult=-1;
+	}
+	//input to the Exec/Mem buffer
+	buffer3[0]= buffer2[0]; 
+	buffer3[1]= zeroflag;
+	buffer3[2]= ALUResult;
+	buffer3[3]= buffer2[2];
+	buffer3[4]= buffer2[4];
 }
