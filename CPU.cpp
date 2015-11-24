@@ -228,7 +228,7 @@ CPU::~CPU()
 {
 }
 
-void CPU:: control () //generates the control signals
+void CPU:: control (int instNum) //generates the control signals
 {
     regWrite= true;
     regDest= true;
@@ -239,7 +239,7 @@ void CPU:: control () //generates the control signals
     memToReg= false;  //control signal 
     jump= false;    //control signal 
     jumpReg= false; 
-	switch (Inst.num)
+	switch (instNum)
 	{	case 1:   //add
 			ALUOp=0;
 			break;
