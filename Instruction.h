@@ -12,10 +12,30 @@
 class Instruction
 {
 public:
+    Instruction();
     Instruction(int i, int s, int d, int t, int imm);//constructor
-    //Instruction (const Instruction &);//copy constructor
+    Instruction (const Instruction &);//copy constructor
     ~Instruction();//destructor
     
+    // setters
+    void setRd(int rd);
+    void setRs (int rs);
+    void setRt (int rt);
+    void setInstNum(int inst);
+    void setImm(int imm);
+    void setOffset(int offset);
+    
+    
+    // getters
+    int getInstNum ();
+    int getImm ();
+    int getOffset ();
+    int getRs();
+    int getRt();
+    int getRd();
+    
+    //clear everything
+    void clear ();
     
     
 private:
@@ -30,7 +50,6 @@ private:
     int clkAtEx;
     int clkAtMem;
     int clkAtWB;
-    
     
     
 };

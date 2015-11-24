@@ -10,6 +10,7 @@ CPU::CPU(string name)    // constructor receives the file name
     in.open(name.c_str());
     Instruction temp;
     string instName, reg1, reg2, reg3, offset, imm;
+    
     while (!in.eof())
     {
         in>>instName;
@@ -46,7 +47,7 @@ CPU::CPU(string name)    // constructor receives the file name
             getline(in, reg2, ')');
             
             temp.setRt(nametoNum(reg1));
-            temp.setOffset(offset);
+            temp.setOffset(stoi(offset));
             temp.setRs(nametoNum(reg2,0));
             temp.setInstNum(4);
             
@@ -57,7 +58,7 @@ CPU::CPU(string name)    // constructor receives the file name
             getline(in, reg2, ')');
             
             temp.setRt(nametoNum(reg1));
-            temp.setOffset(offset);
+            temp.setOffset(stoi(offset));
             temp.setRs(nametoNum(reg2,0));
             temp.setInstNum(5);
             
@@ -67,13 +68,13 @@ CPU::CPU(string name)    // constructor receives the file name
             
             temp.setRs(nametoNum(reg1));
             temp.setRt(nametoNum(reg2));
-            temp.setOffset(offset);
+            temp.setOffset(stoi(offset));
             temp.setInstNum(6);
         } else if(instName == "J")
         {
             in>>imm;
             
-            temp.setImm(imm);
+            temp.setImm(stoi(imm));
             temp.setInstNum(7);
             
         } else if(instName == "SLT")
@@ -86,7 +87,7 @@ CPU::CPU(string name)    // constructor receives the file name
         } else if(instName == "JAL")
         {
             in >>imm;
-            temp.setImm(imm);
+            temp.setImm(stoi(imm));
             temp.setInstNum(9);
         } else if(instName == "JR")
         {
@@ -96,7 +97,7 @@ CPU::CPU(string name)    // constructor receives the file name
         } else if(instName == "JP")
         {
             in >> imm;
-            temp.setImm(imm);
+            temp.setImm(stoi(imm));
             temp.setInstNum(11);
         } else if(instName == "RP")
         {
@@ -219,7 +220,8 @@ int nametoNum(string  & name, bool cut = true)
     } else if(name == "$ra")
     {
         return 31;
-    }     
+    }
+    else return -1;
 }
 
 CPU::~CPU()
@@ -227,7 +229,8 @@ CPU::~CPU()
 }
 
 void CPU:: control () //generates the control signals
-{	regWrite= true;
+{
+    regWrite= true;
     regDest= true;
 	ALUSrc= false;    //control signal (0: read from reg, 1: imm)
     branch= false;   //control signal 
