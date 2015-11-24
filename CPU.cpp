@@ -355,8 +355,8 @@ void CPU:: execute()
 	buffer3[0]= buffer2[0]; 
 	buffer3[1]= zeroflag;
 	buffer3[2]= ALUResult;
-	buffer3[3]= buffer2[2];
-	buffer3[4]= buffer2[4];
+	buffer3[3]= buffer2[2];  // rt
+	buffer3[4]= buffer2[4];  // rd
 	buffer3[5]= buffer2[7];  // regwrite
 	buffer3[6]= buffer2[8];   // regdest
 	buffer3[7]= buffer2[11];   // branch 
@@ -442,6 +442,42 @@ void CPU::programCounter(int imm, int jump, int branch, int fetchEn)
 
 void CPU::MemAccess()
 {
+	/*buffer3[0]= buffer2[0]; 
+	buffer3[1]= zeroflag;
+	buffer3[2]= ALUResult;
+	buffer3[3]= buffer2[2];  // rt*
+	buffer3[4]= buffer2[4];  // rd
+	buffer3[5]= buffer2[7];  // regwrite
+	buffer3[6]= buffer2[8];   // regdest
+	buffer3[7]= buffer2[11];   // branch 
+	buffer3[8]= buffer2[12];   // memread
+    buffer3[9]= buffer2[13];   // memwrite
+	buffer3[10]= buffer2[14];  // memtoreg
+	buffer3[11]= buffer2[15];   // jump
+	buffer3[12]= buffer2[16]; //jumpreg
+	buffer3[13] = clk; */
+	int NextPC;
+	int MemReadData;  // output of data memory 
+	if (buffer3[7])   // branch 
+       NextPC = buffer3[2]; 
+	else
+	    NextPC = buffer3[0]; 
+
+	//where will nextPC go????? ********
+
+	if (buffer3[9])    // memwrite
+		DataMem[buffer3[2]] = buffer3[3];      // Datamem[ALUresult] 
+
+	if (buffer3[10])  // memread
+		MemReadData = DataMem[buffer3[2]];
+
+	buffer4[0] = MemReadData;
+	buffer4[1] = buffer3[2];
+	buffer4[2] = buffer3[4]; 
+	buffer4[3] = buffer3[5];   // regwrite
+	buffer4[4] = buffer3[10];  // memtoreg 
+
+
 }
 void CPU:: WriteBack()
 {
