@@ -3,125 +3,11 @@ using namespace std;
 #include <iostream>
 #include <fstream>
 
-CPU::CPU(string name)    // constructor receives the file name 
-{
-	filename = name;
-    ifstream in;
-    in.open(name.c_str());
-    Instruction temp;
-    string instName, reg1, reg2, reg3, offset, imm;
-    
-    while (!in.eof())
-    {
-        in>>instName;
-        
-        if(instName == "ADD")
-        {
-            in>>reg1>>reg2>>reg3;
-            temp.setRd(nametoNum(reg1));
-            temp.setRt(nametoNum(reg3, 0));
-            temp.setRs(nametoNum(reg2));
-            temp.setInstNum(1);
-            
-        } else if(instName == "ADDI")
-        {
-            in>>reg1>>reg2>>imm;
-            temp.setImm(nametoNum(reg3,0));
-            temp.setRs(nametoNum(reg2));
-            temp.setRt(nametoNum(reg1));
-            
-            temp.setInstNum(2);
-            
-        } else if(instName == "XOR")
-        {
-            in>>reg1>>reg2>>reg3;
-            temp.setRd(nametoNum(reg1));
-            temp.setRt(nametoNum(reg3,0));
-            temp.setRs(nametoNum(reg2));
-            temp.setInstNum(3);
-            
-        } else if(instName == "LW")
-        {
-            in>> reg1;
-            getline(in, offset, '(');
-            getline(in, reg2, ')');
-            
-            temp.setRt(nametoNum(reg1));
-            temp.setOffset(stoi(offset));
-            temp.setRs(nametoNum(reg2,0));
-            temp.setInstNum(4);
-            
-        } else if(instName == "SW")
-        {
-            in>> reg1;
-            getline(in, offset, '(');
-            getline(in, reg2, ')');
-            
-            temp.setRt(nametoNum(reg1));
-            temp.setOffset(stoi(offset));
-            temp.setRs(nametoNum(reg2,0));
-            temp.setInstNum(5);
-            
-        } else if(instName == "BLE")
-        {
-            in>>reg1>>reg2>>offset;
-            
-            temp.setRs(nametoNum(reg1));
-            temp.setRt(nametoNum(reg2));
-            temp.setOffset(stoi(offset));
-            temp.setInstNum(6);
-        } else if(instName == "J")
-        {
-            in>>imm;
-            
-            temp.setImm(stoi(imm));
-            temp.setInstNum(7);
-            
-        } else if(instName == "SLT")
-        {
-            in>>reg1>>reg2>>reg3;
-            temp.setRd(nametoNum(reg1));
-            temp.setRt(nametoNum(reg3, 0));
-            temp.setRs(nametoNum(reg2));
-            temp.setInstNum(8);
-        } else if(instName == "JAL")
-        {
-            in >>imm;
-            temp.setImm(stoi(imm));
-            temp.setInstNum(9);
-        } else if(instName == "JR")
-        {
-            in >>reg1;
-            temp.setRs(nametoNum(reg1,0));
-            temp.setInstNum(10);
-        } else if(instName == "JP")
-        {
-            in >> imm;
-            temp.setImm(stoi(imm));
-            temp.setInstNum(11);
-        } else if(instName == "RP")
-        {
-            temp.setInstNum(12);
-        } else {
-            //NOP
-            temp.setInstNum(0);
-        }
-        
-        IM.push_back(temp);
-        temp.clear();
-                  
-    }
-    
-    
-    in.close();
-    
-}
-
-int nametoNum(string  & name, bool cut = true)
+int CPU:: nametoNum(string  & name, bool cut)
 {
     if(cut){
-    string::iterator iter = name.end();
-    name.erase(iter);
+        string::iterator iter = name.end()-1;
+        name.erase(iter);
     }
     
     if(name == "$zero")
@@ -224,6 +110,129 @@ int nametoNum(string  & name, bool cut = true)
     else return -1;
 }
 
+CPU::CPU(string name)    // constructor receives the file name 
+{
+	filename = name;
+    ifstream in;
+    in.open(name.c_str());
+    
+    Instruction temp;
+    string instName, reg1, reg2, reg3, offset, imm;
+    
+    while (!in.eof())
+    {
+        in>>instName;
+        
+        for (char &i : instName)
+        {
+            toupper(instName[i]);
+        }
+        if(instName == "ADD")
+        {
+            in>>reg1>>reg2>>reg3;
+            temp.setRd(nametoNum(reg1));
+            temp.setRt(nametoNum(reg3, 0));
+            temp.setRs(nametoNum(reg2));
+            temp.setInstNum(1);
+            
+        } else if(instName == "ADDI")
+        {
+            in>>reg1>>reg2>>imm;
+            temp.setImm(nametoNum(reg3,0));
+            temp.setRs(nametoNum(reg2));
+            temp.setRt(nametoNum(reg1));
+            
+            temp.setInstNum(2);
+            
+        } else if(instName == "XOR")
+        {
+            in>>reg1>>reg2>>reg3;
+            temp.setRd(nametoNum(reg1));
+            temp.setRt(nametoNum(reg3,0));
+            temp.setRs(nametoNum(reg2));
+            temp.setInstNum(3);
+            
+        } else if(instName == "LW")
+        {
+            in>> reg1;
+            getline(in, offset, '(');
+            getline(in, reg2, ')');
+            
+            temp.setRt(nametoNum(reg1));
+            temp.setOffset(stoi(offset));
+            temp.setRs(nametoNum(reg2,0));
+            temp.setInstNum(4);
+            
+        } else if(instName == "SW")
+        {
+            in>> reg1;
+            getline(in, offset, '(');
+            getline(in, reg2, ')');
+            
+            temp.setRt(nametoNum(reg1));
+            temp.setOffset(stoi(offset));
+            temp.setRs(nametoNum(reg2,0));
+            temp.setInstNum(5);
+            
+        } else if(instName == "BLE")
+        {
+            in>>reg1>>reg2>>offset;
+            
+            temp.setRs(nametoNum(reg1));
+            temp.setRt(nametoNum(reg2));
+            temp.setOffset(stoi(offset));
+            temp.setInstNum(6);
+        } else if(instName == "J")
+        {
+            in>>imm;
+            
+            temp.setImm(stoi(imm));
+            temp.setInstNum(7);
+            
+        } else if(instName == "SLT")
+        {
+            in>>reg1>>reg2>>reg3;
+            temp.setRd(nametoNum(reg1));
+            temp.setRt(nametoNum(reg3, 0));
+            temp.setRs(nametoNum(reg2));
+            temp.setInstNum(8);
+        } else if(instName == "JAL")
+        {
+            in >>imm;
+            temp.setImm(stoi(imm));
+            temp.setInstNum(9);
+        } else if(instName == "JR")
+        {
+            in >>reg1;
+            temp.setRs(nametoNum(reg1,0));
+            temp.setInstNum(10);
+        } else if(instName == "JP")
+        {
+            in >> imm;
+            temp.setImm(stoi(imm));
+            temp.setInstNum(11);
+        } else if(instName == "RP")
+        {
+            temp.setInstNum(12);
+        } else {
+            //NOP
+            string shit;
+            getline(in,shit);
+            temp.setInstNum(0);
+        }
+        
+        IM.push_back(temp);
+        temp.clear();
+                  
+    }
+    
+    
+    in.close();
+    
+}
+
+
+
 CPU::~CPU()
 {
 }
@@ -322,7 +331,8 @@ void CPU::fetch()
 }
 	
 void CPU:: execute()
-{  zeroflag=0;
+{
+    zeroflag=0;
 	int secoperand;  //imm or data from reg
 	if (buffer2[9]) //addi or lw or sw, the sec operand is the immediate
 		secoperand= buffer2[3];

@@ -1,8 +1,10 @@
 #include <iostream>
+#include "CPU.h"
 using namespace std;
 
 int main ()
 {
-	cout << "Hello World\n";
+    CPU one ("input.txt");
+    
 	return 0;
 }

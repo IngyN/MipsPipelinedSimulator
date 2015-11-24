@@ -23,9 +23,9 @@ public:
 	void WriteBack(); 
 
 private:
-    static int PC;//program counter
-    static int clk;
-    static bool rst;
+    int PC;//program counter
+    int clk;
+    bool rst;
     
 string filename; 
 vector <Instruction> IM; // instruction memory of type Instruction(class)
