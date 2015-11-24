@@ -300,24 +300,16 @@ void CPU:: control () //generates the control signals
 void CPU::fetch()
 {
     programCounter(/*imm  jumpCtrl, branchEn, fetchEn*/);
-
 IM[PC].setClkAtFet(clk);
     buffer1[0] = PC;
-	buffer1[1] = IM[PC].InstNum;
-    buffer1[2] = inst.rs
-    buffer1[3] = inst.rt
-    buffer1[4] = inst.rd
-    buffer1[5] = inst.imm
-    buffer1[6] = inst.clkAtFetch
-    buffer1[7] = inst.clkAtdec
-    buffer1[8] = inst.clkAtEx
-    buffer1[9] = inst.clkAtMem
-    buffer1[10] = inst.clkAtWB
-
-    
-
-    
+	buffer1[1] = IM[PC].getInstNum(); 
+    buffer1[2] = IM[PC].getRs();
+    buffer1[3] = IM[PC].getRt();
+    buffer1[4] = IM[PC].getRd();
+    buffer1[5] = IM[PC].getImm();
+    buffer1[6] = IM[PC].getClkAtFet();
 }
+	
 
 void CPU:: execute()
 {  zeroflag=0;
@@ -357,36 +349,35 @@ void CPU:: execute()
 }
 void CPU::Decode() 
 {  
-	Instruction Inst = buffer1[1]; 
-	// Assuming all parameters of instruction (Rs,Rt,Rd,Imm are initialized to -1)
-	ReadReg1 = Inst.rs;      // rs
-	ReadReg2 = Inst.rt;      // rt
-	ReadData1 = RegFile[ReadReg1];
-	ReadData2 = RegFile[ReadReg2];
-
 	// if R-format
-	if (Inst.num == 1 | Inst.num == 3 | Inst.num == 8)  // ADD/XOR/SLT
-		RD = Inst.rd;
+	if (buffer1[1] == 1 |buffer1[1] == 3 | buffer1[1] == 8)  // ADD/XOR/SLT
+		RD = buffer1[4];
 	else // if I-format
-		if (Inst.num == 2 | Inst.num == 4)   // ADDI/LW
-			RD = Inst.rt;
+		if (buffer1[1] == 2 | buffer1[1] == 4)   // ADDI/LW
+			RD = buffer1[3];
 		else
-			if (Inst.num == 9) //JAL
-				// RD = index of rs
+			if (buffer1[1] == 9) //JAL
+				RD = RegFile[31];
 
 	buffer2[0] = buffer1[0];
-	buffer2[1] = ReadData1;
-	buffer2[2] = ReadData2; 
-	buffer2[3] =  Inst.imm;
+	buffer2[1] = RegFile[buffer1[2]];  // rs
+	buffer2[2] = RegFile[buffer1[3]];   // rt
+	buffer2[3] = buffer1[5];    // imm 
 	buffer2[4] = RD; 
+	buffer2[5] = buffer1[6];   // clkAtFetch
+	buffer2[6] = clk; 
+
+	// control 
 }
 
 //private functions
 
 void CPU::programCounter()
 {
-    if( rst == true)
+    if( rst == true){
         PC = 0;
+		clk =0;
+	}
     else if(fetchEn ==true)
     {
         if(jump ==0)//Normal PC increment
@@ -423,9 +414,10 @@ void CPU::programCounter()
     else if(fetchEn == false )
     {
         //Stall fetching the next instruction
+		
     }
     
-    
+    clk++;
 }
 
 //test
