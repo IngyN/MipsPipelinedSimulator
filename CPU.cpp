@@ -106,3 +106,5 @@ void CPU:: execute()
 	buffer3[3]= buffer2[2];
 	buffer3[4]= buffer2[4];
 }
+
+//test
