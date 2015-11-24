@@ -66,8 +66,105 @@ CPU::CPU(string name)    // constructor receives the file name
 
 int nametoNum(string  & name)
 {
-    name.erase()
-    if(name ==
+    string::iterator iter = name.end();
+    name.erase(iter);
+    if(name == "$zero")
+    {
+        return 0;
+    } else if(name == "$at")
+    {
+        return 1;
+    } else if(name == "$v0")
+    {
+        return 2;
+    } else if(name == "$v1")
+    {
+        return 3;
+    } else if(name == "$a0")
+    {
+        return 4;
+    } else if(name == "$a1")
+    {
+        return 5;
+    } else if(name == "$a1")
+    {
+        return 6;
+    } else if(name == "$a1")
+    {
+        return 7;
+    } else if(name == "$a1")
+    {
+        return 8;
+    } else if(name == "$a1")
+    {
+        return 9;
+    } else if(name == "$a1")
+    {
+        return 10;
+    } else if(name == "$a1")
+    {
+        return 11;
+    } else if(name == "$a1")
+    {
+        return 12;
+    } else if(name == "$a1")
+    {
+        return 13;
+    } else if(name == "$a1")
+    {
+        return 14;
+    }else if(name == "$a1")
+    {
+        return 15;
+    } else if(name == "$a1")
+    {
+        return 16;
+    } else if(name == "$a1")
+    {
+        return 17;
+    } else if(name == "$a1")
+    {
+        return 18;
+    } else if(name == "$a1")
+    {
+        return 19;
+    } else if(name == "$a1")
+    {
+        return 20;
+    } else if(name == "$a1")
+    {
+        return 21;
+    } else if(name == "$a1")
+    {
+        return 22;
+    } else if(name == "$a1")
+    {
+        return 23;
+    } else if(name == "$a1")
+    {
+        return 24;
+    } else if(name == "$a1")
+    {
+        return 25;
+    } else if(name == "$a1")
+    {
+        return 26;
+    } else if(name == "$a1")
+    {
+        return 27;
+    } else if(name == "$a1")
+    {
+        return 28;
+    } else if(name == "$a1")
+    {
+        return 29;
+    } else if(name == "$a1")
+    {
+        return 30;
+    } else if(name == "$a1")
+    {
+        return 31;
+    }     
 }
 
 CPU::~CPU()
