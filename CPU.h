@@ -14,8 +14,8 @@ public:
 	CPU(string);    // class constructor receives the file name containing assembly code to be parsed
 	~CPU(); 
 	void control (); //generates the control signals, it receives the instruction number
-	// Fetch function
-	// Decode function
+	// Decode function	
+	void Decode();      // uses buffer1 as input and stores output in buffer2 
 	void execute ();
 
 private:
