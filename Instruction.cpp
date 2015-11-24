@@ -143,19 +143,19 @@ void Instruction:: clear ()
 }
 
 
-Instruction::Instruction (const Instruction &)
+Instruction::Instruction (const Instruction & rhs)
 {
-    this->instNum = instNum;
-    this->rs =rs;
-    this->rd =rd;
-    this->rt=rt;
-    this->imm=imm;
+    this->instNum = rhs.instNum;
+    this->rs =rhs.rs;
+    this->rd =rhs.rd;
+    this->rt=rhs.rt;
+    this->imm=rhs.imm;
     
-    this->clkAtFet=clkAtFet;
-    this->clkAtDec=clkAtDec;
-    this->clkAtEx=clkAtEx;
-    this->clkAtMem=clkAtMem;
-    this->clkAtWB=clkAtWB;
+    this->clkAtFet=rhs.clkAtFet;
+    this->clkAtDec=rhs.clkAtDec;
+    this->clkAtEx=rhs.clkAtEx;
+    this->clkAtMem=rhs.clkAtMem;
+    this->clkAtWB=rhs.clkAtWB;
 }
 
 Instruction::~Instruction()
