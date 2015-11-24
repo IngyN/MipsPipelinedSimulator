@@ -301,7 +301,17 @@ void CPU::fetch()
 {
     programCounter(/*imm  jumpCtrl, branchEn, fetchEn*/);
     IM[PC].clkAtFet = clk;
-    buffer1[0] = IM[PC];
+    buffer1[0] = PC;
+	buffer1[1] = IM[PC].InstNum;
+    buffer1[2] = inst.rs
+    buffer1[3] = inst.rt
+    buffer1[4] = inst.rd
+    buffer1[5] = inst.imm
+    buffer1[6] = inst.clkAtFetch
+    buffer1[7] = inst.clkAtdec
+    buffer1[8] = inst.clkAtEx
+    buffer1[9] = inst.clkAtMem
+    buffer1[10] = inst.clkAtWB
     
 }
 
