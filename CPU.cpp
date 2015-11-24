@@ -294,6 +294,17 @@ void CPU:: control (int instNum) //generates the control signals
 		default:
 			ALUOp=4; //invalid 
 	}
+
+	buffer2[7] = regWrite;
+	buffer2[8] = regDest;
+	buffer2[9] = ALUSrc;
+	buffer2[10] = ALUOp;
+	buffer2[11] = branch;
+	buffer2[12] = memRead;
+	buffer2[13] = memWrite;
+	buffer2[14] = memToReg;
+	buffer2[15] = jump;
+	buffer2[16] = jumpReg;
 }
 
 
@@ -367,7 +378,7 @@ void CPU::Decode()
 	buffer2[5] = buffer1[6];   // clkAtFetch
 	buffer2[6] = clk; 
 
-	// control 
+	control(buffer1[1]);
 }
 
 //private functions
