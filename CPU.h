@@ -43,8 +43,8 @@ buffer1[8] = inst.clkAtEx
 buffer1[9] = inst.clkAtMem
 buffer1[10] = inst.clkAtWB
 */ 
-int buffer2[5]; // ID/EX
-int buffer3[5]; // EX/Mem
+int buffer2[17]; // ID/EX
+int buffer3[13]; // EX/Mem
 int buffer4[3]; // MEM/WB
 bool regWrite;   //control signal 
 bool regDest;    //control signal (1 for rd, 0 for rt)

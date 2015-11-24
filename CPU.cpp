@@ -325,18 +325,18 @@ IM[PC].setClkAtFet(clk);
 void CPU:: execute()
 {  zeroflag=0;
 	int secoperand;  //imm or data from reg
-	if (Inst.num == 2 || Inst.num == 4 || Inst.num==5 ) //addi or lw or sw, the sec operand is the immediate
+	if (buffer2[9]) //addi or lw or sw, the sec operand is the immediate
 		secoperand= buffer2[3];
 	else 
 		secoperand= buffer2[2];
-	switch (ALUOp)
+	switch (buffer2[10])
 	{
 	case 0:   //add  
-		ALUResult= buffer2[1]+secoperand;  
+		ALUResult = buffer2[1]+secoperand;  
 		break;
 	case 1:   //sub
 		ALUResult= buffer2[1]-secoperand;
-		if (Inst.num==6 && ALUResult<=0)  //ble
+		if (buffer2[11] && ALUResult<=0)  //ble
 			zeroflag=1;
 		break;
 	case 2:   //xor
@@ -357,6 +357,15 @@ void CPU:: execute()
 	buffer3[2]= ALUResult;
 	buffer3[3]= buffer2[2];
 	buffer3[4]= buffer2[4];
+	buffer3[5]= buffer2[7];  // regwrite
+	buffer3[6]= buffer2[8];   // regdest
+	buffer3[7]= buffer2[11];   // branch 
+	buffer3[8]= buffer2[12];   // memread
+    buffer3[9]= buffer2[13];   // memwrite
+	buffer3[10]= buffer2[14];  // memtoreg
+	buffer3[11]= buffer2[15];   // jump
+	buffer3[12]= buffer2[16]; //jumpreg
+
 }
 void CPU::Decode() 
 {  
@@ -370,7 +379,7 @@ void CPU::Decode()
 			if (buffer1[1] == 9) //JAL
 				RD = RegFile[31];
 
-	buffer2[0] = buffer1[0];
+	buffer2[0] = buffer1[0];//PC
 	buffer2[1] = RegFile[buffer1[2]];  // rs
 	buffer2[2] = RegFile[buffer1[3]];   // rt
 	buffer2[3] = buffer1[5];    // imm 
