@@ -321,7 +321,6 @@ void CPU::fetch()
     buffer1[6] = IM[PC].getClkAtFet();
 }
 	
-
 void CPU:: execute()
 {  zeroflag=0;
 	int secoperand;  //imm or data from reg
@@ -378,7 +377,6 @@ void CPU::Decode()
 		else
 			if (buffer1[1] == 9) //JAL
 				RD = RegFile[31];
-
 	buffer2[0] = buffer1[0];//PC
 	buffer2[1] = RegFile[buffer1[2]];  // rs
 	buffer2[2] = RegFile[buffer1[3]];   // rt
@@ -408,8 +406,7 @@ void CPU::programCounter(int imm, int jump, int branch, int fetchEn)
                 PC = (PC+1) + imm;
             else
                 PC = PC+1;// no branch, so pc increments as normal
-        }
-        
+        }  
         else if(jump == 2)//Jump
             PC = imm;
         else if (jump==3)//JAL
@@ -417,9 +414,9 @@ void CPU::programCounter(int imm, int jump, int branch, int fetchEn)
             RegFile[31] = PC+1;
             PC = imm;
         }
-        else if (jump==4)//JR
-            //PC = ra;
-        
+        else if (jump==4)//JR{
+          //  PC = RegFile[rs]; /// HEYYYYY !!! MEEN RS DAH
+		{}
         else if (jump==5)//JumpProced
         {
             returnAddresses.push(PC+1);
@@ -433,29 +430,13 @@ void CPU::programCounter(int imm, int jump, int branch, int fetchEn)
     }
     else if(fetchEn == false )
     {
-        //Stall fetching the next instruction
-		
+        //Stall fetching the next instruction	
     }
-    
     clk++;
 }
 
 void CPU::MemAccess()
 {
-	/*buffer3[0]= buffer2[0]; 
-	buffer3[1]= zeroflag;
-	buffer3[2]= ALUResult;
-	buffer3[3]= buffer2[2];  // rt*
-	buffer3[4]= buffer2[4];  // rd
-	buffer3[5]= buffer2[7];  // regwrite
-	buffer3[6]= buffer2[8];   // regdest
-	buffer3[7]= buffer2[11];   // branch 
-	buffer3[8]= buffer2[12];   // memread
-    buffer3[9]= buffer2[13];   // memwrite
-	buffer3[10]= buffer2[14];  // memtoreg
-	buffer3[11]= buffer2[15];   // jump
-	buffer3[12]= buffer2[16]; //jumpreg
-	buffer3[13] = clk; */
 	int NextPC;
 	int MemReadData;  // output of data memory 
 	if (buffer3[7])   // branch 
@@ -472,15 +453,22 @@ void CPU::MemAccess()
 		MemReadData = DataMem[buffer3[2]];
 
 	buffer4[0] = MemReadData;
-	buffer4[1] = buffer3[2];
-	buffer4[2] = buffer3[4]; 
+	buffer4[1] = buffer3[2]; //alu result
+	buffer4[2] = buffer3[4];   // rd
 	buffer4[3] = buffer3[5];   // regwrite
 	buffer4[4] = buffer3[10];  // memtoreg 
-
-
+	buffer4[5] = clk;         // clkAtmemAccess
 }
+
 void CPU:: WriteBack()
 {
+	int wbData;
+	if (buffer4[4])  // memtoreg
+		wbData = buffer4[0]; 
+	else
+		wbData = buffer4[1]; 
+
+	RegFile[wbData] = buffer4[2]; 
 }
 
 //test
