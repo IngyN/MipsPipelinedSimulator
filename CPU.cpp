@@ -310,8 +310,8 @@ void CPU:: control (int instNum) //generates the control signals
 
 void CPU::fetch()
 {
-    programCounter(/*imm  jumpCtrl, branchEn, fetchEn*/);
-IM[PC].setClkAtFet(clk);
+    programCounter(buffer2[3], buffer2[15], buffer3[7], fetchEn); // (imm,jump, branch,fetchEn)
+    IM[PC].setClkAtFet(clk);
     buffer1[0] = PC;
 	buffer1[1] = IM[PC].getInstNum(); 
     buffer1[2] = IM[PC].getRs();
@@ -365,7 +365,7 @@ void CPU:: execute()
 	buffer3[10]= buffer2[14];  // memtoreg
 	buffer3[11]= buffer2[15];   // jump
 	buffer3[12]= buffer2[16]; //jumpreg
-
+	buffer3[13] = clk; 
 }
 void CPU::Decode() 
 {  
@@ -392,7 +392,7 @@ void CPU::Decode()
 
 //private functions
 
-void CPU::programCounter()
+void CPU::programCounter(int imm, int jump, int branch, int fetchEn)
 {
     if( rst == true){
         PC = 0;
@@ -405,17 +405,17 @@ void CPU::programCounter()
         else if(jump==1)//branch instruction
         {
             if(branch == true)
-                PC = (PC+1) + Inst.imm;
+                PC = (PC+1) + imm;
             else
                 PC = PC+1;// no branch, so pc increments as normal
         }
         
         else if(jump == 2)//Jump
-            PC = Inst.imm;
+            PC = imm;
         else if (jump==3)//JAL
         {
-            ra = PC+1;
-            PC = Inst.imm;
+            RegFile[31] = PC+1;
+            PC = imm;
         }
         else if (jump==4)//JR
             //PC = ra;
@@ -423,7 +423,7 @@ void CPU::programCounter()
         else if (jump==5)//JumpProced
         {
             returnAddresses.push(PC+1);
-            PC = Inst.imm;
+            PC = imm;
         }
         else if (jump==6)//ReturnProced
         {
@@ -438,6 +438,13 @@ void CPU::programCounter()
     }
     
     clk++;
+}
+
+void CPU::MemAccess()
+{
+}
+void CPU:: WriteBack()
+{
 }
 
 //test

@@ -19,6 +19,7 @@ public:
 	void execute ();
     int nametoNum(string  & name, bool cut = true);
 	void MemAccess(); 
+	void WriteBack(); 
 
 private:
     static int PC;//program counter
@@ -30,21 +31,8 @@ vector <Instruction> IM; // instruction memory of type Instruction(class)
 int RegFile[RegFile_Size];             // Declaring an array for Register File 
 int DataMem[DataMem_Size];          // Declaring an array for Data Memory 
 int buffer1[11]; // IF/ID
-/*
-buffer1[0] = pc
-buffer1[1] = inst.num
-buffer1[2] = inst.rs
-buffer1[3] = inst.rt
-buffer1[4] = inst.rd
-buffer1[5] = inst.imm
-buffer1[6] = inst.clkAtFetch
-buffer1[7] = inst.clkAtdec
-buffer1[8] = inst.clkAtEx
-buffer1[9] = inst.clkAtMem
-buffer1[10] = inst.clkAtWB
-*/ 
 int buffer2[17]; // ID/EX
-int buffer3[13]; // EX/Mem
+int buffer3[14]; // EX/Mem
 int buffer4[3]; // MEM/WB
 bool regWrite;   //control signal 
 bool regDest;    //control signal (1 for rd, 0 for rt)
@@ -73,7 +61,7 @@ bool jumpReg; //control signal
     int ALUResult;
     bool fetchEn;
     //private function
-    void programCounter();
+    void programCounter(int,int,int,int);
 
 };
 #endif
