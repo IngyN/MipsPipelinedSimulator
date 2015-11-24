@@ -3,7 +3,7 @@
 #include "Instruction.h"   // to be added 
 #include <string>
 #include <vector>
-#define RegFile_Size 16 // size of register file
+#define RegFile_Size 32 // size of register file
 #define DataMem_Size 100 // Declaring an array for Data Memory
 using namespace std;
 

@@ -1,10 +1,66 @@
 #include "CPU.h"
 using namespace std;
 #include <iostream>
+#include <fstream>
 
 CPU::CPU(string name)    // constructor receives the file name 
 {
-	filename = name; 
+	filename = name;
+    ifstream in;
+    in.open(name.c_str());
+    
+    string instName, reg1, reg2, reg3, offset, imm;
+    while (!in.eof())
+    {
+        in>>instName;
+        
+        if(instName == "ADD")
+        {
+            in>>reg1>>reg2>>reg3;
+            
+        } else if(instName == "ADDI")
+        {
+            
+        } else if(instName == "XOR")
+        {
+            
+        } else if(instName == "LW")
+        {
+            
+        } else if(instName == "SW")
+        {
+            
+        } else if(instName == "BLE")
+        {
+            
+        } else if(instName == "J")
+        {
+            
+        } else if(instName == "SLT")
+        {
+            
+        } else if(instName == "JAL")
+        {
+            
+        } else if(instName == "JR")
+        {
+            
+        } else if(instName == "JP")
+        {
+            
+        } else if(instName == "RP")
+        {
+            
+        } else {
+            //NOP
+        }
+            
+                  
+    }
+    
+    
+    in.close();
+    
 }
 
 CPU::~CPU()
