@@ -1,7 +1,11 @@
 #ifndef CPU_h
 #define CPU_h
 #include "Instruction.h"   // to be added 
-
+#include <string>
+#include <vector>
+#define RegFile_Size 16 // size of register file
+#define DataMem_Size 100 // Declaring an array for Data Memory
+using namespace std;
 
 class CPU
 {
@@ -17,8 +21,6 @@ public:
 private:
 string filename; 
 vector <Instruction> IM; // instruction memory of type Instruction(class)
-const int RegFile_Size = 16;  // size of register file
-const int DataMem_Size;      //**** 
 int RegFile[RegFile_Size];             // Declaring an array for Register File 
 int DataMem[DataMem_Size];          // Declaring an array for Data Memory 
 int buffer1[2]; // IF/ID
