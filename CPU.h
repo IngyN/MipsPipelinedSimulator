@@ -14,11 +14,34 @@ public:
 	CPU(string);    // class constructor receives the file name containing assembly code to be parsed
 	~CPU(); 
 	void control (); //generates the control signals, it receives the instruction number
-	// Decode function	
-	void Decode();      // uses buffer1 as input and stores output in buffer2 
+    void fetch();
+    void Decode();      // uses buffer1 as input and stores output in buffer2
 	void execute ();
 
 private:
+    
+    struct Instruction// instead of instruction class
+    {
+        int num;
+        int rs;
+        int rd;
+        int rt;
+        int imm;    // assuming one variable is enough for any immediate or constant or offset that we may need
+        
+        // variables for logging the clk cycle at which each of these events occur for each instruction
+        int clkAtFet;
+        int clkAtDec;
+        int clkAtEx;
+        int clkAtMem;
+        int clkAtWB;
+        
+    };
+    
+    
+    static int PC;//program counter
+    static int clk;
+    static bool rst;
+    
 string filename; 
 vector <Instruction> IM; // instruction memory of type Instruction(class)
 int RegFile[RegFile_Size];             // Declaring an array for Register File 
@@ -50,8 +73,11 @@ bool jumpReg; //control signal
 	int RD;       // current rd 
 
 // Add parameters needed for fetch/decode/execute
-int zeroflag; //it's an integer to passed through the buffer 
-int ALUResult;
+    int zeroflag; //it's an integer to passed through the buffer
+    int ALUResult;
+    bool fetchEn;
+    //private function
+    void programCounter();
 
 };
 #endif

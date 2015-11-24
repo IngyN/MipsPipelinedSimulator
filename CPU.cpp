@@ -238,6 +238,15 @@ void CPU:: control () //generates the control signals
 	}
 }
 
+
+void CPU::fetch()
+{
+    programCounter(/*imm  jumpCtrl, branchEn, fetchEn*/);
+    IM[PC].clkAtFet = clk;
+    buffer1[0] = IM[PC];
+    
+}
+
 void CPU:: execute()
 {  zeroflag=0;
 	int secoperand;  //imm or data from reg
@@ -298,6 +307,53 @@ void CPU::Decode()
 	buffer2[2] = ReadData2; 
 	buffer2[3] =  Inst.imm;
 	buffer2[4] = RD; 
+}
+
+//private functions
+
+void CPU::programCounter()
+{
+    if( rst == true)
+        PC = 0;
+    else if(fetchEn ==true)
+    {
+        if(jump ==0)//Normal PC increment
+            PC = PC+1;
+        else if(jump==1)//branch instruction
+        {
+            if(branch == true)
+                PC = (PC+1) + Inst.imm;
+            else
+                PC = PC+1;// no branch, so pc increments as normal
+        }
+        
+        else if(jump == 2)//Jump
+            PC = Inst.imm;
+        else if (jump==3)//JAL
+        {
+            ra = PC+1;
+            PC = Inst.imm;
+        }
+        else if (jump==4)//JR
+            //PC = ra;
+        
+        else if (jump==5)//JumpProced
+        {
+            returnAddresses.push(PC+1);
+            PC = Inst.imm;
+        }
+        else if (jump==6)//ReturnProced
+        {
+            PC = returnAddresses.top();
+            returnAddresses.pop();
+        }
+    }
+    else if(fetchEn == false )
+    {
+        //Stall fetching the next instruction
+    }
+    
+    
 }
 
 //test
