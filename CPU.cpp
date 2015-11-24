@@ -8,7 +8,7 @@ CPU::CPU(string name)    // constructor receives the file name
 	filename = name;
     ifstream in;
     in.open(name.c_str());
-    
+    Instruction temp;
     string instName, reg1, reg2, reg3, offset, imm;
     while (!in.eof())
     {
@@ -17,6 +17,7 @@ CPU::CPU(string name)    // constructor receives the file name
         if(instName == "ADD")
         {
             in>>reg1>>reg2>>reg3;
+            
             
         } else if(instName == "ADDI")
         {
@@ -61,6 +62,12 @@ CPU::CPU(string name)    // constructor receives the file name
     
     in.close();
     
+}
+
+int nametoNum(string  & name)
+{
+    name.erase()
+    if(name ==
 }
 
 CPU::~CPU()
