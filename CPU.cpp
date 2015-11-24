@@ -17,45 +17,97 @@ CPU::CPU(string name)    // constructor receives the file name
         if(instName == "ADD")
         {
             in>>reg1>>reg2>>reg3;
-            
+            temp.setRd(nametoNum(reg1));
+            temp.setRt(nametoNum(reg3, 0));
+            temp.setRs(nametoNum(reg2));
+            temp.setInstNum(1);
             
         } else if(instName == "ADDI")
         {
+            in>>reg1>>reg2>>imm;
+            temp.setImm(nametoNum(reg3,0));
+            temp.setRs(nametoNum(reg2));
+            temp.setRt(nametoNum(reg1));
+            
+            temp.setInstNum(2);
             
         } else if(instName == "XOR")
         {
+            in>>reg1>>reg2>>reg3;
+            temp.setRd(nametoNum(reg1));
+            temp.setRt(nametoNum(reg3,0));
+            temp.setRs(nametoNum(reg2));
+            temp.setInstNum(3);
             
         } else if(instName == "LW")
         {
+            in>> reg1;
+            getline(in, offset, '(');
+            getline(in, reg2, ')');
+            
+            temp.setRt(nametoNum(reg1));
+            temp.setOffset(offset);
+            temp.setRs(nametoNum(reg2,0));
+            temp.setInstNum(4);
             
         } else if(instName == "SW")
         {
+            in>> reg1;
+            getline(in, offset, '(');
+            getline(in, reg2, ')');
+            
+            temp.setRt(nametoNum(reg1));
+            temp.setOffset(offset);
+            temp.setRs(nametoNum(reg2,0));
+            temp.setInstNum(5);
             
         } else if(instName == "BLE")
         {
+            in>>reg1>>reg2>>offset;
             
+            temp.setRs(nametoNum(reg1));
+            temp.setRt(nametoNum(reg2));
+            temp.setOffset(offset);
+            temp.setInstNum(6);
         } else if(instName == "J")
         {
+            in>>imm;
+            
+            temp.setImm(imm);
+            temp.setInstNum(7);
             
         } else if(instName == "SLT")
         {
-            
+            in>>reg1>>reg2>>reg3;
+            temp.setRd(nametoNum(reg1));
+            temp.setRt(nametoNum(reg3, 0));
+            temp.setRs(nametoNum(reg2));
+            temp.setInstNum(8);
         } else if(instName == "JAL")
         {
-            
+            in >>imm;
+            temp.setImm(imm);
+            temp.setInstNum(9);
         } else if(instName == "JR")
         {
-            
+            in >>reg1;
+            temp.setRs(nametoNum(reg1,0));
+            temp.setInstNum(10);
         } else if(instName == "JP")
         {
-            
+            in >> imm;
+            temp.setImm(imm);
+            temp.setInstNum(11);
         } else if(instName == "RP")
         {
-            
+            temp.setInstNum(12);
         } else {
             //NOP
+            temp.setInstNum(0);
         }
-            
+        
+        IM.push_back(temp);
+        temp.clear();
                   
     }
     
@@ -64,10 +116,13 @@ CPU::CPU(string name)    // constructor receives the file name
     
 }
 
-int nametoNum(string  & name)
+int nametoNum(string  & name, bool cut = true)
 {
+    if(cut){
     string::iterator iter = name.end();
     name.erase(iter);
+    }
+    
     if(name == "$zero")
     {
         return 0;
@@ -86,82 +141,82 @@ int nametoNum(string  & name)
     } else if(name == "$a1")
     {
         return 5;
-    } else if(name == "$a1")
+    } else if(name == "$a2")
     {
         return 6;
-    } else if(name == "$a1")
+    } else if(name == "$a3")
     {
         return 7;
-    } else if(name == "$a1")
+    } else if(name == "$t0")
     {
         return 8;
-    } else if(name == "$a1")
+    } else if(name == "$t1")
     {
         return 9;
-    } else if(name == "$a1")
+    } else if(name == "$t2")
     {
         return 10;
-    } else if(name == "$a1")
+    } else if(name == "$t3")
     {
         return 11;
-    } else if(name == "$a1")
+    } else if(name == "$t4")
     {
         return 12;
-    } else if(name == "$a1")
+    } else if(name == "$t5")
     {
         return 13;
-    } else if(name == "$a1")
+    } else if(name == "$t6")
     {
         return 14;
-    }else if(name == "$a1")
+    }else if(name == "$t7")
     {
         return 15;
-    } else if(name == "$a1")
+    } else if(name == "$s0")
     {
         return 16;
-    } else if(name == "$a1")
+    } else if(name == "$s1")
     {
         return 17;
-    } else if(name == "$a1")
+    } else if(name == "$s2")
     {
         return 18;
-    } else if(name == "$a1")
+    } else if(name == "$s3")
     {
         return 19;
-    } else if(name == "$a1")
+    } else if(name == "$s4")
     {
         return 20;
-    } else if(name == "$a1")
+    } else if(name == "$s5")
     {
         return 21;
-    } else if(name == "$a1")
+    } else if(name == "$s6")
     {
         return 22;
-    } else if(name == "$a1")
+    } else if(name == "$s7")
     {
         return 23;
-    } else if(name == "$a1")
+    } else if(name == "$t8")
     {
         return 24;
-    } else if(name == "$a1")
+    } else if(name == "$t9")
     {
         return 25;
-    } else if(name == "$a1")
+    } else if(name == "$k0")
     {
         return 26;
-    } else if(name == "$a1")
+    } else if(name == "$k1")
     {
         return 27;
-    } else if(name == "$a1")
+    } else if(name == "$gp")
     {
         return 28;
-    } else if(name == "$a1")
+    } else if(name == "$sp")
     {
         return 29;
-    } else if(name == "$a1")
+    } else if(name == "$fp")
     {
         return 30;
-    } else if(name == "$a1")
+    } else if(name == "$ra")
     {
         return 31;
     }     

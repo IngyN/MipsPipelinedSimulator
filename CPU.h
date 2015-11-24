@@ -17,6 +17,7 @@ public:
     void fetch();
     void Decode();      // uses buffer1 as input and stores output in buffer2
 	void execute ();
+    int nametoNum(string  & name, bool cut = true);
 
 private:
     
