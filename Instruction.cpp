@@ -79,6 +79,53 @@ void Instruction:: setClkAtWB (int clk)
     this->clkAtWB = clk;
 }
 
+int Instruction:: getInstNum ()
+{
+    return this->instNum;
+}
+
+int Instruction:: getImm ()
+{
+    return this ->imm;
+}
+int Instruction:: getOffset ()
+{
+    return this->imm;
+}
+int Instruction:: getRs()
+{
+    return this->rs;
+}
+int Instruction:: getRt()
+{
+    return this->rt;
+}
+int Instruction:: getRd()
+{
+    return this->rd;
+}
+int Instruction:: getClkAtFet ()
+{
+    return this->clkAtFet;
+}
+int Instruction:: getClkAtDec ()
+{
+    return this->clkAtDec;
+}
+int Instruction:: getClkAtEx ()
+{
+    return this->clkAtEx;
+}
+int Instruction:: getClkAtMem ()
+{
+    return this->clkAtMem;
+}
+int Instruction:: getClkAtWB()
+{
+    return this -> clkAtWB;
+}
+
+
 
 void Instruction:: clear ()
 {

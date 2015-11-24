@@ -37,6 +37,11 @@ public:
     int getRs();
     int getRt();
     int getRd();
+    int getClkAtFet ();
+    int getClkAtDec ();
+    int getClkAtEx ();
+    int getClkAtMem ();
+    int getClkAtWB();
     
     //clear everything
     void clear ();
