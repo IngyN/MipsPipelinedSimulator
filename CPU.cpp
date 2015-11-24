@@ -172,7 +172,15 @@ CPU::~CPU()
 }
 
 void CPU:: control () //generates the control signals
-{	
+{	regWrite= true;
+    regDest= true;
+	ALUSrc= false;    //control signal (0: read from reg, 1: imm)
+    branch= false;   //control signal 
+    memRead= false;   //control signal 
+    memWrite= false;   //control signal 
+    memToReg= false;  //control signal 
+    jump= false;    //control signal 
+    jumpReg= false; 
 	switch (Inst.num)
 	{	case 1:   //add
 			ALUOp=0;
@@ -231,7 +239,7 @@ void CPU:: control () //generates the control signals
 }
 
 void CPU:: execute()
-{
+{  zeroflag=0;
 	int secoperand;  //imm or data from reg
 	if (Inst.num == 2 || Inst.num == 4 || Inst.num==5 ) //addi or lw or sw, the sec operand is the immediate
 		secoperand= buffer2[3];

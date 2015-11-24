@@ -27,16 +27,16 @@ int buffer1[2]; // IF/ID
 int buffer2[5]; // ID/EX
 int buffer3[5]; // EX/Mem
 int buffer4[3]; // MEM/WB
-bool regWrite= true;   //control signal 
-bool regDest= true;    //control signal (1 for rd, 0 for rt)
-bool ALUSrc= false;    //control signal (0: read from reg, 1: imm)
+bool regWrite;   //control signal 
+bool regDest;    //control signal (1 for rd, 0 for rt)
+bool ALUSrc;    //control signal (0: read from reg, 1: imm)
 int ALUOp;    //control signal 
-bool branch= false;   //control signal 
-bool memRead= false;   //control signal 
-bool memWrite= false;   //control signal 
-bool memToReg= false;  //control signal 
-bool jump= false;    //control signal 
-bool jumpReg= false; //control signal
+bool branch;   //control signal 
+bool memRead;   //control signal 
+bool memWrite;   //control signal 
+bool memToReg;  //control signal 
+bool jump;    //control signal 
+bool jumpReg; //control signal
 
 // Decode parameters:
 // inputs to the register file
@@ -50,7 +50,7 @@ bool jumpReg= false; //control signal
 	int RD;       // current rd 
 
 // Add parameters needed for fetch/decode/execute
-int zeroflag=0; //it's an integer to passed through the buffer 
+int zeroflag; //it's an integer to passed through the buffer 
 int ALUResult;
 
 };
