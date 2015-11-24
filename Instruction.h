@@ -24,7 +24,11 @@ public:
     void setInstNum(int inst);
     void setImm(int imm);
     void setOffset(int offset);
-    
+    void setClkAtFet (int);
+    void setClkAtDec (int);
+    void setClkAtEx (int);
+    void setClkAtMem (int);
+    void setClkAtWB (int);
     
     // getters
     int getInstNum ();

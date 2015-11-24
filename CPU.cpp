@@ -300,7 +300,7 @@ void CPU:: control () //generates the control signals
 void CPU::fetch()
 {
     programCounter(/*imm  jumpCtrl, branchEn, fetchEn*/);
-    IM[PC].clkAtFet = clk;
+    IM[PC].setClkAtFet(clk);
     buffer1[0] = IM[PC];
     
 }

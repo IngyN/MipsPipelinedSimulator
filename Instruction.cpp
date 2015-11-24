@@ -58,6 +58,28 @@ void Instruction::setOffset(int offset)
     this->imm = offset;
 }
 
+void Instruction:: setClkAtFet (int clk)
+{
+    this->clkAtFet = clk;
+}
+void Instruction::setClkAtDec (int clk)
+{
+    this->clkAtDec=clk;
+}
+void Instruction:: setClkAtEx (int clk)
+{
+    this->clkAtEx = clk;
+}
+void Instruction:: setClkAtMem (int clk)
+{
+    this->clkAtMem = clk;
+}
+void Instruction:: setClkAtWB (int clk)
+{
+    this->clkAtWB = clk;
+}
+
+
 void Instruction:: clear ()
 {
     instNum = 0;
