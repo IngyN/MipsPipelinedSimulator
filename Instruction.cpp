@@ -53,10 +53,11 @@ void Instruction::setImm(int imm)
     this->imm = imm;
 }
 
-void Instruction::setOffset(int offset)
+
+/*void Instruction::setOffset(int offset)
 {
     this->imm = offset;
-}
+}*/
 
 void Instruction:: setClkAtFet (int clk)
 {
@@ -88,10 +89,10 @@ int Instruction:: getImm ()
 {
     return this ->imm;
 }
-int Instruction:: getOffset ()
+/*int Instruction:: getOffset ()
 {
     return this->imm;
-}
+}*/
 int Instruction:: getRs()
 {
     return this->rs;

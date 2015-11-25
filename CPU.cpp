@@ -2,6 +2,7 @@
 using namespace std;
 #include <iostream>
 #include <fstream>
+#include <bitset>
 
 int CPU:: nametoNum(string  & name, bool cut)
 {
@@ -117,7 +118,7 @@ CPU::CPU(string name)    // constructor receives the file name
     in.open(name.c_str());
     
     Instruction temp;
-    string instName, reg1, reg2, reg3, offset, imm;
+    string instName, reg1, reg2, reg3, imm;
     
     while (!in.eof())
     {
@@ -155,32 +156,32 @@ CPU::CPU(string name)    // constructor receives the file name
         } else if(instName == "LW")
         {
             in>> reg1;
-            getline(in, offset, '(');
+            getline(in, imm, '(');
             getline(in, reg2, ')');
             
             temp.setRt(nametoNum(reg1));
-            temp.setOffset(stoi(offset));
+            temp.setImm(stoi(imm));
             temp.setRs(nametoNum(reg2,0));
             temp.setInstNum(4);
             
         } else if(instName == "SW")
         {
             in>> reg1;
-            getline(in, offset, '(');
+            getline(in, imm, '(');
             getline(in, reg2, ')');
             
             temp.setRt(nametoNum(reg1));
-            temp.setOffset(stoi(offset));
+            temp.setImm(stoi(imm));
             temp.setRs(nametoNum(reg2,0));
             temp.setInstNum(5);
             
         } else if(instName == "BLE")
         {
-            in>>reg1>>reg2>>offset;
+            in>>reg1>>reg2>>imm;
             
             temp.setRs(nametoNum(reg1));
             temp.setRt(nametoNum(reg2));
-            temp.setOffset(stoi(offset));
+            temp.setImm(stoi(imm));
             temp.setInstNum(6);
         } else if(instName == "J")
         {
@@ -222,16 +223,10 @@ CPU::CPU(string name)    // constructor receives the file name
         }
         
         IM.push_back(temp);
-        temp.clear();
-                  
+        temp.clear();              
     }
-    
-    
-    in.close();
-    
+    in.close();   
 }
-
-
 
 CPU::~CPU()
 {
@@ -319,7 +314,7 @@ void CPU:: control (int instNum) //generates the control signals
 
 void CPU::fetch()
 {
-    programCounter(buffer2[3], buffer2[15], buffer3[7], fetchEn); // (imm,jump, branch,fetchEn)
+    programCounter(); // (imm,jump, branch,fetchEn)
     IM[PC].setClkAtFet(clk);
     buffer1[0] = PC;
 	buffer1[1] = IM[PC].getInstNum(); 
@@ -400,43 +395,50 @@ void CPU::Decode()
 
 //private functions
 
-void CPU::programCounter(int imm, int jump, int branch, int fetchEn)
+void CPU::programCounter()
 {
+	fetchEn = true;       // no hazards yet 
     if( rst == true){
         PC = 0;
 		clk =0;
 	}
-    else if(fetchEn ==true)
+    else if(fetchEn == true)
     {
-        if(jump ==0)//Normal PC increment
-            PC = PC+1;
-        else if(jump==1)//branch instruction
+		if (branch)
+			PC = nextPC; 
+		else
+        if(jump)        
+		{
+            PC = buffer2[3];  // imm      
+		}
+		else
+			PC++;     // normal increment
+        /*else if(jump==1)     //branch instruction  
         {
             if(branch == true)
-                PC = (PC+1) + imm;
+                PC = (PC+1) + buffer2[3];    // imm
             else
                 PC = PC+1;// no branch, so pc increments as normal
-        }  
-        else if(jump == 2)//Jump
-            PC = imm;
-        else if (jump==3)//JAL
+        } */ 
+            
+       /* else if (jump==3)//JAL
         {
             RegFile[31] = PC+1;
-            PC = imm;
+            PC = buffer2[3];
         }
         else if (jump==4)//JR{
-          //  PC = RegFile[rs]; /// HEYYYYY !!! MEEN RS DAH
-		{}
+          //  PC = RegFile[rs]; /// HEYYYYY !!! MEEN RS DAH 
+		
         else if (jump==5)//JumpProced
         {
             returnAddresses.push(PC+1);
-            PC = imm;
+            PC = buffer2[3];
         }
         else if (jump==6)//ReturnProced
         {
             PC = returnAddresses.top();
             returnAddresses.pop();
-        }
+        }*/
     }
     else if(fetchEn == false )
     {
@@ -447,12 +449,12 @@ void CPU::programCounter(int imm, int jump, int branch, int fetchEn)
 
 void CPU::MemAccess()
 {
-	int NextPC;
+	
 	int MemReadData;  // output of data memory 
-	if (buffer3[7])   // branch 
-       NextPC = buffer3[2]; 
+	if (buffer3[7] && buffer3[1])   // branch & zeroflag 
+       nextPC = buffer3[2]; 
 	else
-	    NextPC = buffer3[0]; 
+	    nextPC = buffer3[0]; 
 
 	//where will nextPC go????? ********
 
