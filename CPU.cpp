@@ -3,7 +3,6 @@ using namespace std;
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <bitset>
 
 int CPU:: nametoNum(string  & name, bool cut)
 {
@@ -114,7 +113,22 @@ int CPU:: nametoNum(string  & name, bool cut)
 
 CPU::CPU(string name)    // constructor receives the file name 
 {
+	regWrite= true;
+    regDest= true;
+	ALUSrc= false;    //control signal (0: read from reg, 1: imm)
+    branch= false;   //control signal 
+    memRead= false;   //control signal 
+    memWrite= false;   //control signal 
+    memToReg= false;  //control signal 
+    jump= false;    //control signal 
+    jumpReg= false; 
+	// initializing regfile
+	RegFile[0] = 0;  // $zero
+	for (int i = 1; i < 32; i++)
+		RegFile[i] = 0;
 
+	RegFile[17] = 5;
+	RegFile[18] = 3; 
 	filename = name;
     ifstream in;
     in.open(name.c_str());
@@ -129,6 +143,11 @@ CPU::CPU(string name)    // constructor receives the file name
         {
             toupper(instName[i]);
         }  */
+		for(int i=0; instName[i]=='\0';i++)
+	{
+		instName[i]=toupper(instName[i]);
+	}
+
 		
         if(instName == "ADD")
         {
@@ -233,9 +252,11 @@ CPU::CPU(string name)    // constructor receives the file name
         temp.clear();              
     }
     in.close();
+	
+
 	PC = -1;
     clk = -1;
-	test();
+	do{test();} while (PC<(IM.size()-2));
 }
 
 CPU::~CPU()
@@ -244,15 +265,7 @@ CPU::~CPU()
 
 void CPU:: control (int instNum) //generates the control signals
 {
-    regWrite= true;
-    regDest= true;
-	ALUSrc= false;    //control signal (0: read from reg, 1: imm)
-    branch= false;   //control signal 
-    memRead= false;   //control signal 
-    memWrite= false;   //control signal 
-    memToReg= false;  //control signal 
-    jump= false;    //control signal 
-    jumpReg= false; 
+    
 	switch (instNum)
 	{	case 1:   //add
 			ALUOp=0;
@@ -319,7 +332,7 @@ void CPU:: control (int instNum) //generates the control signals
 	buffer2[14] = memToReg;
 	buffer2[15] = jump;
 	buffer2[16] = jumpReg;
-}
+	}
 
 
 void CPU::fetch()
@@ -365,6 +378,7 @@ void CPU:: execute()
 	default:
 		ALUResult=-1;
 	}
+	
 	//input to the Exec/Mem buffer
 	buffer3[0]= buffer2[0]; 
 	buffer3[1]= zeroflag;
@@ -379,7 +393,8 @@ void CPU:: execute()
 	buffer3[10]= buffer2[14];  // memtoreg
 	buffer3[11]= buffer2[15];   // jump
 	buffer3[12]= buffer2[16]; //jumpreg
-	buffer3[13] = clk; 
+	buffer3[13] = clk;
+	buffer3[14]= buffer2[3];
 }
 void CPU::Decode() 
 {  
@@ -401,6 +416,7 @@ void CPU::Decode()
 	buffer2[6] = clk; 
 
 	control(buffer1[1]);
+	
 }
 
 //private functions
@@ -460,9 +476,9 @@ void CPU::programCounter()
 void CPU::MemAccess()
 {
 	
-	int MemReadData;  // output of data memory 
+	int MemReadData=0;  // output of data memory 
 	if (buffer3[7] && buffer3[1])   // branch & zeroflag 
-       nextPC = buffer3[2]; 
+       nextPC = buffer3[14]; 
 	else
 	    nextPC = buffer3[0]; 
 
@@ -494,17 +510,19 @@ void CPU:: WriteBack()
 
 void CPU::test()
 {
+
 	fetch();
 	Decode();
 	execute();
+
 	MemAccess();
 	WriteBack();
-
+	
 	cout << "PC: "<<  PC << endl;
-	cout << IM[0].getInstNum() << endl;
-	cout << IM[0].getRs() << endl;
-	cout << IM[0].getRd() << endl;
-	cout << IM[0].getRt() << endl;
+	cout << IM[PC].getInstNum() << endl;
+	cout << IM[PC].getRs() << endl;
+	cout << IM[PC].getRd() << endl;
+	cout << IM[PC].getRt() << endl;
 	cout << ALUResult << endl; 
 }
 //test

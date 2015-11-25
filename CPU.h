@@ -33,7 +33,7 @@ int RegFile[RegFile_Size];             // Declaring an array for Register File
 int DataMem[DataMem_Size];          // Declaring an array for Data Memory 
 int buffer1[11]; // IF/ID
 int buffer2[17]; // ID/EX
-int buffer3[14]; // EX/Mem
+int buffer3[15]; // EX/Mem
 int buffer4[6]; // MEM/WB
 bool regWrite;   //control signal 
 bool regDest;    //control signal (1 for rd, 0 for rt)
