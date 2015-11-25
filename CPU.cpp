@@ -113,15 +113,6 @@ int CPU:: nametoNum(string  & name, bool cut)
 
 CPU::CPU(string name)    // constructor receives the file name 
 {
-	regWrite= true;
-    regDest= true;
-	ALUSrc= false;    //control signal (0: read from reg, 1: imm)
-    branch= false;   //control signal 
-    memRead= false;   //control signal 
-    memWrite= false;   //control signal 
-    memToReg= false;  //control signal 
-    jump= false;    //control signal 
-    jumpReg= false; 
 	// initializing regfile
 	RegFile[0] = 0;  // $zero
 	for (int i = 1; i < 32; i++)
@@ -337,6 +328,17 @@ void CPU:: control (int instNum) //generates the control signals
 
 void CPU::fetch()
 {
+	// control signals initialization
+	regWrite= true;
+    regDest= true;
+	ALUSrc= false;    //control signal (0: read from reg, 1: imm)
+    branch= false;   //control signal 
+    memRead= false;   //control signal 
+    memWrite= false;   //control signal 
+    memToReg= false;  //control signal 
+    jump= false;    //control signal 
+    jumpReg= false; 
+
     programCounter(); // (imm,jump, branch,fetchEn)
     IM[PC].setClkAtFet(clk);
     buffer1[0] = PC;
@@ -431,9 +433,6 @@ void CPU::programCounter()
 	}*/    // initialized in constructor
     if(fetchEn == true)
     {
-		if (branch)
-			PC = nextPC; 
-		else
         if(jump)        
 		{
             PC = buffer2[3];  // imm      
@@ -479,9 +478,9 @@ void CPU::MemAccess()
 	
 	int MemReadData=0;  // output of data memory 
 	if (buffer3[7] && buffer3[1])   // branch & zeroflag 
-       nextPC = buffer3[14]; 
+       PC = buffer3[14]; 
 	else
-	    nextPC = buffer3[0]; 
+	    PC = buffer3[0]; 
 
 	//where will nextPC go????? ********
 
@@ -506,8 +505,8 @@ void CPU:: WriteBack()
 		wbData = buffer4[0]; 
 	else
 		wbData = buffer4[1]; 
-
-	RegFile[buffer4[2]] = wbData; 
+	if (buffer4[3]) // regwrite
+	      RegFile[buffer4[2]] = wbData; 
 }
 
 void CPU::test()
@@ -520,6 +519,7 @@ void CPU::test()
 	MemAccess();
 	WriteBack();
 	
+	// test
 	/*cout << "PC: "<<  PC << endl;
 	cout << IM[PC].getInstNum() << endl;
 	cout << IM[PC].getRs() << endl;
@@ -527,4 +527,3 @@ void CPU::test()
 	cout << IM[PC].getRt() << endl;
 	cout << ALUResult << endl; */
 }
-//test

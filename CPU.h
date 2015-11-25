@@ -56,7 +56,6 @@ bool jumpReg; //control signal
 	int ReadData1;    // Read data 1 (RegFile[Rs])
 	int ReadData2;    // Read data 2 (RegFile[Rt])
 	int RD;       // current rd 
-	int nextPC;   // pc after branch mux
 // Add parameters needed for fetch/decode/execute
     int zeroflag; //it's an integer to passed through the buffer
     int ALUResult;
