@@ -256,7 +256,7 @@ CPU::CPU(string name)    // constructor receives the file name
 
 	PC = -1;
     clk = -1;
-	do{test();} while (PC<(IM.size()-2));
+	//do{test();} while (PC<(IM.size()-2));
 }
 
 CPU::~CPU()
@@ -359,6 +359,7 @@ void CPU:: execute()
 	switch (buffer2[10])
 	{
 	case 0:   //add  
+	
 		ALUResult = buffer2[1]+secoperand;  
 		break;
 	case 1:   //sub
@@ -491,7 +492,8 @@ void CPU::MemAccess()
 		MemReadData = DataMem[buffer3[2]];
 
 	buffer4[0] = MemReadData;
-	buffer4[1] = buffer3[2]; //alu 	buffer4[2] = buffer3[4];   // rd
+	buffer4[1] = buffer3[2]; //alu 
+	buffer4[2] = buffer3[4];   // rd
 	buffer4[3] = buffer3[5];   // regwrite
 	buffer4[4] = buffer3[10];  // memtoreg 
 	buffer4[5] = clk;         // clkAtmemAccess
@@ -505,7 +507,7 @@ void CPU:: WriteBack()
 	else
 		wbData = buffer4[1]; 
 
-	RegFile[wbData] = buffer4[2]; 
+	RegFile[buffer4[2]] = wbData; 
 }
 
 void CPU::test()
@@ -518,11 +520,11 @@ void CPU::test()
 	MemAccess();
 	WriteBack();
 	
-	cout << "PC: "<<  PC << endl;
+	/*cout << "PC: "<<  PC << endl;
 	cout << IM[PC].getInstNum() << endl;
 	cout << IM[PC].getRs() << endl;
 	cout << IM[PC].getRd() << endl;
 	cout << IM[PC].getRt() << endl;
-	cout << ALUResult << endl; 
+	cout << ALUResult << endl; */
 }
 //test

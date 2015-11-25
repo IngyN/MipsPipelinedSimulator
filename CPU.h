@@ -5,7 +5,7 @@
 #include <vector>
 #include<stack>
 #define RegFile_Size 32 // size of register file
-#define DataMem_Size 100 // Declaring an array for Data Memory
+#define DataMem_Size 32 // Declaring an array for Data Memory
 using namespace std;
 
 class CPU
@@ -26,7 +26,7 @@ private:
     int PC;//program counter
     int clk;
     bool rst;
-    
+
 string filename; 
 vector <Instruction> IM; // instruction memory of type Instruction(class)
 int RegFile[RegFile_Size];             // Declaring an array for Register File 
