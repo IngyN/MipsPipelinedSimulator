@@ -64,6 +64,7 @@ bool jumpReg; //control signal
 	stack<int> returnAddresses;
     //private function
     void programCounter();
+	void test(); 
 
 };
 #endif

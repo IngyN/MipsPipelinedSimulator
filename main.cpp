@@ -5,6 +5,7 @@ using namespace std;
 int main ()
 {
     CPU one ("input.txt");
+
     
 	return 0;
 }

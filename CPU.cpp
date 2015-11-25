@@ -113,6 +113,7 @@ int CPU:: nametoNum(string  & name, bool cut)
 
 CPU::CPU(string name)    // constructor receives the file name 
 {
+
 	filename = name;
     ifstream in;
     in.open(name.c_str());
@@ -225,7 +226,10 @@ CPU::CPU(string name)    // constructor receives the file name
         IM.push_back(temp);
         temp.clear();              
     }
-    in.close();   
+    in.close();
+	PC = -1;
+    clk = -1;
+	test();
 }
 
 CPU::~CPU()
@@ -374,10 +378,10 @@ void CPU:: execute()
 void CPU::Decode() 
 {  
 	// if R-format
-	if (buffer1[1] == 1 |buffer1[1] == 3 | buffer1[1] == 8)  // ADD/XOR/SLT
+	if (buffer1[1] == 1 || buffer1[1] == 3 || buffer1[1] == 8)  // ADD/XOR/SLT
 		RD = buffer1[4];
 	else // if I-format
-		if (buffer1[1] == 2 | buffer1[1] == 4)   // ADDI/LW
+		if (buffer1[1] == 2 || buffer1[1] == 4)   // ADDI/LW
 			RD = buffer1[3];
 		else
 			if (buffer1[1] == 9) //JAL
@@ -398,11 +402,11 @@ void CPU::Decode()
 void CPU::programCounter()
 {
 	fetchEn = true;       // no hazards yet 
-    if( rst == true){
+  /*  if( rst == true){
         PC = 0;
-		clk =0;
-	}
-    else if(fetchEn == true)
+		clk = 0;
+	}*/    // initialized in constructor
+    if(fetchEn == true)
     {
 		if (branch)
 			PC = nextPC; 
@@ -483,4 +487,19 @@ void CPU:: WriteBack()
 	RegFile[wbData] = buffer4[2]; 
 }
 
+void CPU::test()
+{
+	fetch();
+	Decode();
+	execute();
+	MemAccess();
+	WriteBack();
+
+	cout << "PC: "<<  PC << endl;
+	cout << IM[PC].getInstNum() << endl;
+	cout << IM[PC].getRs() << endl;
+	cout << IM[PC].getRd() << endl;
+	cout << IM[PC].getRt() << endl;
+	cout << ALUResult << endl; 
+}
 //test
