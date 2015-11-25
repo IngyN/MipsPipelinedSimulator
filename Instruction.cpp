@@ -7,6 +7,8 @@
 //
 
 #include "Instruction.h"
+#include<iostream>
+using namespace std;
 
 Instruction::Instruction()
 {

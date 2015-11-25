@@ -2,6 +2,7 @@
 using namespace std;
 #include <iostream>
 #include <fstream>
+#include <string>
 #include <bitset>
 
 int CPU:: nametoNum(string  & name, bool cut)
@@ -117,7 +118,6 @@ CPU::CPU(string name)    // constructor receives the file name
 	filename = name;
     ifstream in;
     in.open(name.c_str());
-    
     Instruction temp;
     string instName, reg1, reg2, reg3, imm;
     
@@ -125,10 +125,11 @@ CPU::CPU(string name)    // constructor receives the file name
     {
         in>>instName;
         
-        for (char &i : instName)
+   /*     for (char &i : instName)
         {
             toupper(instName[i]);
-        }
+        }  */
+		
         if(instName == "ADD")
         {
             in>>reg1>>reg2>>reg3;
@@ -224,6 +225,11 @@ CPU::CPU(string name)    // constructor receives the file name
         }
         
         IM.push_back(temp);
+	/*	cout << temp.getInstNum();
+		cout << temp.getRs();
+		cout << temp.getRt();
+
+		*/
         temp.clear();              
     }
     in.close();
@@ -469,8 +475,7 @@ void CPU::MemAccess()
 		MemReadData = DataMem[buffer3[2]];
 
 	buffer4[0] = MemReadData;
-	buffer4[1] = buffer3[2]; //alu result
-	buffer4[2] = buffer3[4];   // rd
+	buffer4[1] = buffer3[2]; //alu 	buffer4[2] = buffer3[4];   // rd
 	buffer4[3] = buffer3[5];   // regwrite
 	buffer4[4] = buffer3[10];  // memtoreg 
 	buffer4[5] = clk;         // clkAtmemAccess
@@ -496,10 +501,10 @@ void CPU::test()
 	WriteBack();
 
 	cout << "PC: "<<  PC << endl;
-	cout << IM[PC].getInstNum() << endl;
-	cout << IM[PC].getRs() << endl;
-	cout << IM[PC].getRd() << endl;
-	cout << IM[PC].getRt() << endl;
+	cout << IM[0].getInstNum() << endl;
+	cout << IM[0].getRs() << endl;
+	cout << IM[0].getRd() << endl;
+	cout << IM[0].getRt() << endl;
 	cout << ALUResult << endl; 
 }
 //test
