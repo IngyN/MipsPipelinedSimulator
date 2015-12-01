@@ -2,6 +2,7 @@
 using namespace std;
 #include <iostream>
 #include <fstream>
+#include <string>
 
 int CPU:: nametoNum(string  & name, bool cut)
 {
@@ -112,21 +113,33 @@ int CPU:: nametoNum(string  & name, bool cut)
 
 CPU::CPU(string name)    // constructor receives the file name 
 {
+	// initializing regfile
+	RegFile[0] = 0;  // $zero
+	for (int i = 1; i < 32; i++)
+		RegFile[i] = 0;
+
+	RegFile[17] = 5;
+	RegFile[18] = 3; 
 	filename = name;
     ifstream in;
     in.open(name.c_str());
-    
     Instruction temp;
-    string instName, reg1, reg2, reg3, offset, imm;
+    string instName, reg1, reg2, reg3, imm;
     
     while (!in.eof())
     {
         in>>instName;
         
-        for (char &i : instName)
+   /*     for (char &i : instName)
         {
             toupper(instName[i]);
-        }
+        }  */
+		for(int i=0; instName[i]=='\0';i++)
+	{
+		instName[i]=toupper(instName[i]);
+	}
+
+		
         if(instName == "ADD")
         {
             in>>reg1>>reg2>>reg3;
@@ -155,32 +168,32 @@ CPU::CPU(string name)    // constructor receives the file name
         } else if(instName == "LW")
         {
             in>> reg1;
-            getline(in, offset, '(');
+            getline(in, imm, '(');
             getline(in, reg2, ')');
             
             temp.setRt(nametoNum(reg1));
-            temp.setOffset(stoi(offset));
+            temp.setImm(stoi(imm));
             temp.setRs(nametoNum(reg2,0));
             temp.setInstNum(4);
             
         } else if(instName == "SW")
         {
             in>> reg1;
-            getline(in, offset, '(');
+            getline(in, imm, '(');
             getline(in, reg2, ')');
             
             temp.setRt(nametoNum(reg1));
-            temp.setOffset(stoi(offset));
+            temp.setImm(stoi(imm));
             temp.setRs(nametoNum(reg2,0));
             temp.setInstNum(5);
             
         } else if(instName == "BLE")
         {
-            in>>reg1>>reg2>>offset;
+            in>>reg1>>reg2>>imm;
             
             temp.setRs(nametoNum(reg1));
             temp.setRt(nametoNum(reg2));
-            temp.setOffset(stoi(offset));
+            temp.setImm(stoi(imm));
             temp.setInstNum(6);
         } else if(instName == "J")
         {
@@ -222,16 +235,20 @@ CPU::CPU(string name)    // constructor receives the file name
         }
         
         IM.push_back(temp);
-        temp.clear();
-                  
+	/*	cout << temp.getInstNum();
+		cout << temp.getRs();
+		cout << temp.getRt();
+
+		*/
+        temp.clear();              
     }
-    
-    
     in.close();
-    
+	
+
+	PC = -1;
+    clk = -1;
+	//do{test();} while (PC<(IM.size()-2));
 }
-
-
 
 CPU::~CPU()
 {
@@ -239,15 +256,7 @@ CPU::~CPU()
 
 void CPU:: control (int instNum) //generates the control signals
 {
-    regWrite= true;
-    regDest= true;
-	ALUSrc= false;    //control signal (0: read from reg, 1: imm)
-    branch= false;   //control signal 
-    memRead= false;   //control signal 
-    memWrite= false;   //control signal 
-    memToReg= false;  //control signal 
-    jump= false;    //control signal 
-    jumpReg= false; 
+    
 	switch (instNum)
 	{	case 1:   //add
 			ALUOp=0;
@@ -314,12 +323,23 @@ void CPU:: control (int instNum) //generates the control signals
 	buffer2[14] = memToReg;
 	buffer2[15] = jump;
 	buffer2[16] = jumpReg;
-}
+	}
 
 
 void CPU::fetch()
 {
-    programCounter(buffer2[3], buffer2[15], buffer3[7], fetchEn); // (imm,jump, branch,fetchEn)
+	// control signals initialization
+	regWrite= true;
+    regDest= true;
+	ALUSrc= false;    //control signal (0: read from reg, 1: imm)
+    branch= false;   //control signal 
+    memRead= false;   //control signal 
+    memWrite= false;   //control signal 
+    memToReg= false;  //control signal 
+    jump= false;    //control signal 
+    jumpReg= false; 
+
+    programCounter(); // (imm,jump, branch,fetchEn)
     IM[PC].setClkAtFet(clk);
     buffer1[0] = PC;
 	buffer1[1] = IM[PC].getInstNum(); 
@@ -341,6 +361,7 @@ void CPU:: execute()
 	switch (buffer2[10])
 	{
 	case 0:   //add  
+	
 		ALUResult = buffer2[1]+secoperand;  
 		break;
 	case 1:   //sub
@@ -360,6 +381,7 @@ void CPU:: execute()
 	default:
 		ALUResult=-1;
 	}
+	
 	//input to the Exec/Mem buffer
 	buffer3[0]= buffer2[0]; 
 	buffer3[1]= zeroflag;
@@ -374,15 +396,16 @@ void CPU:: execute()
 	buffer3[10]= buffer2[14];  // memtoreg
 	buffer3[11]= buffer2[15];   // jump
 	buffer3[12]= buffer2[16]; //jumpreg
-	buffer3[13] = clk; 
+	buffer3[13] = clk;
+	buffer3[14]= buffer2[3];
 }
 void CPU::Decode() 
 {  
 	// if R-format
-	if (buffer1[1] == 1 |buffer1[1] == 3 | buffer1[1] == 8)  // ADD/XOR/SLT
+	if (buffer1[1] == 1 || buffer1[1] == 3 || buffer1[1] == 8)  // ADD/XOR/SLT
 		RD = buffer1[4];
 	else // if I-format
-		if (buffer1[1] == 2 | buffer1[1] == 4)   // ADDI/LW
+		if (buffer1[1] == 2 || buffer1[1] == 4)   // ADDI/LW
 			RD = buffer1[3];
 		else
 			if (buffer1[1] == 9) //JAL
@@ -396,47 +419,52 @@ void CPU::Decode()
 	buffer2[6] = clk; 
 
 	control(buffer1[1]);
+	
 }
 
 //private functions
 
-void CPU::programCounter(int imm, int jump, int branch, int fetchEn)
+void CPU::programCounter()
 {
-    if( rst == true){
+	fetchEn = true;       // no hazards yet 
+  /*  if( rst == true){
         PC = 0;
-		clk =0;
-	}
-    else if(fetchEn ==true)
+		clk = 0;
+	}*/    // initialized in constructor
+    if(fetchEn == true)
     {
-        if(jump ==0)//Normal PC increment
-            PC = PC+1;
-        else if(jump==1)//branch instruction
+        if(jump)        
+		{
+            PC = buffer2[3];  // imm      
+		}
+		else
+			PC++;     // normal increment
+        /*else if(jump==1)     //branch instruction  
         {
             if(branch == true)
-                PC = (PC+1) + imm;
+                PC = (PC+1) + buffer2[3];    // imm
             else
                 PC = PC+1;// no branch, so pc increments as normal
-        }  
-        else if(jump == 2)//Jump
-            PC = imm;
-        else if (jump==3)//JAL
+        } */ 
+            
+       /* else if (jump==3)//JAL
         {
             RegFile[31] = PC+1;
-            PC = imm;
+            PC = buffer2[3];
         }
         else if (jump==4)//JR{
-          //  PC = RegFile[rs]; /// HEYYYYY !!! MEEN RS DAH
-		{}
+          //  PC = RegFile[rs]; /// HEYYYYY !!! MEEN RS DAH 
+		
         else if (jump==5)//JumpProced
         {
             returnAddresses.push(PC+1);
-            PC = imm;
+            PC = buffer2[3];
         }
         else if (jump==6)//ReturnProced
         {
             PC = returnAddresses.top();
             returnAddresses.pop();
-        }
+        }*/
     }
     else if(fetchEn == false )
     {
@@ -447,12 +475,12 @@ void CPU::programCounter(int imm, int jump, int branch, int fetchEn)
 
 void CPU::MemAccess()
 {
-	int NextPC;
-	int MemReadData;  // output of data memory 
-	if (buffer3[7])   // branch 
-       NextPC = buffer3[2]; 
+	
+	int MemReadData=0;  // output of data memory 
+	if (buffer3[7] && buffer3[1])   // branch & zeroflag 
+       PC = buffer3[14]; 
 	else
-	    NextPC = buffer3[0]; 
+	    PC = buffer3[0]; 
 
 	//where will nextPC go????? ********
 
@@ -463,7 +491,7 @@ void CPU::MemAccess()
 		MemReadData = DataMem[buffer3[2]];
 
 	buffer4[0] = MemReadData;
-	buffer4[1] = buffer3[2]; //alu result
+	buffer4[1] = buffer3[2]; //alu 
 	buffer4[2] = buffer3[4];   // rd
 	buffer4[3] = buffer3[5];   // regwrite
 	buffer4[4] = buffer3[10];  // memtoreg 
@@ -477,8 +505,25 @@ void CPU:: WriteBack()
 		wbData = buffer4[0]; 
 	else
 		wbData = buffer4[1]; 
-
-	RegFile[wbData] = buffer4[2]; 
+	if (buffer4[3]) // regwrite
+	      RegFile[buffer4[2]] = wbData; 
 }
 
-//test
+void CPU::test()
+{
+
+	fetch();
+	Decode();
+	execute();
+
+	MemAccess();
+	WriteBack();
+	
+	// test
+	/*cout << "PC: "<<  PC << endl;
+	cout << IM[PC].getInstNum() << endl;
+	cout << IM[PC].getRs() << endl;
+	cout << IM[PC].getRd() << endl;
+	cout << IM[PC].getRt() << endl;
+	cout << ALUResult << endl; */
+}

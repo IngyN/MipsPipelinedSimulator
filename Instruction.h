@@ -23,7 +23,7 @@ public:
     void setRt (int rt);
     void setInstNum(int inst);
     void setImm(int imm);
-    void setOffset(int offset);
+    //void setOffset(int offset);
     void setClkAtFet (int);
     void setClkAtDec (int);
     void setClkAtEx (int);
@@ -33,7 +33,7 @@ public:
     // getters
     int getInstNum ();
     int getImm ();
-    int getOffset ();
+    //int getOffset ();
     int getRs();
     int getRt();
     int getRd();
