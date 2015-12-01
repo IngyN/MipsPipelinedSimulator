@@ -15,13 +15,13 @@ public:
 	CPU(string);    // class constructor receives the file name containing assembly code to be parsed
 	~CPU(); 
 	int nametoNum(string  & name, bool cut = true);
-	/*	void control(int); //generates the control signals, it receives the instruction number
+	void control(int); //generates the control signals, it receives the instruction number
 	void fetch();
 	void Decode();      // uses buffer1 as input and stores output in buffer2
 	void execute ();
 	void MemAccess(); 
 	void WriteBack(); 
-	*/
+	
 private:
 
 	/*struct buffer1
