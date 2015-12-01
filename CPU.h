@@ -10,13 +10,6 @@ using namespace std;
 
 class CPU
 {
-
-	friend class Fetch;
-	friend class Decode;
-	friend class Execute;
-	friend class MemAccess;
-	friend class WriteBack;
-
 public: 
 
 	CPU(string);    // class constructor receives the file name containing assembly code to be parsed
@@ -31,7 +24,7 @@ public:
 	*/
 private:
 
-	struct buffer1
+	/*struct buffer1
 	{
 		int pc;
 		Instruction inst;
@@ -77,19 +70,11 @@ private:
 		int RD;
 		bool memWrite;   //control signal 
 		bool memToReg;  //control signal 
-	};
-	buffer1 oneNew;
-	buffer1 oneOld;
-	buffer2 twoNew;
-	buffer2 twoOld;
-	buffer3 threeNew;
-	buffer3 threeOld;
-	buffer4 fourNew;
-	buffer4 fourOld;
+	};*/
 	string filename; 
 	vector <Instruction> IM; // instruction memory of type Instruction(class)
 
-	/*int PC;//program counter
+	int PC;//program counter
 	int clk;
 	bool rst;
 	int RegFile[RegFile_Size];             // Declaring an array for Register File 
@@ -124,8 +109,8 @@ private:
 	int ALUResult;
 	bool fetchEn;
 	stack<int> returnAddresses; 
-	private function
+	//private function
 	void programCounter();
-	void test(); */
+	void test(); 
 };
 #endif
