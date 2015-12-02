@@ -1,3 +1,9 @@
 BLE $s2, $s1, 2
 ADD $s4, $s5, $s6 
 ADD $s3, $s1, $s2
+
+
+ADDI $s3, $s1, 8
+ADD $s3, $s1, $s2
+ADD $s4, $s3, $s1 
+ADD $s2, $s3, $s5

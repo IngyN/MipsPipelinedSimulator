@@ -21,6 +21,7 @@ public:
 	void execute ();
 	void MemAccess(); 
 	void WriteBack(); 
+	void flush(); 
 	
 private:
 
@@ -111,8 +112,17 @@ private:
 	// Add parameters needed for fetch/decode/execute
 	int zeroflag; //it's an integer to passed through the buffer
 	int ALUResult;
+
+	int clkAtFinalInst;
+	bool finalInst;
 	bool fetchEn;
-	
+	bool finalfooEn;
+	bool finalEn;
+	bool decodeEn;
+	bool execEn;
+	bool memEn;
+	bool wbEn;
+
 	stack<int> returnAddresses; 
 	//private function
 	void programCounter();

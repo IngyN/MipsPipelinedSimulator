@@ -253,16 +253,28 @@ CPU::CPU(string name)    // constructor receives the file name
 		*/
 		temp.clear();              
 	}
+	IM.pop_back();
 	in.close();
 
+	finalEn = false;
+	fetchEn =true;
+	decodeEn = true;
+	execEn = true;
+	memEn = true;
+	wbEn = true;
+	finalfooEn = false;
+	finalInst = false;
+	clkAtFinalInst=400000;
 
-	PC = -1;
+	PC = 0;
 	clk = 0;
 	do{
 		test();
 	
 	clk++;
-	} while (clk<(IM.size()+3));
+	} while (clk <clkAtFinalInst +8);
+
+	cout <<"blaaaaa";
 }
 
 CPU::~CPU()
@@ -343,6 +355,9 @@ void CPU:: control (int instNum) //generates the control signals
 
 void CPU::fetch()
 {
+	if(fetchEn == false)
+		return;
+
 	// control signals initialization
 	regWrite= true;
 	regDest= true;
@@ -355,11 +370,7 @@ void CPU::fetch()
 	jumpReg= false; 
 
 
-	
-	if(PC== (IM.size()-2))
-		return;
-	programCounter(); // (imm,jump, branch,fetchEn)
-	IM[PC].setClkAtFet(clk);
+		IM[PC].setClkAtFet(clk);
 	buffer1new[0] = PC;
 	buffer1new[1] = IM[PC].getInstNum(); 
 	buffer1new[2] = IM[PC].getRs();
@@ -367,10 +378,28 @@ void CPU::fetch()
 	buffer1new[4] = IM[PC].getRd();
 	buffer1new[5] = IM[PC].getImm();
 	buffer1new[6] = IM[PC].getClkAtFet();
+
+	if(PC== (IM.size()-1))//final instruction
+	{
+		finalInst=true;
+		clkAtFinalInst = clk;
+		return;
+	}
+	programCounter(); // (imm,jump, branch,fetchEn)
+
 }
 
 void CPU:: execute()
 {
+	if(finalEn ==true)
+	{
+		fetchEn = false;
+	}
+
+	if(execEn == false)
+		return;
+
+
 	zeroflag=0;
 	int secoperand;  //imm or data from reg
 	if (buffer2old[9]) //addi or lw or sw, the sec operand is the immediate
@@ -417,11 +446,16 @@ void CPU:: execute()
 	buffer3new[12]= buffer2old[16]; //jumpreg
 	buffer3new[13] = clk;
 	buffer3new[14]= buffer2old[3];
+	
 }
 
 
 void CPU::Decode() 
-{ RD=0;
+{ 
+	if(decodeEn == false)
+		return;
+
+	RD=0;
 	// if R-format
 	if (buffer1old[1] == 1 || buffer1old[1] == 3 || buffer1old[1] == 8)  // ADD/XOR/SLT
 		RD = buffer1old[4];
@@ -432,7 +466,7 @@ void CPU::Decode()
 			if (buffer1old[1] == 9) //JAL
 				RD = RegFile[31];
 
-	control(buffer1old[1]);
+	control(buffer1old[1]);  
 
 	buffer2new[0] = buffer1old[0];//PC
 	buffer2new[1] = RegFile[buffer1old[2]];  // rs
@@ -442,7 +476,19 @@ void CPU::Decode()
 	buffer2new[5] = buffer1old[6];   // clkAtFetch
 	buffer2new[6] = clk; 
 
-	
+	if(jump) 
+	{		PC = buffer1old[5];    // imm
+	flush();}	
+
+	if(!( jump==true || branch == true) && finalInst== true )
+	{
+		finalEn = true;
+		//return;
+	}
+	//else if(!finalEn)
+	//{
+	//	execEn = false;
+	//}
 
 }
 
@@ -457,14 +503,14 @@ void CPU::programCounter()
 	}*/    // initialized in constructor
 	if(fetchEn == true)
 	{
-		if(jump)        
-		{
-			PC = buffer2old[3];  // imm      
-		}
-		else
+		if(!jump)        
 			PC++;     // normal increment
-		cout << "PC in fetch " << PC << endl;
-		/*else if(jump==1)     //branch instruction  
+
+		//cout << "PC in fetch " << PC << endl;
+		/*else 
+		
+		
+	if(jump==1)     //branch instruction  
 		{
 		if(branch == true)
 		PC = (PC+1) + buffer2[3];    // imm
@@ -500,6 +546,13 @@ void CPU::programCounter()
 
 void CPU::MemAccess()
 {
+	if(finalEn ==true)
+	{
+		decodeEn = false;
+	}
+
+	if(memEn == false)
+		return;
 
 	int MemReadData=0;  // output of data memory 
 	int PC;
@@ -521,10 +574,20 @@ void CPU::MemAccess()
 	buffer4new[3] = buffer3old[5];   // regwrite
 	buffer4new[4] = buffer3old[10];  // memtoreg 
 	buffer4new[5] = clk;         // clkAtmemAccess
+
+	
 }
 
 void CPU:: WriteBack()
 {
+	if(finalEn ==true)
+	{
+		execEn = false;
+	}
+
+	if(wbEn == false)
+		return;
+
 	int wbData;
 	if (buffer4old[4])  // memtoreg
 		wbData = buffer4old[0]; 
@@ -532,10 +595,18 @@ void CPU:: WriteBack()
 		wbData = buffer4old[1]; 
 	if (buffer4old[3]) // regwrite
 		RegFile[buffer4old[2]] = wbData; 
+
 }
 
 void CPU::test()
 {
+		cout << "PC: "<<  PC << endl;
+	cout << IM[PC].getInstNum() << endl;
+	cout << IM[PC].getRs() << endl;
+	cout << IM[PC].getRd() << endl;
+	cout << IM[PC].getRt() << endl;
+	
+
 
 		fetch();
 		Decode();
@@ -555,12 +626,32 @@ void CPU::test()
 		
 		
 	// test
-	cout << "PC: "<<  PC << endl;
-	cout << IM[PC].getInstNum() << endl;
-	cout << IM[PC].getRs() << endl;
-	cout << IM[PC].getRd() << endl;
-	cout << IM[PC].getRt() << endl;
-	
 	cout << ALUResult << endl; 
-	cout<<IM[3].getImm()<<endl;
+	cout<<IM[0].getImm()<<endl;
+
+}
+
+void CPU::flush()
+{
+	for (int i=0; i<7; i++)
+	{
+			buffer1old[i]=0;
+			buffer1new[i]=0;
+	}
+		for (int i=0; i<17; i++)
+		{
+			buffer2old[i]=0;
+			buffer2new[i]=0;
+		}
+		for (int i=0; i<15; i++)
+		{
+			buffer3old[i]=0;
+			buffer3new[i]=0;
+		}
+		for (int i=0; i<6; i++)
+		{
+			buffer4old[i]=0;
+			buffer4new[i]=0;
+		}
+
 }
