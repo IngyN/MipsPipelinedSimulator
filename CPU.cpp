@@ -4,114 +4,6 @@ using namespace std;
 #include <fstream>
 #include <string>
 
-int CPU:: nametoNum(string  & name, bool cut)
-{
-	if(cut){
-		string::iterator iter = name.end()-1;
-		name.erase(iter);
-	}
-
-	if(name == "$zero")
-	{
-		return 0;
-	} else if(name == "$at")
-	{
-		return 1;
-	} else if(name == "$v0")
-	{
-		return 2;
-	} else if(name == "$v1")
-	{
-		return 3;
-	} else if(name == "$a0")
-	{
-		return 4;
-	} else if(name == "$a1")
-	{
-		return 5;
-	} else if(name == "$a2")
-	{
-		return 6;
-	} else if(name == "$a3")
-	{
-		return 7;
-	} else if(name == "$t0")
-	{
-		return 8;
-	} else if(name == "$t1")
-	{
-		return 9;
-	} else if(name == "$t2")
-	{
-		return 10;
-	} else if(name == "$t3")
-	{
-		return 11;
-	} else if(name == "$t4")
-	{
-		return 12;
-	} else if(name == "$t5")
-	{
-		return 13;
-	} else if(name == "$t6")
-	{
-		return 14;
-	}else if(name == "$t7")
-	{
-		return 15;
-	} else if(name == "$s0")
-
-
-	{
-		return 16;
-	} else if(name == "$s1")
-	{
-		return 17;
-	} else if(name == "$s2")
-	{
-		return 18;
-	} else if(name == "$s3")
-	{
-		return 19;
-	} else if(name == "$s4")
-	{
-		return 20;
-	} else if(name == "$s5")
-	{
-		return 21;
-	} else if(name == "$s6")
-	{
-		return 22;
-	} else if(name == "$s7")
-	{
-		return 23;
-	} else if(name == "$t8")
-	{
-		return 24;
-	} else if(name == "$t9")
-	{
-		return 25;
-	} else if(name == "$k0")
-	{
-		return 26;
-	} else if(name == "$k1")
-	{
-		return 27;
-	} else if(name == "$gp")
-	{
-		return 28;
-	} else if(name == "$sp")
-	{
-		return 29;
-	} else if(name == "$fp")
-	{
-		return 30;
-	} else if(name == "$ra")
-	{
-		return 31;
-	}
-	else return -1;
-}
 
 CPU::CPU(string name)    // constructor receives the file name 
 {
@@ -277,6 +169,40 @@ CPU::CPU(string name)    // constructor receives the file name
 	cout <<"blaaaaa";
 }
 
+void CPU::test()
+{
+    cout << "PC: "<<  PC << endl;
+    cout << IM[PC].getInstNum() << endl;
+    cout << IM[PC].getRs() << endl;
+    cout << IM[PC].getRd() << endl;
+    cout << IM[PC].getRt() << endl;
+    
+    
+    
+    fetch();
+    Decode();
+    execute();
+    MemAccess();
+    WriteBack();
+    
+    for (int i=0; i<7; i++)
+        buffer1old[i]=buffer1new[i];
+    for (int i=0; i<17; i++)
+        buffer2old[i]=buffer2new[i];
+    for (int i=0; i<15; i++)
+        buffer3old[i]=buffer3new[i];
+    for (int i=0; i<6; i++)
+        buffer4old[i]=buffer4new[i];
+    
+    
+    
+    // test
+    cout << ALUResult << endl; 
+    cout<<IM[0].getImm()<<endl;
+    
+}
+
+
 CPU::~CPU()
 {
 }
@@ -389,6 +315,48 @@ void CPU::fetch()
 
 }
 
+void CPU::Decode()
+{
+    if(decodeEn == false)
+        return;
+    
+    RD=0;
+    // if R-format
+    if (buffer1old[1] == 1 || buffer1old[1] == 3 || buffer1old[1] == 8)  // ADD/XOR/SLT
+        RD = buffer1old[4];
+    else // if I-format
+        if (buffer1old[1] == 2 || buffer1old[1] == 4)   // ADDI/LW
+            RD = buffer1old[3];
+        else
+            if (buffer1old[1] == 9) //JAL
+                RD = RegFile[31];
+    
+    control(buffer1old[1]);
+    
+    buffer2new[0] = buffer1old[0];//PC
+    buffer2new[1] = RegFile[buffer1old[2]];  // rs
+    buffer2new[2] = RegFile[buffer1old[3]];   // rt
+    buffer2new[3] = buffer1old[5];    // imm
+    buffer2new[4] = RD;
+    buffer2new[5] = buffer1old[6];   // clkAtFetch
+    buffer2new[6] = clk;
+    
+    if(jump)
+    {		PC = buffer1old[5];    // imm
+        flush();}
+    
+    if(!( jump==true || branch == true) && finalInst== true )
+    {
+        finalEn = true;
+        //return;
+    }
+    //else if(!finalEn)
+    //{
+    //	execEn = false;
+    //}
+    
+}
+
 void CPU:: execute()
 {
 	if(finalEn ==true)
@@ -449,47 +417,58 @@ void CPU:: execute()
 	
 }
 
+void CPU::MemAccess()
+{
+    if(finalEn ==true)
+    {
+        decodeEn = false;
+    }
+    
+    if(memEn == false)
+        return;
+    
+    int MemReadData=0;  // output of data memory
+    int PC;
+    if (buffer3old[7] && buffer3old[1])   // branch & zeroflag
+        PC = buffer3old[14];
+    
+    
+    //where will nextPC go????? ********
+    
+    if (buffer3old[9])    // memwrite
+        DataMem[buffer3old[2]] = buffer3old[3];      // Datamem[ALUresult]
+    
+    if (buffer3old[10])  // memread
+        MemReadData = DataMem[buffer3old[2]];
+    
+    buffer4new[0] = MemReadData;
+    buffer4new[1] = buffer3old[2]; //alu
+    buffer4new[2] = buffer3old[4];   // rd
+    buffer4new[3] = buffer3old[5];   // regwrite
+    buffer4new[4] = buffer3old[10];  // memtoreg
+    buffer4new[5] = clk;         // clkAtmemAccess
+    
+    
+}
 
-void CPU::Decode() 
-{ 
-	if(decodeEn == false)
-		return;
-
-	RD=0;
-	// if R-format
-	if (buffer1old[1] == 1 || buffer1old[1] == 3 || buffer1old[1] == 8)  // ADD/XOR/SLT
-		RD = buffer1old[4];
-	else // if I-format
-		if (buffer1old[1] == 2 || buffer1old[1] == 4)   // ADDI/LW
-			RD = buffer1old[3];
-		else
-			if (buffer1old[1] == 9) //JAL
-				RD = RegFile[31];
-
-	control(buffer1old[1]);  
-
-	buffer2new[0] = buffer1old[0];//PC
-	buffer2new[1] = RegFile[buffer1old[2]];  // rs
-	buffer2new[2] = RegFile[buffer1old[3]];   // rt
-	buffer2new[3] = buffer1old[5];    // imm 
-	buffer2new[4] = RD; 
-	buffer2new[5] = buffer1old[6];   // clkAtFetch
-	buffer2new[6] = clk; 
-
-	if(jump) 
-	{		PC = buffer1old[5];    // imm
-	flush();}	
-
-	if(!( jump==true || branch == true) && finalInst== true )
-	{
-		finalEn = true;
-		//return;
-	}
-	//else if(!finalEn)
-	//{
-	//	execEn = false;
-	//}
-
+void CPU:: WriteBack()
+{
+    if(finalEn ==true)
+    {
+        execEn = false;
+    }
+    
+    if(wbEn == false)
+        return;
+    
+    int wbData;
+    if (buffer4old[4])  // memtoreg
+        wbData = buffer4old[0];
+    else
+        wbData = buffer4old[1];
+    if (buffer4old[3]) // regwrite
+        RegFile[buffer4old[2]] = wbData; 
+    
 }
 
 //private functions
@@ -544,93 +523,6 @@ void CPU::programCounter()
 
 }
 
-void CPU::MemAccess()
-{
-	if(finalEn ==true)
-	{
-		decodeEn = false;
-	}
-
-	if(memEn == false)
-		return;
-
-	int MemReadData=0;  // output of data memory 
-	int PC;
-	if (buffer3old[7] && buffer3old[1])   // branch & zeroflag 
-		PC = buffer3old[14]; 
-	
-
-	//where will nextPC go????? ********
-
-	if (buffer3old[9])    // memwrite
-		DataMem[buffer3old[2]] = buffer3old[3];      // Datamem[ALUresult] 
-
-	if (buffer3old[10])  // memread
-		MemReadData = DataMem[buffer3old[2]];
-
-	buffer4new[0] = MemReadData;
-	buffer4new[1] = buffer3old[2]; //alu 
-	buffer4new[2] = buffer3old[4];   // rd
-	buffer4new[3] = buffer3old[5];   // regwrite
-	buffer4new[4] = buffer3old[10];  // memtoreg 
-	buffer4new[5] = clk;         // clkAtmemAccess
-
-	
-}
-
-void CPU:: WriteBack()
-{
-	if(finalEn ==true)
-	{
-		execEn = false;
-	}
-
-	if(wbEn == false)
-		return;
-
-	int wbData;
-	if (buffer4old[4])  // memtoreg
-		wbData = buffer4old[0]; 
-	else
-		wbData = buffer4old[1]; 
-	if (buffer4old[3]) // regwrite
-		RegFile[buffer4old[2]] = wbData; 
-
-}
-
-void CPU::test()
-{
-		cout << "PC: "<<  PC << endl;
-	cout << IM[PC].getInstNum() << endl;
-	cout << IM[PC].getRs() << endl;
-	cout << IM[PC].getRd() << endl;
-	cout << IM[PC].getRt() << endl;
-	
-
-
-		fetch();
-		Decode();
-		execute();
-		MemAccess();
-		WriteBack();
-
-		for (int i=0; i<7; i++)
-			buffer1old[i]=buffer1new[i];
-		for (int i=0; i<17; i++)
-			buffer2old[i]=buffer2new[i];
-		for (int i=0; i<15; i++)
-			buffer3old[i]=buffer3new[i];
-		for (int i=0; i<6; i++)
-			buffer4old[i]=buffer4new[i];
-
-		
-		
-	// test
-	cout << ALUResult << endl; 
-	cout<<IM[0].getImm()<<endl;
-
-}
-
 void CPU::flush()
 {
 	for (int i=0; i<7; i++)
@@ -655,3 +547,113 @@ void CPU::flush()
 		}
 
 }
+
+int CPU:: nametoNum(string  & name, bool cut)
+{
+    if(cut){
+        string::iterator iter = name.end()-1;
+        name.erase(iter);
+    }
+    
+    if(name == "$zero")
+    {
+        return 0;
+    } else if(name == "$at")
+    {
+        return 1;
+    } else if(name == "$v0")
+    {
+        return 2;
+    } else if(name == "$v1")
+    {
+        return 3;
+    } else if(name == "$a0")
+    {
+        return 4;
+    } else if(name == "$a1")
+    {
+        return 5;
+    } else if(name == "$a2")
+    {
+        return 6;
+    } else if(name == "$a3")
+    {
+        return 7;
+    } else if(name == "$t0")
+    {
+        return 8;
+    } else if(name == "$t1")
+    {
+        return 9;
+    } else if(name == "$t2")
+    {
+        return 10;
+    } else if(name == "$t3")
+    {
+        return 11;
+    } else if(name == "$t4")
+    {
+        return 12;
+    } else if(name == "$t5")
+    {
+        return 13;
+    } else if(name == "$t6")
+    {
+        return 14;
+    }else if(name == "$t7")
+    {
+        return 15;
+    } else if(name == "$s0")
+        
+        
+    {
+        return 16;
+    } else if(name == "$s1")
+    {
+        return 17;
+    } else if(name == "$s2")
+    {
+        return 18;
+    } else if(name == "$s3")
+    {
+        return 19;
+    } else if(name == "$s4")
+    {
+        return 20;
+    } else if(name == "$s5")
+    {
+        return 21;
+    } else if(name == "$s6")
+    {
+        return 22;
+    } else if(name == "$s7")
+    {
+        return 23;
+    } else if(name == "$t8")
+    {
+        return 24;
+    } else if(name == "$t9")
+    {
+        return 25;
+    } else if(name == "$k0")
+    {
+        return 26;
+    } else if(name == "$k1")
+    {
+        return 27;
+    } else if(name == "$gp")
+    {
+        return 28;
+    } else if(name == "$sp")
+    {
+        return 29;
+    } else if(name == "$fp")
+    {
+        return 30;
+    } else if(name == "$ra")
+    {
+        return 31;
+    }
+    else return -1;
+}
+
