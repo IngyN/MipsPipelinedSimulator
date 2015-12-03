@@ -26,6 +26,9 @@ CPU::CPU(string name)    // constructor receives the file name
 	filename = name;
 	ifstream in;
 	in.open(name.c_str());
+//    bool fail = in.fail();
+//    if(fail)
+//        cout << "failed to open file";
 	Instruction temp;
 	string instName, reg1, reg2, reg3, imm;
 
@@ -172,11 +175,11 @@ CPU::CPU(string name)    // constructor receives the file name
 void CPU::test()
 {
     cout << "PC: "<<  PC << endl;
-    cout << IM[PC].getInstNum() << endl;
+    cout << "inst " << IM[PC].getInstNum() << endl;
     cout << IM[PC].getRs() << endl;
     cout << IM[PC].getRd() << endl;
     cout << IM[PC].getRt() << endl;
-    
+    cout<< "imm " << IM[PC].getImm()<<endl;
     
     
     fetch();
@@ -197,8 +200,8 @@ void CPU::test()
     
     
     // test
-    cout << ALUResult << endl; 
-    cout<<IM[0].getImm()<<endl;
+    cout << "aluaftercycleexec " << ALUResult << endl<< endl;
+    
     
 }
 
@@ -263,7 +266,8 @@ void CPU:: control (int instNum) //generates the control signals
 		regWrite= false;
 		break;
 	default:
-		ALUOp=4; //invalid 
+		
+            ALUOp=4; //invalid
 	}
 
 	buffer2new[7] = regWrite;
@@ -343,7 +347,16 @@ void CPU::Decode()
     
     if(jump)
     {		PC = buffer1old[5];    // imm
-        flush();}
+        flush();
+//        buffer1new[0] = PC;
+//        buffer1new[1] = IM[PC].getInstNum();
+//        buffer1new[2] = IM[PC].getRs();
+//        buffer1new[3] = IM[PC].getRt();
+//        buffer1new[4] = IM[PC].getRd();
+//        buffer1new[5] = IM[PC].getImm();
+//        buffer1new[6] = IM[PC].getClkAtFet();
+        
+    }
     
     if(!( jump==true || branch == true) && finalInst== true )
     {
