@@ -183,6 +183,7 @@ void CPU::test()
     
     
     fetch();
+    
     Decode();
     execute();
     MemAccess();
@@ -427,6 +428,9 @@ void CPU:: execute()
 	buffer3new[12]= buffer2old[16]; //jumpreg
 	buffer3new[13] = clk;
 	buffer3new[14]= buffer2old[3];
+    buffer3new[15]= buffer2new[5]; // Clk at fetch
+    buffer3new[16]= buffer2new[6]; // clk at Dec
+    
 	
 }
 
@@ -466,7 +470,7 @@ void CPU::MemAccess()
 
 void CPU:: WriteBack()
 {
-    if(finalEn ==true)
+    if(finalEn ==true && clkAtFinalInst)
     {
         execEn = false;
     }

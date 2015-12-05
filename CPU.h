@@ -86,7 +86,7 @@ private:
 	int buffer4old[6]; // MEM/WB
 	int buffer1new[7];
 	int buffer2new[17]; // ID/EX
-	int buffer3new[15]; // EX/Mem
+	int buffer3new[17]; // EX/Mem
 	int buffer4new[6]; // MEM/WB
 	bool regWrite;   //control signal 
 	bool regDest;    //control signal (1 for rd, 0 for rt)
@@ -122,6 +122,7 @@ private:
 	bool execEn;
 	bool memEn;
 	bool wbEn;
+    
 
 	stack<int> returnAddresses; 
 	//private function
