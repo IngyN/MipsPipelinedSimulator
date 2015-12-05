@@ -362,14 +362,6 @@ void CPU::Decode()
     if(jump)
     {		PC = buffer1old[5];    // imm
         flush();
-//        buffer1new[0] = PC;
-//        buffer1new[1] = IM[PC].getInstNum();
-//        buffer1new[2] = IM[PC].getRs();
-//        buffer1new[3] = IM[PC].getRt();
-//        buffer1new[4] = IM[PC].getRd();
-//        buffer1new[5] = IM[PC].getImm();
-//        buffer1new[6] = IM[PC].getClkAtFet();
-        
     }
     
     if(!( jump==true || branch == true) && clkAtFinalInst==buffer1old[6])
@@ -442,7 +434,7 @@ void CPU:: execute()
 	buffer3new[11]= buffer2old[15];   // jump
 	buffer3new[12]= buffer2old[16]; //jumpreg
 	buffer3new[13] = clk;
-	buffer3new[14]= buffer2old[3];
+    buffer3new[14]= buffer2old[3]; //imm
     buffer3new[15]= buffer2old[5]; // Clk at fetch
     buffer3new[16]= buffer2old[6]; // clk at Dec
     
@@ -460,10 +452,10 @@ void CPU::MemAccess()
         return;
     
     int MemReadData=0;  // output of data memory
-    int PC;
+
     if (buffer3old[7] && buffer3old[1])   // branch & zeroflag
 	{
-	    PC = buffer3old[14];
+        PC = (buffer3old[0])+1+buffer3old[14]; // PC+1+imm
 		// insert in btb 	
 		BTB temp; 
 		temp.branchAddress = PC;

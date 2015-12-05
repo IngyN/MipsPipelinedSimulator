@@ -1,4 +1,6 @@
-BLE $s2, $s1, 8
+BLE $s2, $s1, 9
+nop
+nop
 nop
 nop
 ADD $s4, $s3, $s1
