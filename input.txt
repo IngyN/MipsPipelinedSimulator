@@ -1,3 +1,11 @@
+BLE $s2, $s1, 8
+nop
+nop
+ADD $s4, $s3, $s1
+nop
+nop
+nop
+ADDI $s3, $s1, 7
+ADD $s5, $s5, $s1
 
-lw $s3, 1($s1)
 
