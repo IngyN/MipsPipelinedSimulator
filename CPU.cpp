@@ -638,30 +638,7 @@ void CPU::programCounter()
 
 }
 
-void CPU::flush()
-{
-	for (int i=0; i<8; i++)
-	{
-			buffer1old[i]=0;
-			buffer1new[i]=0;
-	}
-		for (int i=0; i<18; i++)
-		{
-			buffer2old[i]=0;
-			buffer2new[i]=0;
-		}
-		for (int i=0; i<18; i++)
-		{
-			buffer3old[i]=0;
-			buffer3new[i]=0;
-		}
-		for (int i=0; i<9; i++)
-		{
-			buffer4old[i]=0;
-			buffer4new[i]=0;
-		}
 
-}
 
 void CPU::flushFetch()
 {
@@ -776,34 +753,4 @@ int CPU:: nametoNum(string  & name, bool cut)
         return 31;
     }
     else return -1;
-}
-
-bool CPU::Found(int address)
-{
-	for (int i = 0; i < btb.size(); i++)
-		if (btb[i].branchAddress == address && (btb[i].taken))
-			return true; 
-	return false; 
-}
-
-int CPU::Predicted(int pc)
-{
-	for (int i = 0; i < btb.size(); i++)
-		if (btb[i].branchAddress == pc)
-			return btb[i].predictedPC;
-    return 0;
-}
-void CPU::DeleteEntry(int pc)  // finds brnach address with current pc and sets taken to false
-{
-	for (int i = 0; i < btb.size(); i++)
-		if (btb[i].branchAddress == pc) 
-			btb[i].taken = false; 
-}
-void CPU :: InsertInBtb(int address,int predicted)  // inserts record in btb
-{
-	BTB temp; 
-	temp.branchAddress = address;
-	temp.predictedPC = predicted;
-	temp.taken = true;   // assume taken
-	btb.push_back(temp); 
 }
