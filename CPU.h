@@ -126,6 +126,7 @@ private:
 	bool memEn;
 	bool wbEn;
     bool branchFound;
+	int wbData;
 
 	struct BTB
 	{int branchAddress; 
