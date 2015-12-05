@@ -1,0 +1,4 @@
+ADDI $s3, $s2, 13
+NOP
+NOP
+ADD $s4, $s3, $s1
