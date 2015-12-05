@@ -24,9 +24,8 @@ CPU::CPU(string name)    // constructor receives the file name
 		DataMem[i]  = 0;
 	DataMem[6] = 35; 
 
-	RegFile[17] = 5;    // $s1
-	RegFile[18] = 3;   // $s2 
-
+	RegFile[17] = 5;
+	RegFile[18] = 3; 
 	filename = name;
 	ifstream in;
 	in.open(name.c_str());
@@ -304,7 +303,7 @@ void CPU::fetch()
 		}
 		else  // insert in btb
 		{
-			InsertInBtb(PC,(IM[PC].getImm() + PC + 1));
+			insertInBtb(PC,(IM[PC].getImm() + PC + 1));
 		}
 	}
 
@@ -409,8 +408,8 @@ void CPU:: execute()
 	if (buffer3old[5] && buffer3old[4]==buffer1old[2] && buffer3old[4]!=0) //RegWrite AND rd=rs
 		firstoperand= buffer3old[2];				//ALUResult directly from buffer
 	else
-		if (buffer4old[3] && (buffer4old[2]== buffer2old[1]) && (buffer4old[2]!=0) &&
-			!(buffer3old[5] && buffer3old[4]!=0 && (buffer3old[4]==buffer2old[1]))) 
+		if (buffer4old[3] && (buffer4old[2]== buffer1old[2]) && (buffer4old[2]!=0) &&
+			!(buffer3old[5] && buffer3old[4]!=0 && (buffer3old[4]==buffer1old[2]))) 
 																//RegWrite AND rd=rs AND !(regwrite & rd==rs)   
 			 firstoperand= wbData;
 		else
@@ -419,8 +418,8 @@ void CPU:: execute()
 	if (buffer3old[5] && buffer3old[4]==buffer1old[3] && buffer3old[4]!=0) //RegWrite AND                  rd=rt
 		secoperand= buffer3old[2]; //ALUResult directly from buffer
 	else 
-		if ((buffer4old[3] && (buffer4old[2]== buffer2old[2]) && buffer4old[2]!=0 ) && 
-			!(buffer3old[5] && (buffer3old[4]!=0) && (buffer3old[4]==buffer2old[2])))  
+		if ((buffer4old[3] && (buffer4old[2]== buffer1old[3]) && buffer4old[2]!=0 ) && 
+			!(buffer3old[5] && (buffer3old[4]!=0) && (buffer3old[4]==buffer1old[3])))  
 				 //RegWrite AND    rd=rt   AND !(regwrite & rd=rt)
 			secoperand= wbData;  
 		else
@@ -491,17 +490,32 @@ void CPU::MemAccess()
 
 	if (buffer3old[17] && buffer3old[7] && !buffer3old[1])    // branchFound & branch & !zeroflag 
 	{
-		// mispredict branch, kill fetched inst, restart fetch at other target ?????
-		PC = buffer3old[0] + 1;  
-		DeleteEntry(buffer3old[0]); // prediction state = false 
+		// mispredict branch, kill fetched inst, restart fetch at other target ???????????????????????
+
+		deleteEntry(buffer3old[0]); // prediction state = false 
 	}
 	else  
 		if (!buffer3old[17] && buffer3old[7] && buffer3old[1])  // !branchFound & branch & zeroflag 
 	{
 
 	   PC = buffer3old[0]+1+buffer3old[14]; // PC+1+imm 
-	   DeleteEntry(buffer3old[0]);
+	   insertInBtb(buffer3old[0],buffer3old[0]+1+buffer3old[14]);   // insert brnachPc and target address in btb 
+
 	}
+
+
+   /* if (buffer3old[7] && buffer3old[1])   // branch & zeroflag
+	{
+        PC = (buffer3old[0])+1+buffer3old[14]; // PC+1+imm
+		// insert in btb 	
+		BTB temp; 
+		temp.branchAddress = PC;
+		temp.predictedPC = buffer3old[14];
+		temp.taken = true;
+		btb.push_back(temp);
+	}*/
+
+    
        
     if (buffer3old[9])    // memwrite
         DataMem[buffer3old[2]] = buffer3old[3];      // Datamem[ALUresult]
@@ -747,13 +761,13 @@ int CPU::Predicted(int pc)
 			return btb[i].predictedPC;
     return 0;
 }
-void CPU::DeleteEntry(int pc)  // finds brnach address with current pc and sets taken to false
+void CPU::deleteEntry(int pc)  // finds brnach address with current pc and sets taken to false
 {
 	for (int i = 0; i < btb.size(); i++)
 		if (btb[i].branchAddress == pc) 
 			btb[i].taken = false; 
 }
-void CPU :: InsertInBtb(int address,int predicted)  // inserts record in btb
+void CPU :: insertInBtb(int address,int predicted)  // inserts record in btb
 {
 	BTB temp; 
 	temp.branchAddress = address;
