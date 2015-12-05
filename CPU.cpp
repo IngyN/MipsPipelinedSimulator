@@ -43,7 +43,7 @@ CPU::CPU(string name)    // constructor receives the file name
 		{
 		toupper(instName[i]);
 		}  */
-		for(int i=0; instName[i]=='\0';i++)
+		for(int i=0; i<instName.size();i++)
 		{
 			instName[i]=toupper(instName[i]);
 		}
@@ -165,7 +165,7 @@ CPU::CPU(string name)    // constructor receives the file name
 	clkWAtFinalInst=400000;
 
 	PC = 0;
-	clk = 0;
+	clk = 1;
 	do{
 		test();
 	
@@ -653,8 +653,6 @@ int CPU:: nametoNum(string  & name, bool cut)
     {
         return 15;
     } else if(name == "$s0")
-        
-        
     {
         return 16;
     } else if(name == "$s1")
@@ -719,4 +717,5 @@ int CPU:: Predicted(int pc)
 	for (int i = 0; i < btb.size(); i++)
 		if (btb[i].branchAddress == pc) 
 			return btb[i].predictedPC;
+    return 0;
 }
