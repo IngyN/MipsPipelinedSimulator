@@ -1,12 +1,5 @@
 
-JAL 9
-nop
-nop
-nop
-ADD $s4, $s3, $s1 
-nop
-nop
-nop
-ADDI $s3, $s1, 7
-ADD $s5, $s5, $s1 
+ADD $s3, $s2, $s1
+ADD $s6, $s4, $s3
+
 
