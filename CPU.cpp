@@ -284,6 +284,7 @@ void CPU:: control (int instNum) //generates the control signals
 	buffer2new[14] = memToReg;
 	buffer2new[15] = jump;
 	buffer2new[16] = jumpReg;
+	buffer2new[17] = buffer1old[7]; 
 }
 
 
@@ -296,8 +297,11 @@ void CPU::fetch()
 	{
 		if (Found(PC))   // if branch instruction found in btb
 		{
+			branchFound = true;
 			PC = Predicted(PC);      // returns predicted branch pc 
 		}
+		else
+			branchFound = false;
 	}
 	// control signals initialization
 	regWrite= true;
@@ -319,6 +323,7 @@ void CPU::fetch()
 	buffer1new[4] = IM[PC].getRd();
 	buffer1new[5] = IM[PC].getImm();
 	buffer1new[6] = IM[PC].getClkAtFet();
+    buffer1new[7] = branchFound; 
 
 	if(PC== (IM.size()-1))//final instruction
 	{
@@ -445,6 +450,7 @@ void CPU:: execute()
 	buffer3new[14]= buffer2old[3];
     buffer3new[15]= buffer2old[5]; // Clk at fetch
     buffer3new[16]= buffer2old[6]; // clk at Dec
+	buffer3new[17] = buffer2old[17];     // branchFound 
     
     if(clkAtFinalInst==buffer2old[5])
     {
@@ -454,13 +460,22 @@ void CPU:: execute()
 }
 
 void CPU::MemAccess()
-{
-    
+{   
     if(memEn == false)
         return;
     
     int MemReadData=0;  // output of data memory
     int PC;
+
+	/*if (buffer3old[17])    // branchFound = true
+	{
+		  
+	}
+	else
+	{
+
+	}*/
+
     if (buffer3old[7] && buffer3old[1])   // branch & zeroflag
 	{
 	    PC = buffer3old[14];
@@ -709,14 +724,14 @@ int CPU:: nametoNum(string  & name, bool cut)
 bool CPU::Found(int address)
 {
 	for (int i = 0; i < btb.size(); i++)
-		if (btb[i].branchAddress == address)
+		if (btb[i].branchAddress == address && (btb[i].taken))
 			return true; 
 	return false; 
 }
 
-int CPU:: Predicted(int pc)
+int CPU::Predicted(int pc)
 {
 	for (int i = 0; i < btb.size(); i++)
-		if (btb[i].branchAddress == pc) 
+		if (btb[i].branchAddress == pc)
 			return btb[i].predictedPC;
 }
