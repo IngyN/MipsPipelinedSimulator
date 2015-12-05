@@ -24,8 +24,9 @@ CPU::CPU(string name)    // constructor receives the file name
 		DataMem[i]  = 0;
 	DataMem[6] = 35; 
 
-	RegFile[17] = 5;
-	RegFile[18] = 3; 
+	RegFile[17] = 5;    // $s1
+	RegFile[18] = 3;   // $s2 
+
 	filename = name;
 	ifstream in;
 	in.open(name.c_str());
@@ -490,8 +491,8 @@ void CPU::MemAccess()
 
 	if (buffer3old[17] && buffer3old[7] && !buffer3old[1])    // branchFound & branch & !zeroflag 
 	{
-		// mispredict branch, kill fetched inst, restart fetch at other target ???????????????????????
-
+		// mispredict branch, kill fetched inst, restart fetch at other target ?????
+		PC = buffer3old[0] + 1;  
 		DeleteEntry(buffer3old[0]); // prediction state = false 
 	}
 	else  
