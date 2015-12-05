@@ -458,7 +458,7 @@ void CPU:: execute()
 		if (buffer4old[3]  &&(buffer4old[2]== buffer2old[18]) && (buffer4old[2]!=0) &&
 			!(buffer3old[5] && buffer3old[4]!=0 && (buffer3old[4]==buffer2old[18]))) 
 																//RegWrite AND rd=rs AND !(regwrite & rd==rs)   
-			 firstoperand= buffer4old[0];
+			 firstoperand= wbData;
 		else
 			firstoperand= buffer2old[1];
 
@@ -468,7 +468,7 @@ void CPU:: execute()
 		if ((buffer4old[3] && (buffer4old[2]== buffer2old[19]) && buffer4old[2]!=0 ) && 
 			!(buffer3old[5] && (buffer3old[4]!=0) && (buffer3old[4]==buffer2old[19])))  
 				 //RegWrite AND    rd=rt   AND !(regwrite & rd=rt)
-			secoperand= buffer4old[0];  
+				 secoperand= wbData;  
 		else
 	{
 		if (buffer2old[9]) //addi or lw or sw, the sec operand is the immediate
