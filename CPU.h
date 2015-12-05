@@ -22,6 +22,8 @@ public:
 	void MemAccess(); 
 	void WriteBack(); 
 	void flush(); 
+	void deleteEntry(int);   // prediction state = false
+	void insertInBtb(int,int);   // inserts record in btb
 
 private:
 
