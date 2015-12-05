@@ -350,10 +350,8 @@ void CPU::Decode()
     else // if I-format
         if (buffer1old[1] == 2 || buffer1old[1] == 4)   // ADDI/LW
             RD = buffer1old[3];
-        else
-            if (buffer1old[1] == 9) //JAL
-                RD = RegFile[31];
-    
+       
+        
     control(buffer1old[1]);
     
     buffer2new[0] = buffer1old[0];//PC
@@ -364,11 +362,18 @@ void CPU::Decode()
     buffer2new[5] = buffer1old[6];   // clkAtFetch
     buffer2new[6] = clk;
     
+	if (buffer1old[1]== 9) //jal; store pc+1 in ra
+	{
+                RegFile[31]= PC+1;
+    
+	}
+
     if(jump)
     {		PC = buffer1old[5];    // imm
         flush();
     }
     
+
     if(!( jump==true || branch == true) && clkAtFinalInst==buffer1old[6])
     {
         decodeEn=false;

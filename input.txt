@@ -1,13 +1,12 @@
-BLE $s2, $s1, 9
+
+JAL 8
 nop
 nop
 nop
-nop
-ADD $s4, $s3, $s1
+ADD $s4, $s3, $s1 
 nop
 nop
 nop
 ADDI $s3, $s1, 7
-ADD $s5, $s5, $s1
-
+ADD $s5, $s5, $s1 
 
