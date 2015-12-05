@@ -210,7 +210,8 @@ void CPU::test()
     // test
     cout << "aluaftercycleexec " << ALUResult << endl<< endl;
     
-    
+	
+
 }
 
 
@@ -471,18 +472,18 @@ void CPU:: execute()
 	{
 	case 0:   //add  
 
-		ALUResult = buffer2old[1]+secoperand;  
+		ALUResult = firstoperand+secoperand;  
 		break;
 	case 1:   //sub
-		ALUResult= buffer2old[1]-secoperand;
-		if (buffer2old[11] && ALUResult<=0)  //ble
+		ALUResult= firstoperand-secoperand;
+		if (firstoperand && ALUResult<=0)  //ble
 			zeroflag=1;
 		break;
 	case 2:   //xor
-		ALUResult= buffer2old[1]^secoperand;
+		ALUResult= firstoperand^secoperand;
 		break;
 	case 3:   //slt
-		if (buffer2old[1]<secoperand)
+		if (firstoperand<secoperand)
 			ALUResult= 1;
 		else 
 			ALUResult=0;

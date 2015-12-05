@@ -1,6 +1,7 @@
 ADD $s1, $s1, $s2
-ADD $s1, $s1, $s3
-ADD $s2, $s1, $s2
+ADD $s1, $s1, $s2
+ADD $s1, $s1, $s2
+
 
 
 
