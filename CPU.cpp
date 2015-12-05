@@ -187,10 +187,10 @@ void CPU::test()
     
     fetch();
     
-    Decode();
+    WriteBack();
     execute();
     MemAccess();
-    WriteBack();
+    Decode();
     
     for (int i=0; i<7; i++)
         buffer1old[i]=buffer1new[i];
@@ -388,7 +388,7 @@ void CPU:: execute()
         return;
     }
 		
-
+    ALUResult = 0; // initialize to zero so that when it doesn't compute something it doesn't resturn previous result
 	zeroflag=0;
 	int secoperand;  //imm or data from reg
 	if (buffer2old[9]) //addi or lw or sw, the sec operand is the immediate
