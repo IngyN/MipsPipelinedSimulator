@@ -25,7 +25,7 @@ CPU::CPU(string name)    // constructor receives the file name
 	DataMem[6] = 35; 
 
 	RegFile[17] = 5;
-	RegFile[18] = 3; 
+	RegFile[18] = 3;
 	filename = name;
 	ifstream in;
 	in.open(name.c_str());
@@ -160,7 +160,7 @@ CPU::CPU(string name)    // constructor receives the file name
 	execEn = true;
 	memEn = true;
 	wbEn = true;
-	finalfooEn = false;
+    finalfooEn = false; //so that the clock at final instruction is set only once.
 	finalInst = false;
 	clkWAtFinalInst=400000;
 
@@ -256,19 +256,33 @@ void CPU:: control (int instNum) //generates the control signals
 		break;
 	case 9:   //jal   
 		jump= true;
+        RegFile[31]= buffer1old[0]+1;
 		break;
 	case 10:   //jr
 		jumpReg= true;
 		regWrite= false;
+        PC =  RegFile[buffer1old[2]];
 		break;
 	case 11:   //jumpProcedure
 		jump= true;
 		regWrite= false;
+            if(returnAddresses.size()<4)
+         returnAddresses.push(buffer1old[0]+1);
 		break;
 	case 12:   //returnProcedure
 		jumpReg= true;
 		regWrite= false;
-		break;
+            if(returnAddresses.size()!=0)
+            {
+                PC = returnAddresses.top();
+                returnAddresses.pop();
+                
+            }
+            else
+            {
+                jumpReg = false;
+            }
+        break;
 	default:
 		
             ALUOp=4; //invalid
@@ -327,7 +341,8 @@ void CPU::fetch()
 
 	if(PC== (IM.size()-1))//final instruction
 	{
-		finalInst=true;
+        finalInst=true;
+        
         if(!finalfooEn){
             clkAtFinalInst = clk;
             finalfooEn=true;
@@ -350,8 +365,9 @@ void CPU::Decode()
     else // if I-format
         if (buffer1old[1] == 2 || buffer1old[1] == 4)   // ADDI/LW
             RD = buffer1old[3];
-       
-        
+    
+    
+    
     control(buffer1old[1]);
     
     buffer2new[0] = buffer1old[0];//PC
@@ -362,32 +378,41 @@ void CPU::Decode()
     buffer2new[5] = buffer1old[6];   // clkAtFetch
     buffer2new[6] = clk;
     
-	if (buffer1old[1]== 9) //jal; store pc+1 in ra
-	{
-                RegFile[31]= buffer1old[0]+1;
+    if(finalfooEn && jumpReg)
+    {
+        finalfooEn = false;
+    }
     
-	}
+    if(jumpReg) // JR or RP
+    {		    // imm
+        flushFetch();
+    }
 
-    if(jump)
-    {		PC = buffer1old[5];    // imm
-        flush();
+    if(jump) // JAL or JP
+    {		   // imm
+        PC = buffer1old[5];
+        flushFetch();
     }
     
 
-    if(!( jump==true || branch == true) && clkAtFinalInst==buffer1old[6])
+    if(!( jump==true || branch == true || jumpReg) && clkAtFinalInst==buffer1old[6])
     {
+        //finalfooEn=true;
         decodeEn=false;
         finalEn=true;
         //return;
     }
-    else if(( jump==true || branch == true)&& clkAtFinalInst==buffer1old[6])
-    {
-        finalfooEn=false;
-    }
+//    if(( jump==true || branch == true ||jumpReg)&& clkAtFinalInst==buffer1old[6])
+//    {
+//        finalfooEn=false;
+//    }
+//    else if (clkAtFinalInst==buffer1old[6]) finalfooEn= false;
     //else if(!finalEn)
     //{
     //	execEn = false;
     //}
+    
+
     
 }
 
@@ -608,6 +633,14 @@ void CPU::flush()
 			buffer4new[i]=0;
 		}
 
+}
+
+void CPU::flushFetch()
+{
+    for (int i=0; i<7; i++)
+    {
+        buffer1old[i]=0;
+    }
 }
 
 int CPU:: nametoNum(string  & name, bool cut)

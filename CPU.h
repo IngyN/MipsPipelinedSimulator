@@ -21,7 +21,8 @@ public:
 	void execute ();
 	void MemAccess(); 
 	void WriteBack(); 
-	void flush(); 
+	void flush();
+    void flushFetch();
 
 private:
 
