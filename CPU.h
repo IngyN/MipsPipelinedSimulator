@@ -80,13 +80,13 @@ private:
 	bool rst;
 	int RegFile[RegFile_Size];             // Declaring an array for Register File 
 	int DataMem[DataMem_Size];          // Declaring an array for Data Memory 
-	int buffer1old[7]; // IF/ID
-	int buffer2old[17]; // ID/EX
-	int buffer3old[17]; // EX/Mem
+	int buffer1old[8]; // IF/ID    
+	int buffer2old[18]; // ID/EX   
+	int buffer3old[18]; // EX/Mem 
 	int buffer4old[9]; // MEM/WB
-	int buffer1new[7];
-	int buffer2new[17]; // ID/EX
-	int buffer3new[17]; // EX/Mem
+	int buffer1new[8];  // 
+	int buffer2new[18]; // ID/EX  
+	int buffer3new[18]; // EX/Mem
 	int buffer4new[9]; // MEM/WB
 	bool regWrite;   //control signal 
 	bool regDest;    //control signal (1 for rd, 0 for rt)
@@ -123,7 +123,7 @@ private:
 	bool execEn;
 	bool memEn;
 	bool wbEn;
-    
+    bool branchFound;
 
 	struct BTB
 	{int branchAddress; 

@@ -457,7 +457,6 @@ void CPU::MemAccess()
         return;
     
     int MemReadData=0;  // output of data memory
-<<<<<<< HEAD
     int PC;
 
 	/*if (buffer3old[17])    // branchFound = true
@@ -468,8 +467,7 @@ void CPU::MemAccess()
 	{
 
 	}*/
-=======
->>>>>>> origin/master
+
 
     if (buffer3old[7] && buffer3old[1])   // branch & zeroflag
 	{
