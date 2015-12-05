@@ -82,12 +82,12 @@ private:
 	int DataMem[DataMem_Size];          // Declaring an array for Data Memory 
 	int buffer1old[7]; // IF/ID
 	int buffer2old[17]; // ID/EX
-	int buffer3old[15]; // EX/Mem
-	int buffer4old[6]; // MEM/WB
+	int buffer3old[17]; // EX/Mem
+	int buffer4old[9]; // MEM/WB
 	int buffer1new[7];
 	int buffer2new[17]; // ID/EX
 	int buffer3new[17]; // EX/Mem
-	int buffer4new[6]; // MEM/WB
+	int buffer4new[9]; // MEM/WB
 	bool regWrite;   //control signal 
 	bool regDest;    //control signal (1 for rd, 0 for rt)
 	bool ALUSrc;    //control signal (0: read from reg, 1: imm)
@@ -114,6 +114,7 @@ private:
 	int ALUResult;
 
 	int clkAtFinalInst;
+    int clkWAtFinalInst;
 	bool finalInst;
 	bool fetchEn;
 	bool finalfooEn;

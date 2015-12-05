@@ -17,8 +17,7 @@ CPU::CPU(string name)    // constructor receives the file name
 			buffer4old[i]=0;
 
 	// initializing regfile
-	RegFile[0] = 0;  // $zero
-	for (int i = 1; i < 32; i++)
+	for (int i = 0; i < 32; i++)
 		RegFile[i] = 0;
 
 	RegFile[17] = 5;
@@ -159,7 +158,7 @@ CPU::CPU(string name)    // constructor receives the file name
 	wbEn = true;
 	finalfooEn = false;
 	finalInst = false;
-	clkAtFinalInst=400000;
+	clkWAtFinalInst=400000;
 
 	PC = 0;
 	clk = 0;
@@ -167,7 +166,7 @@ CPU::CPU(string name)    // constructor receives the file name
 		test();
 	
 	clk++;
-	} while (clk <clkAtFinalInst +8);
+	} while (clk <clkWAtFinalInst);
 
 	cout <<"blaaaaa";
 }
@@ -193,9 +192,9 @@ void CPU::test()
         buffer1old[i]=buffer1new[i];
     for (int i=0; i<17; i++)
         buffer2old[i]=buffer2new[i];
-    for (int i=0; i<15; i++)
+    for (int i=0; i<17; i++)
         buffer3old[i]=buffer3new[i];
-    for (int i=0; i<6; i++)
+    for (int i=0; i<9; i++)
         buffer4old[i]=buffer4new[i];
     
     
@@ -313,7 +312,10 @@ void CPU::fetch()
 	if(PC== (IM.size()-1))//final instruction
 	{
 		finalInst=true;
-		clkAtFinalInst = clk;
+        if(!finalfooEn){
+            clkAtFinalInst = clk;
+            finalfooEn=true;
+        }
 		return;
 	}
 	programCounter(); // (imm,jump, branch,fetchEn)
@@ -359,10 +361,15 @@ void CPU::Decode()
         
     }
     
-    if(!( jump==true || branch == true) && finalInst== true )
+    if(!( jump==true || branch == true) && clkAtFinalInst==buffer1old[6])
     {
-        finalEn = true;
+        decodeEn=false;
+        finalEn=true;
         //return;
+    }
+    else if(( jump==true || branch == true)&& clkAtFinalInst==buffer1old[6])
+    {
+        finalfooEn=false;
     }
     //else if(!finalEn)
     //{
@@ -373,14 +380,11 @@ void CPU::Decode()
 
 void CPU:: execute()
 {
-	if(finalEn ==true)
-	{
-		fetchEn = false;
-	}
 
-	if(execEn == false)
-		return;
-
+    if(execEn == false){
+        return;
+    }
+		
 
 	zeroflag=0;
 	int secoperand;  //imm or data from reg
@@ -428,18 +432,18 @@ void CPU:: execute()
 	buffer3new[12]= buffer2old[16]; //jumpreg
 	buffer3new[13] = clk;
 	buffer3new[14]= buffer2old[3];
-    buffer3new[15]= buffer2new[5]; // Clk at fetch
-    buffer3new[16]= buffer2new[6]; // clk at Dec
+    buffer3new[15]= buffer2old[5]; // Clk at fetch
+    buffer3new[16]= buffer2old[6]; // clk at Dec
     
+    if(clkAtFinalInst==buffer2old[5])
+    {
+        execEn=false;
+    }
 	
 }
 
 void CPU::MemAccess()
 {
-    if(finalEn ==true)
-    {
-        decodeEn = false;
-    }
     
     if(memEn == false)
         return;
@@ -464,27 +468,37 @@ void CPU::MemAccess()
     buffer4new[3] = buffer3old[5];   // regwrite
     buffer4new[4] = buffer3old[10];  // memtoreg
     buffer4new[5] = clk;         // clkAtmemAccess
+    buffer4new[6] = buffer3old[13]; // clk at exec
+    buffer4new[7] = buffer3old[15]; //clk at F
+    buffer4new[8] = buffer3old[16]; // clk at D
     
+    if(clkAtFinalInst==buffer3old[15])
+    {
+        memEn=false;
+    }
     
 }
 
 void CPU:: WriteBack()
 {
-    if(finalEn ==true && clkAtFinalInst)
-    {
-        execEn = false;
-    }
-    
     if(wbEn == false)
         return;
     
+    if(finalEn ==true && clkAtFinalInst == buffer4old[7])
+    {
+        execEn = false;
+        wbEn=false;
+        clkWAtFinalInst=clk;
+    }
+     
     int wbData;
     if (buffer4old[4])  // memtoreg
         wbData = buffer4old[0];
     else
         wbData = buffer4old[1];
-    if (buffer4old[3]) // regwrite
-        RegFile[buffer4old[2]] = wbData; 
+    if (buffer4old[3] && buffer4old[2]!=0) // regwrite
+        RegFile[buffer4old[2]] = wbData;
+    
     
 }
 
@@ -552,12 +566,12 @@ void CPU::flush()
 			buffer2old[i]=0;
 			buffer2new[i]=0;
 		}
-		for (int i=0; i<15; i++)
+		for (int i=0; i<17; i++)
 		{
 			buffer3old[i]=0;
 			buffer3new[i]=0;
 		}
-		for (int i=0; i<6; i++)
+		for (int i=0; i<9; i++)
 		{
 			buffer4old[i]=0;
 			buffer4new[i]=0;
