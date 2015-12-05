@@ -175,6 +175,8 @@ CPU::CPU(string name)    // constructor receives the file name
 	} while (clk <clkWAtFinalInst);
 
 	cout <<"blaaaaa";
+	/*for (int i = 0; i < btb.size(); i++)
+		cout << btb[i].branchAddress << btb[i].predictedPC << btb[i].taken << endl;*/
 }
 
 void CPU::test()
@@ -304,7 +306,9 @@ void CPU::fetch()
 		}
 		else  // insert in btb
 		{
+			branchFound = false; 
 			InsertInBtb(PC,(IM[PC].getImm() + PC + 1));
+			PC = PC+1+IM[PC].getImm(); 
 		}
 	}
 
@@ -398,54 +402,34 @@ void CPU::Decode()
 
 void CPU:: execute()
 {
-	ALUResult = 0; // initialize to zero so that when it doesn't compute something it doesn't resturn previous result
-	zeroflag=0;
-	int firstoperand;
-	int secoperand;  //imm or data from reg
+
     if(execEn == false){
         return;
     }
-	//FORWARDING
-	if (buffer3old[5] && buffer3old[4]==buffer2old[1] && buffer3old[4]!=0) //RegWrite AND rd=rs
-		firstoperand= buffer3old[2];				//ALUResult directly from buffer
-	else
-		if (buffer4old[3]&&buffer4old[2]== buffer2old[1]&& buffer4old[2]!=0 &&
-			!(buffer3old[5]&& buffer3old[4]!=0&& buffer3old[4]==buffer2old[1])) 
-																//RegWrite AND rd=rs AND !(regwrite & rd==rs)   
-			 firstoperand= wbData;
-		else
-			firstoperand= buffer2old[1];
-
-	if (buffer3old[5] && buffer3old[4]==buffer2old[2] && buffer3old[4]!=0) //RegWrite AND                  rd=rt
-		secoperand= buffer3old[2]; //ALUResult directly from buffer
+		
+    ALUResult = 0; // initialize to zero so that when it doesn't compute something it doesn't resturn previous result
+	zeroflag=0;
+	int secoperand;  //imm or data from reg
+	if (buffer2old[9]) //addi or lw or sw, the sec operand is the immediate
+		secoperand= buffer2old[3];
 	else 
-		if ((buffer4old[3]&& buffer4old[2]== buffer2old[2] && buffer4old[2]!=0 ) && 
-			!(buffer3old[5] && buffer3old[4]!=0 && buffer3old[4]==buffer2old[2]))  
-				 //RegWrite AND    rd=rt   AND !(regwrite & rd=rt)
-			secoperand= wbData;  
-		else
-	{
-		if (buffer2old[9]) //addi or lw or sw, the sec operand is the immediate
-			secoperand= buffer2old[3];
-		else 
-			secoperand= buffer2old[2];
-	}
+		secoperand= buffer2old[2];
 	switch (buffer2old[10])
 	{
 	case 0:   //add  
 
-		ALUResult = firstoperand+secoperand;  
+		ALUResult = buffer2old[1]+secoperand;  
 		break;
 	case 1:   //sub
-		ALUResult= firstoperand-secoperand;
+		ALUResult= buffer2old[1]-secoperand;
 		if (buffer2old[11] && ALUResult<=0)  //ble
 			zeroflag=1;
 		break;
 	case 2:   //xor
-		ALUResult= firstoperand^secoperand;
+		ALUResult= buffer2old[1]^secoperand;
 		break;
 	case 3:   //slt
-		if (firstoperand<secoperand)
+		if (buffer2old[1]<secoperand)
 			ALUResult= 1;
 		else 
 			ALUResult=0;
@@ -496,10 +480,10 @@ void CPU::MemAccess()
 		DeleteEntry(buffer3old[0]); // prediction state = false 
 	}
 	else  
-		if (!buffer3old[17] && buffer3old[7] && buffer3old[1])  // !branchFound & branch & zeroflag 
+		if (!buffer3old[17] && buffer3old[7] && !buffer3old[1])  // !branchFound & branch & !zeroflag 
 	{
-
-	   PC = buffer3old[0]+1+buffer3old[14]; // PC+1+imm 
+		PC = buffer3old[0]+1; 
+	   //PC = buffer3old[0]+1+buffer3old[14]; // PC+1+imm 
 	   DeleteEntry(buffer3old[0]);
 	}
        
@@ -538,6 +522,7 @@ void CPU:: WriteBack()
         clkWAtFinalInst=clk;
     }
      
+    int wbData;
     if (buffer4old[4])  // memtoreg
         wbData = buffer4old[0];
     else
