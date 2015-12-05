@@ -409,17 +409,17 @@ void CPU:: execute()
 		firstoperand= buffer3old[2];				//ALUResult directly from buffer
 	else
 		if (buffer4old[3]&&buffer4old[2]== buffer2old[1]&& buffer4old[2]!=0 &&
-			!(buffer3old[5]&& buffer3old[4]!=0&&buffer3old[4]==buffer2old[1])) 
+			!(buffer3old[5]&& buffer3old[4]!=0&& buffer3old[4]==buffer2old[1])) 
 																//RegWrite AND rd=rs AND !(regwrite & rd==rs)   
 			 firstoperand= wbData;
 		else
-			 firstoperand= buffer2old[1];
+			firstoperand= buffer2old[1];
 
 	if (buffer3old[5] && buffer3old[4]==buffer2old[2] && buffer3old[4]!=0) //RegWrite AND                  rd=rt
 		secoperand= buffer3old[2]; //ALUResult directly from buffer
 	else 
 		if ((buffer4old[3]&& buffer4old[2]== buffer2old[2] && buffer4old[2]!=0 ) && 
-			!(buffer3old[5] && ]&& buffer3old[4]!=0 && buffer3old[4]==buffer2old[2]))  
+			!(buffer3old[5] && buffer3old[4]!=0 && buffer3old[4]==buffer2old[2]))  
 				 //RegWrite AND    rd=rt   AND !(regwrite & rd=rt)
 			secoperand= wbData;  
 		else
