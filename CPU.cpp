@@ -187,10 +187,10 @@ void CPU::test()
     
     fetch();
     
-    Decode();
+    WriteBack();
     execute();
     MemAccess();
-    WriteBack();
+    Decode();
     
     for (int i=0; i<7; i++)
         buffer1old[i]=buffer1new[i];

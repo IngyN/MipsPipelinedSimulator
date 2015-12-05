@@ -1,4 +1,4 @@
-ADDI $s3, $s2, 13
+LW $s3, 6($s4)
 NOP
 NOP
 ADD $s4, $s3, $s1
