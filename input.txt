@@ -1,1 +1,8 @@
 
+<<<<<<< HEAD
+=======
+ADD $s3, $s2, $s1
+ADD $s6, $s4, $s3
+
+
+>>>>>>> origin/master
