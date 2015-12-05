@@ -364,7 +364,7 @@ void CPU::Decode()
     
 	if (buffer1old[1]== 9) //jal; store pc+1 in ra
 	{
-                RegFile[31]= PC+1;
+                RegFile[31]= buffer1old[0]+1;
     
 	}
 
