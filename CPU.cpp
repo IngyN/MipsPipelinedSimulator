@@ -19,15 +19,19 @@ CPU::CPU(string name)    // constructor receives the file name
 	// initializing regfile
 	for (int i = 0; i < 32; i++)
 		RegFile[i] = 0;
+	// initializing dataMem
+	for (int i = 0; i < 32; i++)
+		DataMem[i]  = 0;
+	DataMem[6] = 35; 
 
 	RegFile[17] = 5;
 	RegFile[18] = 3; 
 	filename = name;
 	ifstream in;
 	in.open(name.c_str());
-//    bool fail = in.fail();
-//    if(fail)
-//        cout << "failed to open file";
+    bool fail = in.fail();
+    if(fail)
+        cout << "failed to open file";
 	Instruction temp;
 	string instName, reg1, reg2, reg3, imm;
 
