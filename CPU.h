@@ -22,55 +22,55 @@ public:
 	void MemAccess(); 
 	void WriteBack(); 
 	void flush(); 
-	
+
 private:
 
 	/*struct buffer1
 	{
-		int pc;
-		Instruction inst;
+	int pc;
+	Instruction inst;
 	};
 	struct buffer2
 	{
-		int pc;
-		bool regWrite;   //control signal 
-		bool regDest;    //control signal (1 for rd, 0 for rt)
-		bool ALUSrc;    //control signal (0: read from reg, 1: imm)
-		int ALUOp;    //control signal 
-		bool branch;   //control signal 
-		bool memRead;   //control signal 
-		bool memWrite;   //control signal 
-		bool memToReg;  //control signal 
-		bool jump;    //control signal 
-		bool jumpReg; //control signal
-		int rs;
-		int rt;
-		int imm;
-		int RD;
+	int pc;
+	bool regWrite;   //control signal 
+	bool regDest;    //control signal (1 for rd, 0 for rt)
+	bool ALUSrc;    //control signal (0: read from reg, 1: imm)
+	int ALUOp;    //control signal 
+	bool branch;   //control signal 
+	bool memRead;   //control signal 
+	bool memWrite;   //control signal 
+	bool memToReg;  //control signal 
+	bool jump;    //control signal 
+	bool jumpReg; //control signal
+	int rs;
+	int rt;
+	int imm;
+	int RD;
 	};
 	struct buffer3
 	{
-		int pc;
-		int zeroflag;
-		int ALUresult;
-		int rt;
-		int RD;
-		bool regDest;
-		bool branch;   //control signal 
-		bool memRead;   //control signal 
-		bool memWrite;   //control signal 
-		bool memToReg;  //control signal 
-		bool jump;    //control signal 
-		bool jumpReg; //control signal
-		int imm;
+	int pc;
+	int zeroflag;
+	int ALUresult;
+	int rt;
+	int RD;
+	bool regDest;
+	bool branch;   //control signal 
+	bool memRead;   //control signal 
+	bool memWrite;   //control signal 
+	bool memToReg;  //control signal 
+	bool jump;    //control signal 
+	bool jumpReg; //control signal
+	int imm;
 	};
 	struct buffer4
 	{
-		int MemReadData; 
-		int ALUresult;
-		int RD;
-		bool memWrite;   //control signal 
-		bool memToReg;  //control signal 
+	int MemReadData; 
+	int ALUresult;
+	int RD;
+	bool memWrite;   //control signal 
+	bool memToReg;  //control signal 
 	};*/
 	string filename; 
 	vector <Instruction> IM; // instruction memory of type Instruction(class)
@@ -125,9 +125,17 @@ private:
 	bool wbEn;
     
 
+	struct BTB
+	{int branchAddress; 
+	int predictedPC;
+	bool taken; 
+	};
+	vector<BTB> btb;
 	stack<int> returnAddresses; 
 	//private function
 	void programCounter();
 	void test(); 
+	bool Found(int);   // returns true if branch address is found in BTB
+	int Predicted(int);  
 };
 #endif

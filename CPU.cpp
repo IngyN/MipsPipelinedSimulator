@@ -288,6 +288,13 @@ void CPU::fetch()
 	if(fetchEn == false)
 		return;
 
+	if (IM[PC].getInstNum() == 6)    // branch instruction
+	{
+		if (Found(PC))   // if branch instruction found in btb
+		{
+			PC = Predicted(PC);      // returns predicted branch pc 
+		}
+	}
 	// control signals initialization
 	regWrite= true;
 	regDest= true;
@@ -451,11 +458,18 @@ void CPU::MemAccess()
     int MemReadData=0;  // output of data memory
     int PC;
     if (buffer3old[7] && buffer3old[1])   // branch & zeroflag
-        PC = buffer3old[14];
+	{
+	    PC = buffer3old[14];
+		// insert in btb 	
+		BTB temp; 
+		temp.branchAddress = PC;
+		temp.predictedPC = buffer3old[14];
+		temp.taken = true;
+		btb.push_back(temp);
+	}
+
     
-    
-    //where will nextPC go????? ********
-    
+       
     if (buffer3old[9])    // memwrite
         DataMem[buffer3old[2]] = buffer3old[3];      // Datamem[ALUresult]
     
@@ -688,3 +702,17 @@ int CPU:: nametoNum(string  & name, bool cut)
     else return -1;
 }
 
+bool CPU::Found(int address)
+{
+	for (int i = 0; i < btb.size(); i++)
+		if (btb[i].branchAddress == address)
+			return true; 
+	return false; 
+}
+
+int CPU:: Predicted(int pc)
+{
+	for (int i = 0; i < btb.size(); i++)
+		if (btb[i].branchAddress == pc) 
+			return btb[i].predictedPC;
+}
