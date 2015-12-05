@@ -83,6 +83,7 @@ private:
 	int PC;//program counter
 	int clk;
 	bool rst;
+	bool stall;
 	int RegFile[RegFile_Size];             // Declaring an array for Register File 
 	int DataMem[DataMem_Size];          // Declaring an array for Data Memory 
 	int buffer1old[8]; // IF/ID    

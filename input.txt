@@ -1,10 +1,7 @@
-ADD $s1, $s1, $s2
-ADD $s1, $s1, $s2
-ADD $s1, $s1, $s2
-
-
-
-
+LW $s0, 1($s1)
+ADD $s3, $s0, $s1
+ADD $s4, $s1, $s2
+ADD $s4, $s1, $s2
 
 
 

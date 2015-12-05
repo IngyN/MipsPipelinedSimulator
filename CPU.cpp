@@ -6,8 +6,7 @@ using namespace std;
 
 
 CPU::CPU(string name)    // constructor receives the file name 
-{
-	
+{   stall=false;
 	for (int i=0; i<8; i++)
 			buffer1old[i]=0;
 		for (int i=0; i<20; i++)
@@ -370,6 +369,7 @@ void CPU::fetch()
 
 void CPU::Decode()
 {
+	  
     if(decodeEn == false)
         return;
     
@@ -381,9 +381,17 @@ void CPU::Decode()
         if (buffer1old[1] == 2 || buffer1old[1] == 4)   // ADDI/LW
             RD = buffer1old[3];
     
-    
-    
+     
     control(buffer1old[1]);
+
+   if (buffer2new[12] && ((buffer2new[19]==buffer1old[2]) || (buffer2new[19]==buffer1old[3]))) //memRead AND(rt==rs or rt==rt )  //load hazard
+	{
+		flush();
+	    stall= true;
+		
+	} 
+   else 
+	   stall= false;
     
     buffer2new[0] = buffer1old[0];//PC
     buffer2new[1] = RegFile[buffer1old[2]];  // rs
@@ -392,7 +400,7 @@ void CPU::Decode()
     buffer2new[4] = RD;
     buffer2new[5] = buffer1old[6];   // clkAtFetch
     buffer2new[6] = clk;
-    
+   
     if(finalfooEn && jumpReg)
     {
         finalfooEn = false;
@@ -444,23 +452,23 @@ void CPU:: execute()
 
 
 	//FORWARDING
-	if (buffer3old[5] && buffer3old[4]==buffer2old[18] && buffer3old[4]!=0) //RegWrite AND rd=rs
+	if (buffer3old[5] &&  !buffer2old[12] && buffer3old[4]==buffer2old[18] && buffer3old[4]!=0) //RegWrite AND rd=rs
 		firstoperand= buffer3old[2];				//ALUResult directly from buffer
 	else
-		if (buffer4old[3] && (buffer4old[2]== buffer2old[18]) && (buffer4old[2]!=0) &&
+		if (buffer4old[3]  &&(buffer4old[2]== buffer2old[18]) && (buffer4old[2]!=0) &&
 			!(buffer3old[5] && buffer3old[4]!=0 && (buffer3old[4]==buffer2old[18]))) 
 																//RegWrite AND rd=rs AND !(regwrite & rd==rs)   
-			 firstoperand= wbData;
+			 firstoperand= buffer4old[0];
 		else
 			firstoperand= buffer2old[1];
 
-	if (buffer3old[5] && buffer3old[4]==buffer2old[19] && buffer3old[4]!=0) //RegWrite AND                  rd=rt
+	if (buffer3old[5] &&  !buffer2old[12] && buffer3old[4]==buffer2old[19] && buffer3old[4]!=0) //RegWrite AND                  rd=rt
 		secoperand= buffer3old[2]; //ALUResult directly from buffer
 	else 
 		if ((buffer4old[3] && (buffer4old[2]== buffer2old[19]) && buffer4old[2]!=0 ) && 
 			!(buffer3old[5] && (buffer3old[4]!=0) && (buffer3old[4]==buffer2old[19])))  
 				 //RegWrite AND    rd=rt   AND !(regwrite & rd=rt)
-			secoperand= wbData;  
+			secoperand= buffer4old[0];  
 		else
 	{
 		if (buffer2old[9]) //addi or lw or sw, the sec operand is the immediate
@@ -591,12 +599,12 @@ void CPU:: WriteBack()
 
 void CPU::programCounter()
 {
-	fetchEn = true;       // no hazards yet 
+	
 	/*  if( rst == true){
 	PC = 0;
 	clk = 0;
 	}*/    // initialized in constructor
-	if(fetchEn == true)
+	if(!stall)
 	{
 		if(!jump)        
 			PC++;     // normal increment
@@ -632,35 +640,35 @@ void CPU::programCounter()
 		returnAddresses.pop();
 		}*/
 	}
-	else if(fetchEn == false )
+	else if( stall)
 	{
-		//Stall fetching the next instruction	
+		PC--; //Stall fetching the next instruction	
 	}
 
 }
 
 void CPU::flush()
 {
-	for (int i=0; i<8; i++)
+	/*for (int i=0; i<8; i++)
 	{
 			buffer1old[i]=0;
 			buffer1new[i]=0;
-	}
+	}*/
 		for (int i=0; i<18; i++)
 		{
 			buffer2old[i]=0;
-			buffer2new[i]=0;
+		//	buffer2new[i]=0;
 		}
-		for (int i=0; i<18; i++)
+		/*for (int i=0; i<18; i++)
 		{
 			buffer3old[i]=0;
-			buffer3new[i]=0;
+			//buffer3new[i]=0;
 		}
 		for (int i=0; i<9; i++)
 		{
 			buffer4old[i]=0;
-			buffer4new[i]=0;
-		}
+		 //buffer4new[i]=0;
+		}*/
 
 }
 
