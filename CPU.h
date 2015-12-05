@@ -85,11 +85,11 @@ private:
 	int RegFile[RegFile_Size];             // Declaring an array for Register File 
 	int DataMem[DataMem_Size];          // Declaring an array for Data Memory 
 	int buffer1old[8]; // IF/ID    
-	int buffer2old[18]; // ID/EX   
+	int buffer2old[20]; // ID/EX   
 	int buffer3old[18]; // EX/Mem 
 	int buffer4old[9]; // MEM/WB
 	int buffer1new[8];  // 
-	int buffer2new[18]; // ID/EX  
+	int buffer2new[20]; // ID/EX  
 	int buffer3new[18]; // EX/Mem
 	int buffer4new[9]; // MEM/WB
 	bool regWrite;   //control signal 

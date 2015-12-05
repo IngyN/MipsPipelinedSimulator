@@ -7,9 +7,10 @@ using namespace std;
 
 CPU::CPU(string name)    // constructor receives the file name 
 {
+	
 	for (int i=0; i<8; i++)
 			buffer1old[i]=0;
-		for (int i=0; i<18; i++)
+		for (int i=0; i<20; i++)
 			buffer2old[i]=0;
 		for (int i=0; i<18; i++)
 			buffer3old[i]=0;
@@ -197,7 +198,7 @@ void CPU::test()
     
     for (int i=0; i<8; i++)
         buffer1old[i]=buffer1new[i];
-    for (int i=0; i<18; i++)
+    for (int i=0; i<20; i++)
         buffer2old[i]=buffer2new[i];
     for (int i=0; i<18; i++)
         buffer3old[i]=buffer3new[i];
@@ -287,7 +288,9 @@ void CPU:: control (int instNum) //generates the control signals
 	buffer2new[14] = memToReg;
 	buffer2new[15] = jump;
 	buffer2new[16] = jumpReg;
-	buffer2new[17] = buffer1old[7]; 
+	buffer2new[17] = buffer1old[7];
+	buffer2new[18]= buffer1old[2];//rs
+	buffer2new[19]=buffer1old[3];  //rt
 }
 
 
@@ -412,27 +415,24 @@ void CPU:: execute()
     ALUResult = 0; // initialize to zero so that when it doesn't compute something it doesn't resturn previous result
 	zeroflag=0;
 	int secoperand;  //imm or data from reg
-	if (buffer2old[9]) //addi or lw or sw, the sec operand is the immediate
-		secoperand= buffer2old[3];
-	else 
-		secoperand= buffer2old[2];
+
 
 	//FORWARDING
-	if (buffer3old[5] && buffer3old[4]==buffer1old[2] && buffer3old[4]!=0) //RegWrite AND rd=rs
+	if (buffer3old[5] && buffer3old[4]==buffer2old[18] && buffer3old[4]!=0) //RegWrite AND rd=rs
 		firstoperand= buffer3old[2];				//ALUResult directly from buffer
 	else
-		if (buffer4old[3] && (buffer4old[2]== buffer1old[2]) && (buffer4old[2]!=0) &&
-			!(buffer3old[5] && buffer3old[4]!=0 && (buffer3old[4]==buffer1old[2]))) 
+		if (buffer4old[3] && (buffer4old[2]== buffer2old[18]) && (buffer4old[2]!=0) &&
+			!(buffer3old[5] && buffer3old[4]!=0 && (buffer3old[4]==buffer2old[18]))) 
 																//RegWrite AND rd=rs AND !(regwrite & rd==rs)   
 			 firstoperand= wbData;
 		else
 			firstoperand= buffer2old[1];
 
-	if (buffer3old[5] && buffer3old[4]==buffer1old[3] && buffer3old[4]!=0) //RegWrite AND                  rd=rt
+	if (buffer3old[5] && buffer3old[4]==buffer2old[19] && buffer3old[4]!=0) //RegWrite AND                  rd=rt
 		secoperand= buffer3old[2]; //ALUResult directly from buffer
 	else 
-		if ((buffer4old[3] && (buffer4old[2]== buffer1old[3]) && buffer4old[2]!=0 ) && 
-			!(buffer3old[5] && (buffer3old[4]!=0) && (buffer3old[4]==buffer1old[3])))  
+		if ((buffer4old[3] && (buffer4old[2]== buffer2old[19]) && buffer4old[2]!=0 ) && 
+			!(buffer3old[5] && (buffer3old[4]!=0) && (buffer3old[4]==buffer2old[19])))  
 				 //RegWrite AND    rd=rt   AND !(regwrite & rd=rt)
 			secoperand= wbData;  
 		else
