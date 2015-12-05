@@ -7,13 +7,13 @@ using namespace std;
 
 CPU::CPU(string name)    // constructor receives the file name 
 {
-	for (int i=0; i<7; i++)
+	for (int i=0; i<8; i++)
 			buffer1old[i]=0;
-		for (int i=0; i<17; i++)
+		for (int i=0; i<18; i++)
 			buffer2old[i]=0;
-		for (int i=0; i<15; i++)
+		for (int i=0; i<18; i++)
 			buffer3old[i]=0;
-		for (int i=0; i<6; i++)
+		for (int i=0; i<9; i++)
 			buffer4old[i]=0;
 
 	// initializing regfile
@@ -162,6 +162,7 @@ CPU::CPU(string name)    // constructor receives the file name
 	wbEn = true;
     finalfooEn = false; //so that the clock at final instruction is set only once.
 	finalInst = false;
+	branchFound = false; 
 	clkWAtFinalInst=400000;
 
 	PC = 0;
@@ -173,6 +174,8 @@ CPU::CPU(string name)    // constructor receives the file name
 	} while (clk <clkWAtFinalInst);
 
 	cout <<"blaaaaa";
+	for (int i = 0; i < btb.size(); i++)
+		cout << btb[i].branchAddress << btb[i].predictedPC << btb[i].taken << endl;
 }
 
 void CPU::test()
@@ -192,11 +195,11 @@ void CPU::test()
     MemAccess();
     Decode();
     
-    for (int i=0; i<7; i++)
+    for (int i=0; i<8; i++)
         buffer1old[i]=buffer1new[i];
-    for (int i=0; i<17; i++)
+    for (int i=0; i<18; i++)
         buffer2old[i]=buffer2new[i];
-    for (int i=0; i<17; i++)
+    for (int i=0; i<18; i++)
         buffer3old[i]=buffer3new[i];
     for (int i=0; i<9; i++)
         buffer4old[i]=buffer4new[i];
@@ -309,14 +312,22 @@ void CPU::fetch()
 
 	if (IM[PC].getInstNum() == 6)    // branch instruction
 	{
+		branch = true; 
 		if (Found(PC))   // if branch instruction found in btb
 		{
 			branchFound = true;
 			PC = Predicted(PC);      // returns predicted branch pc 
 		}
-		else
-			branchFound = false;
+		else  // insert in btb
+		{
+
+			branchFound = false; 
+			InsertInBtb(PC,(IM[PC].getImm() + PC + 1));
+			PC = PC+1+IM[PC].getImm(); 
+
+		}
 	}
+
 	// control signals initialization
 	regWrite= true;
 	regDest= true;
@@ -418,7 +429,7 @@ void CPU::Decode()
 
 void CPU:: execute()
 {
-
+	int firstoperand;
     if(execEn == false){
         return;
     }
@@ -430,6 +441,32 @@ void CPU:: execute()
 		secoperand= buffer2old[3];
 	else 
 		secoperand= buffer2old[2];
+
+	//FORWARDING
+	if (buffer3old[5] && buffer3old[4]==buffer1old[2] && buffer3old[4]!=0) //RegWrite AND rd=rs
+		firstoperand= buffer3old[2];				//ALUResult directly from buffer
+	else
+		if (buffer4old[3] && (buffer4old[2]== buffer1old[2]) && (buffer4old[2]!=0) &&
+			!(buffer3old[5] && buffer3old[4]!=0 && (buffer3old[4]==buffer1old[2]))) 
+																//RegWrite AND rd=rs AND !(regwrite & rd==rs)   
+			 firstoperand= wbData;
+		else
+			firstoperand= buffer2old[1];
+
+	if (buffer3old[5] && buffer3old[4]==buffer1old[3] && buffer3old[4]!=0) //RegWrite AND                  rd=rt
+		secoperand= buffer3old[2]; //ALUResult directly from buffer
+	else 
+		if ((buffer4old[3] && (buffer4old[2]== buffer1old[3]) && buffer4old[2]!=0 ) && 
+			!(buffer3old[5] && (buffer3old[4]!=0) && (buffer3old[4]==buffer1old[3])))  
+				 //RegWrite AND    rd=rt   AND !(regwrite & rd=rt)
+			secoperand= wbData;  
+		else
+	{
+		if (buffer2old[9]) //addi or lw or sw, the sec operand is the immediate
+			secoperand= buffer2old[3];
+		else 
+			secoperand= buffer2old[2];
+	}
 	switch (buffer2old[10])
 	{
 	case 0:   //add  
@@ -489,28 +526,19 @@ void CPU::MemAccess()
     int MemReadData=0;  // output of data memory
     int PC;
 
-	/*if (buffer3old[17])    // branchFound = true
+	if (buffer3old[17] && buffer3old[7] && !buffer3old[1])    // branchFound & branch & !zeroflag 
 	{
-		  
+		// mispredict branch, kill fetched inst, restart fetch at other target ???????????????????????
+		PC = buffer3old[0]+1; 
+		DeleteEntry(buffer3old[0]); // prediction state = false 
 	}
-	else
+	else  
+		if (!buffer3old[17] && buffer3old[7] && !buffer3old[1])  // !branchFound & branch & !zeroflag 
 	{
-
-	}*/
-
-
-    if (buffer3old[7] && buffer3old[1])   // branch & zeroflag
-	{
-        PC = (buffer3old[0])+1+buffer3old[14]; // PC+1+imm
-		// insert in btb 	
-		BTB temp; 
-		temp.branchAddress = PC;
-		temp.predictedPC = buffer3old[14];
-		temp.taken = true;
-		btb.push_back(temp);
+	   DeleteEntry(buffer3old[0]);
+		PC = buffer3old[0]+1; // PC = PC+1
 	}
 
-    
        
     if (buffer3old[9])    // memwrite
         DataMem[buffer3old[2]] = buffer3old[3];      // Datamem[ALUresult]
@@ -612,17 +640,17 @@ void CPU::programCounter()
 
 void CPU::flush()
 {
-	for (int i=0; i<7; i++)
+	for (int i=0; i<8; i++)
 	{
 			buffer1old[i]=0;
 			buffer1new[i]=0;
 	}
-		for (int i=0; i<17; i++)
+		for (int i=0; i<18; i++)
 		{
 			buffer2old[i]=0;
 			buffer2new[i]=0;
 		}
-		for (int i=0; i<17; i++)
+		for (int i=0; i<18; i++)
 		{
 			buffer3old[i]=0;
 			buffer3new[i]=0;
@@ -764,4 +792,18 @@ int CPU::Predicted(int pc)
 		if (btb[i].branchAddress == pc)
 			return btb[i].predictedPC;
     return 0;
+}
+void CPU::DeleteEntry(int pc)  // finds brnach address with current pc and sets taken to false
+{
+	for (int i = 0; i < btb.size(); i++)
+		if (btb[i].branchAddress == pc) 
+			btb[i].taken = false; 
+}
+void CPU :: InsertInBtb(int address,int predicted)  // inserts record in btb
+{
+	BTB temp; 
+	temp.branchAddress = address;
+	temp.predictedPC = predicted;
+	temp.taken = true;   // assume taken
+	btb.push_back(temp); 
 }

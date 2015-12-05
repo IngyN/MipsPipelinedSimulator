@@ -15,7 +15,7 @@ public:
 	CPU(string);    // class constructor receives the file name containing assembly code to be parsed
 	~CPU(); 
 	int nametoNum(string  & name, bool cut = true);
-	void control(int); //generates the control signals, it receives the instruction number
+	void control(int); //generates the control signals, it receives the ins truction number
 	void fetch();
 	void Decode();      // uses buffer1 as input and stores output in buffer2
 	void execute ();
@@ -125,6 +125,7 @@ private:
 	bool memEn;
 	bool wbEn;
     bool branchFound;
+	int wbData;
 
 	struct BTB
 	{int branchAddress; 
@@ -136,7 +137,5 @@ private:
 	//private function
 	void programCounter();
 	void test(); 
-	bool Found(int);   // returns true if branch address is found in BTB
-	int Predicted(int);  
 };
 #endif
