@@ -305,13 +305,12 @@ void CPU::fetch()
 		}
 		else  // insert in btb
 		{
-<<<<<<< HEAD
+
 			branchFound = false; 
 			InsertInBtb(PC,(IM[PC].getImm() + PC + 1));
 			PC = PC+1+IM[PC].getImm(); 
-=======
-			insertInBtb(PC,(IM[PC].getImm() + PC + 1));
->>>>>>> origin/master
+			InsertInBtb(PC,(IM[PC].getImm() + PC + 1));
+
 		}
 	}
 
@@ -405,11 +404,10 @@ void CPU::Decode()
 
 void CPU:: execute()
 {
-
+	int firstoperand;
     if(execEn == false){
         return;
     }
-<<<<<<< HEAD
 		
     ALUResult = 0; // initialize to zero so that when it doesn't compute something it doesn't resturn previous result
 	zeroflag=0;
@@ -418,7 +416,7 @@ void CPU:: execute()
 		secoperand= buffer2old[3];
 	else 
 		secoperand= buffer2old[2];
-=======
+
 	//FORWARDING
 	if (buffer3old[5] && buffer3old[4]==buffer1old[2] && buffer3old[4]!=0) //RegWrite AND rd=rs
 		firstoperand= buffer3old[2];				//ALUResult directly from buffer
@@ -444,7 +442,6 @@ void CPU:: execute()
 		else 
 			secoperand= buffer2old[2];
 	}
->>>>>>> origin/master
 	switch (buffer2old[10])
 	{
 	case 0:   //add  
@@ -508,21 +505,19 @@ void CPU::MemAccess()
 	{
 		// mispredict branch, kill fetched inst, restart fetch at other target ???????????????????????
 
-		deleteEntry(buffer3old[0]); // prediction state = false 
+		DeleteEntry(buffer3old[0]); // prediction state = false 
 	}
 	else  
 		if (!buffer3old[17] && buffer3old[7] && !buffer3old[1])  // !branchFound & branch & !zeroflag 
 	{
-<<<<<<< HEAD
 		PC = buffer3old[0]+1; 
 	   //PC = buffer3old[0]+1+buffer3old[14]; // PC+1+imm 
 	   DeleteEntry(buffer3old[0]);
-=======
+
 
 	   PC = buffer3old[0]+1+buffer3old[14]; // PC+1+imm 
-	   insertInBtb(buffer3old[0],buffer3old[0]+1+buffer3old[14]);   // insert brnachPc and target address in btb 
+	   InsertInBtb(buffer3old[0],buffer3old[0]+1+buffer3old[14]);   // insert brnachPc and target address in btb 
 
->>>>>>> origin/master
 	}
 
 
@@ -784,13 +779,13 @@ int CPU::Predicted(int pc)
 			return btb[i].predictedPC;
     return 0;
 }
-void CPU::deleteEntry(int pc)  // finds brnach address with current pc and sets taken to false
+void CPU::DeleteEntry(int pc)  // finds brnach address with current pc and sets taken to false
 {
 	for (int i = 0; i < btb.size(); i++)
 		if (btb[i].branchAddress == pc) 
 			btb[i].taken = false; 
 }
-void CPU :: insertInBtb(int address,int predicted)  // inserts record in btb
+void CPU :: InsertInBtb(int address,int predicted)  // inserts record in btb
 {
 	BTB temp; 
 	temp.branchAddress = address;
