@@ -43,7 +43,7 @@ CPU::CPU(string name)    // constructor receives the file name
 		{
 		toupper(instName[i]);
 		}  */
-		for(int i=0; instName[i]=='\0';i++)
+		for(int i=0; i<instName.size();i++)
 		{
 			instName[i]=toupper(instName[i]);
 		}
@@ -165,7 +165,7 @@ CPU::CPU(string name)    // constructor receives the file name
 	clkWAtFinalInst=400000;
 
 	PC = 0;
-	clk = 0;
+	clk = 1;
 	do{
 		test();
 	
@@ -187,10 +187,10 @@ void CPU::test()
     
     fetch();
     
-    Decode();
+    WriteBack();
     execute();
     MemAccess();
-    WriteBack();
+    Decode();
     
     for (int i=0; i<7; i++)
         buffer1old[i]=buffer1new[i];
@@ -367,14 +367,6 @@ void CPU::Decode()
     if(jump)
     {		PC = buffer1old[5];    // imm
         flush();
-//        buffer1new[0] = PC;
-//        buffer1new[1] = IM[PC].getInstNum();
-//        buffer1new[2] = IM[PC].getRs();
-//        buffer1new[3] = IM[PC].getRt();
-//        buffer1new[4] = IM[PC].getRd();
-//        buffer1new[5] = IM[PC].getImm();
-//        buffer1new[6] = IM[PC].getClkAtFet();
-        
     }
     
     if(!( jump==true || branch == true) && clkAtFinalInst==buffer1old[6])
@@ -401,7 +393,7 @@ void CPU:: execute()
         return;
     }
 		
-
+    ALUResult = 0; // initialize to zero so that when it doesn't compute something it doesn't resturn previous result
 	zeroflag=0;
 	int secoperand;  //imm or data from reg
 	if (buffer2old[9]) //addi or lw or sw, the sec operand is the immediate
@@ -447,7 +439,7 @@ void CPU:: execute()
 	buffer3new[11]= buffer2old[15];   // jump
 	buffer3new[12]= buffer2old[16]; //jumpreg
 	buffer3new[13] = clk;
-	buffer3new[14]= buffer2old[3];
+    buffer3new[14]= buffer2old[3]; //imm
     buffer3new[15]= buffer2old[5]; // Clk at fetch
     buffer3new[16]= buffer2old[6]; // clk at Dec
 	buffer3new[17] = buffer2old[17];     // branchFound 
@@ -465,6 +457,7 @@ void CPU::MemAccess()
         return;
     
     int MemReadData=0;  // output of data memory
+<<<<<<< HEAD
     int PC;
 
 	/*if (buffer3old[17])    // branchFound = true
@@ -475,10 +468,12 @@ void CPU::MemAccess()
 	{
 
 	}*/
+=======
+>>>>>>> origin/master
 
     if (buffer3old[7] && buffer3old[1])   // branch & zeroflag
 	{
-	    PC = buffer3old[14];
+        PC = (buffer3old[0])+1+buffer3old[14]; // PC+1+imm
 		// insert in btb 	
 		BTB temp; 
 		temp.branchAddress = PC;
@@ -668,8 +663,6 @@ int CPU:: nametoNum(string  & name, bool cut)
     {
         return 15;
     } else if(name == "$s0")
-        
-        
     {
         return 16;
     } else if(name == "$s1")
@@ -734,4 +727,5 @@ int CPU::Predicted(int pc)
 	for (int i = 0; i < btb.size(); i++)
 		if (btb[i].branchAddress == pc)
 			return btb[i].predictedPC;
+    return 0;
 }
