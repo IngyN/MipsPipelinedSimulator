@@ -174,8 +174,8 @@ CPU::CPU(string name)    // constructor receives the file name
 	} while (clk <clkWAtFinalInst);
 
 	cout <<"blaaaaa";
-	/*for (int i = 0; i < btb.size(); i++)
-		cout << btb[i].branchAddress << btb[i].predictedPC << btb[i].taken << endl;*/
+	for (int i = 0; i < btb.size(); i++)
+		cout << btb[i].branchAddress << btb[i].predictedPC << btb[i].taken << endl;
 }
 
 void CPU::test()
@@ -298,6 +298,7 @@ void CPU::fetch()
 
 	if (IM[PC].getInstNum() == 6)    // branch instruction
 	{
+		branch = true; 
 		if (Found(PC))   // if branch instruction found in btb
 		{
 			branchFound = true;
@@ -309,7 +310,6 @@ void CPU::fetch()
 			branchFound = false; 
 			InsertInBtb(PC,(IM[PC].getImm() + PC + 1));
 			PC = PC+1+IM[PC].getImm(); 
-			InsertInBtb(PC,(IM[PC].getImm() + PC + 1));
 
 		}
 	}
@@ -504,35 +504,16 @@ void CPU::MemAccess()
 	if (buffer3old[17] && buffer3old[7] && !buffer3old[1])    // branchFound & branch & !zeroflag 
 	{
 		// mispredict branch, kill fetched inst, restart fetch at other target ???????????????????????
-
+		PC = buffer3old[0]+1; 
 		DeleteEntry(buffer3old[0]); // prediction state = false 
 	}
 	else  
 		if (!buffer3old[17] && buffer3old[7] && !buffer3old[1])  // !branchFound & branch & !zeroflag 
 	{
-		PC = buffer3old[0]+1; 
-	   //PC = buffer3old[0]+1+buffer3old[14]; // PC+1+imm 
 	   DeleteEntry(buffer3old[0]);
-
-
-	   PC = buffer3old[0]+1+buffer3old[14]; // PC+1+imm 
-	   InsertInBtb(buffer3old[0],buffer3old[0]+1+buffer3old[14]);   // insert brnachPc and target address in btb 
-
+		PC = buffer3old[0]+1; // PC = PC+1
 	}
 
-
-   /* if (buffer3old[7] && buffer3old[1])   // branch & zeroflag
-	{
-        PC = (buffer3old[0])+1+buffer3old[14]; // PC+1+imm
-		// insert in btb 	
-		BTB temp; 
-		temp.branchAddress = PC;
-		temp.predictedPC = buffer3old[14];
-		temp.taken = true;
-		btb.push_back(temp);
-	}*/
-
-    
        
     if (buffer3old[9])    // memwrite
         DataMem[buffer3old[2]] = buffer3old[3];      // Datamem[ALUresult]
