@@ -22,8 +22,10 @@ public:
 	void MemAccess(); 
 	void WriteBack(); 
 	void flush(); 
-	void deleteEntry(int);   // prediction state = false
-	void insertInBtb(int,int);   // inserts record in btb
+	bool Found(int);   // returns true if branch address is found in BTB
+	int Predicted(int);  
+	void DeleteEntry(int);   // prediction state = false
+	void InsertInBtb(int,int);   // inserts record in btb
 
 private:
 
@@ -138,7 +140,5 @@ private:
 	//private function
 	void programCounter();
 	void test(); 
-	bool Found(int);   // returns true if branch address is found in BTB
-	int Predicted(int);  
 };
 #endif
