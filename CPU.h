@@ -20,7 +20,12 @@ public:
 	void Decode();      // uses buffer1 as input and stores output in buffer2
 	void execute ();
 	void MemAccess(); 
-	void WriteBack(); 
+	void WriteBack();
+	void flush(); 
+	bool Found(int);   // returns true if branch address is found in BTB
+	int Predicted(int);  
+	void DeleteEntry(int);   // prediction state = false
+	void InsertInBtb(int,int);   // inserts record in btb
     void flushFetch();
 
 private:
