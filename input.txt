@@ -10,6 +10,3 @@ ADD $s5, $s3, $s5
 RP
 
 
-
-
->>>>>>> origin/master
