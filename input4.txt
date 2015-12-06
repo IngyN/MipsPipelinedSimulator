@@ -1,0 +1,9 @@
+ADD $s3, $s1, $s2
+ADDI $s4, $s3,30
+JP 7
+AND $s2,$s2,0
+NOP
+NOP
+NOP
+ADDI $s5, $s3, 1
+RP
