@@ -160,7 +160,7 @@ CPU::CPU(string name)    // constructor receives the file name
 	execEn = true;
 	memEn = true;
 	wbEn = true;
-    finalfooEn = false; //so that the clock at final instruction is set only once.
+    finalfooEn = false; //so that the clock at final instruction is set only once at fetch, instead of at each stage.
 	finalInst = false;
 	branchFound = false; 
 	clkWAtFinalInst=400000;
@@ -401,7 +401,7 @@ void CPU::Decode()
     buffer2new[5] = buffer1old[6];   // clkAtFetch
     buffer2new[6] = clk;
    
-    if(finalfooEn && jumpReg)
+    if(finalfooEn && (jumpReg || jump) )
     {
         finalfooEn = false;
     }
@@ -420,10 +420,10 @@ void CPU::Decode()
 
     if(!( jump==true || branch == true || jumpReg) && clkAtFinalInst==buffer1old[6])
     {
-        //finalfooEn=true;
+        
         decodeEn=false;
         finalEn=true;
-        //return;
+        
     }
 //    if(( jump==true || branch == true ||jumpReg)&& clkAtFinalInst==buffer1old[6])
 //    {
@@ -520,7 +520,7 @@ void CPU:: execute()
     buffer3new[16]= buffer2old[6]; // clk at Dec
 	buffer3new[17] = buffer2old[17];     // branchFound 
     
-    if(clkAtFinalInst==buffer2old[5])
+    if(clkAtFinalInst==buffer2old[5]&& finalfooEn)
     {
         execEn=false;
     }
@@ -565,7 +565,7 @@ void CPU::MemAccess()
     buffer4new[7] = buffer3old[15]; //clk at F
     buffer4new[8] = buffer3old[16]; // clk at D
     
-    if(clkAtFinalInst==buffer3old[15])
+    if(clkAtFinalInst==buffer3old[15]&& finalfooEn)
     {
         memEn=false;
     }
@@ -786,3 +786,34 @@ int CPU:: nametoNum(string  & name, bool cut)
     }
     else return -1;
 }
+
+bool CPU::Found(int address)
+{
+    for (int i = 0; i < btb.size(); i++)
+        if (btb[i].branchAddress == address && (btb[i].taken))
+            return true;
+    return false;
+}
+
+int CPU::Predicted(int pc)
+{
+    for (int i = 0; i < btb.size(); i++)
+        if (btb[i].branchAddress == pc)
+            return btb[i].predictedPC;
+    return 0;
+}
+void CPU::DeleteEntry(int pc)  // finds brnach address with current pc and sets taken to false
+{
+    for (int i = 0; i < btb.size(); i++)
+        if (btb[i].branchAddress == pc)
+            btb[i].taken = false;
+}
+void CPU :: InsertInBtb(int address,int predicted)  // inserts record in btb
+{
+    BTB temp;
+    temp.branchAddress = address;
+    temp.predictedPC = predicted;
+    temp.taken = true;   // assume taken
+    btb.push_back(temp); 
+}
+
