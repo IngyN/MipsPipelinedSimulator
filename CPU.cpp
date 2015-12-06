@@ -6,7 +6,7 @@ using namespace std;
 
 
 CPU::CPU(string name)    // constructor receives the file name 
-{   stall=false;
+{  
 	for (int i=0; i<8; i++)
 			buffer1old[i]=0;
 		for (int i=0; i<20; i++)
@@ -386,12 +386,10 @@ void CPU::Decode()
 
    if (buffer2new[12] && ((buffer2new[19]==buffer1old[2]) || (buffer2new[19]==buffer1old[3]))) //memRead AND(rt==rs or rt==rt )  //load hazard
 	{
-		flush();
-	    stall= true;
-		
+		stall();
+	    		
 	} 
-   else 
-	   stall= false;
+
     
     buffer2new[0] = buffer1old[0];//PC
     buffer2new[1] = RegFile[buffer1old[2]];  // rs
@@ -458,7 +456,7 @@ void CPU:: execute()
 		if (buffer4old[3]  &&(buffer4old[2]== buffer2old[18]) && (buffer4old[2]!=0) &&
 			!(buffer3old[5] && buffer3old[4]!=0 && (buffer3old[4]==buffer2old[18]))) 
 																//RegWrite AND rd=rs AND !(regwrite & rd==rs)   
-			 firstoperand= wbData;
+			 firstoperand= buffer4old[0];
 		else
 			firstoperand= buffer2old[1];
 
@@ -468,7 +466,7 @@ void CPU:: execute()
 		if ((buffer4old[3] && (buffer4old[2]== buffer2old[19]) && buffer4old[2]!=0 ) && 
 			!(buffer3old[5] && (buffer3old[4]!=0) && (buffer3old[4]==buffer2old[19])))  
 				 //RegWrite AND    rd=rt   AND !(regwrite & rd=rt)
-				 secoperand= wbData;  
+				 secoperand= buffer4old[0];  
 		else
 	{
 		if (buffer2old[9]) //addi or lw or sw, the sec operand is the immediate
@@ -604,7 +602,7 @@ void CPU::programCounter()
 	PC = 0;
 	clk = 0;
 	}*/    // initialized in constructor
-	if(!stall)
+	if(fetchEn)
 	{
 		if(!jump)        
 			PC++;     // normal increment
@@ -640,35 +638,35 @@ void CPU::programCounter()
 		returnAddresses.pop();
 		}*/
 	}
-	else if( stall)
+	/*else if( stall)
 	{
 		PC--; //Stall fetching the next instruction	
-	}
+	}*/
 
 }
 
 void CPU::flush()
 {
-	/*for (int i=0; i<8; i++)
+	for (int i=0; i<8; i++)
 	{
-			buffer1old[i]=0;
+	//		buffer1old[i]=0;
 			buffer1new[i]=0;
-	}*/
-		for (int i=0; i<18; i++)
+	}
+		for (int i=0; i<20; i++)
 		{
 			buffer2old[i]=0;
 		//	buffer2new[i]=0;
 		}
-		/*for (int i=0; i<18; i++)
+		for (int i=0; i<18; i++)
 		{
 			buffer3old[i]=0;
-			//buffer3new[i]=0;
+		//	buffer3new[i]=0;
 		}
 		for (int i=0; i<9; i++)
 		{
 			buffer4old[i]=0;
 		 //buffer4new[i]=0;
-		}*/
+		}
 
 }
 
@@ -817,3 +815,8 @@ void CPU :: InsertInBtb(int address,int predicted)  // inserts record in btb
     btb.push_back(temp); 
 }
 
+void CPU :: stall()
+{
+	flush();
+	PC--;
+}
