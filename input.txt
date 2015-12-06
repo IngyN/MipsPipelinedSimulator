@@ -1,12 +1,6 @@
-ADD $ra, $s3, $s1
-nop
-nop
-JP 8
-nop
-ADDI $s1, $s2, 9
-nop
-ADDI $s1, $s2, 8
-ADD $s5, $s3, $s5
-RP
+LW $s0, 1($s1)
+ADD $s3, $s0, $s1
+ADD $s4, $s1, $s2
+ADD $s4, $s1, $s2
 
 
