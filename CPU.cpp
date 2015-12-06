@@ -647,7 +647,30 @@ void CPU::programCounter()
 
 }
 
+void CPU::flush()
+{
+	/*for (int i=0; i<8; i++)
+	{
+			buffer1old[i]=0;
+			buffer1new[i]=0;
+	}*/
+		for (int i=0; i<18; i++)
+		{
+			buffer2old[i]=0;
+		//	buffer2new[i]=0;
+		}
+		/*for (int i=0; i<18; i++)
+		{
+			buffer3old[i]=0;
+			//buffer3new[i]=0;
+		}
+		for (int i=0; i<9; i++)
+		{
+			buffer4old[i]=0;
+		 //buffer4new[i]=0;
+		}*/
 
+}
 
 void CPU::flushFetch()
 {
