@@ -335,6 +335,17 @@ void CPU::fetch()
 	buffer1new[6] = IM[PC].getClkAtFet();
     buffer1new[7] = branchFound; 
 
+    if(PC== (IM.size()-1))//final instruction
+    {
+        finalInst=true;
+        
+        if(!finalfooEn){
+            clkAtFinalInst = clk;
+            finalfooEn=true;
+        }
+        if(IM[PC].getInstNum() != 6) return;
+    }
+    
 	if (IM[PC].getInstNum() == 6)    // branch instruction
 	{
 		branch = true; 
@@ -347,21 +358,12 @@ void CPU::fetch()
 		{
 
 			branchFound = false; 
-			InsertInBtb(PC,(IM[PC].getImm() + PC + 1));
-			PC = PC+1+IM[PC].getImm(); 
+			InsertInBtb(PC,(IM[PC].getImm() + PC));
+			PC = PC+IM[PC].getImm();
 		}
 	}
 
-	if(PC== (IM.size()-1))//final instruction
-	{
-        finalInst=true;
-        
-        if(!finalfooEn){
-            clkAtFinalInst = clk;
-            finalfooEn=true;
-        }
-		return;
-	}
+
 	programCounter(); // (imm,jump, branch,fetchEn)
 
 }
@@ -530,20 +532,8 @@ void CPU::MemAccess()
         return;
     
     int MemReadData=0;  // output of data memory
-    int PC;
+                        // int PC;
 
-	if (buffer3old[17] && buffer3old[7] && !buffer3old[1])    // branchFound & branch & !zeroflag 
-	{
-		// mispredict branch, kill fetched inst, restart fetch at other target ???????????????????????
-		PC = buffer3old[0]+1; 
-		DeleteEntry(buffer3old[0]); // prediction state = false 
-	}
-	else  
-		if (!buffer3old[17] && buffer3old[7] && !buffer3old[1])  // !branchFound & branch & !zeroflag 
-	{
-	   DeleteEntry(buffer3old[0]);
-		PC = buffer3old[0]+1; // PC = PC+1
-	}
 
        
     if (buffer3old[9])    // memwrite
@@ -561,6 +551,17 @@ void CPU::MemAccess()
     buffer4new[6] = buffer3old[13]; // clk at exec
     buffer4new[7] = buffer3old[15]; //clk at F
     buffer4new[8] = buffer3old[16]; // clk at D
+    
+    
+    if (buffer3old[7] && !buffer3old[1])    //branch & !zeroflag
+    {
+        // mispredict branch, kill fetched inst, restart fetch at other target ???????????????????????
+        PC = buffer3old[0]+1;
+        
+        DeleteEntry(buffer3old[0]); // prediction state = false
+        flushThree();
+        finalfooEn=false;
+    }
     
     if(clkAtFinalInst==buffer3old[15]&& finalfooEn)
     {
@@ -667,6 +668,26 @@ void CPU::flush()
 		 //buffer4new[i]=0;
 		}
 
+}
+
+void CPU::flushThree()
+{
+    for (int i=0; i<8; i++)
+    {
+        buffer1old[i]=0;
+        buffer1new[i]=0;
+    }
+    for (int i=0; i<20; i++)
+    {
+        buffer2old[i]=0;
+        buffer2new[i]=0;
+    }
+    for (int i=0; i<18; i++)
+    {
+        buffer3old[i]=0;
+        buffer3new[i]=0;
+    }
+    
 }
 
 void CPU::flushFetch()

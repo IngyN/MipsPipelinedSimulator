@@ -27,6 +27,7 @@ public:
 	void DeleteEntry(int);   // prediction state = false
 	void InsertInBtb(int,int);   // inserts record in btb
     void flushFetch();
+    void flushThree();
 	void stall();
 
 private:
