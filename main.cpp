@@ -7,25 +7,25 @@ using namespace std;
 int main ()
 {
     //SEBA
-    try {
-        CPU one ("C:/Users/Seba/Documents/330_Project/MipsPipelinedSimulator/MipsPipelinedSimulator/input2.txt");
-    }
-    catch(const inputException & inp)
-    {
-        cout << "File input error: \nIncorrect syntax at line: " <<inp.what();
-        exit(0);
-    }
-    
-    
-    //NESMA
-    try {
-        CPU one ("C:/Users/NesmaBadr/Desktop/Fall 2015/CS 330/330project/input.txt");
-    }
-    catch(const inputException & inp)
-    {
-        cout << "File input error: \nIncorrect syntax at line: " <<inp.what();
-        exit(0);
-    }
+//    try {
+//        CPU one ("C:/Users/Seba/Documents/330_Project/MipsPipelinedSimulator/MipsPipelinedSimulator/input2.txt");
+//    }
+//    catch(const inputException & inp)
+//    {
+//        cout << "File input error: \nIncorrect syntax at line: " <<inp.what();
+//        exit(0);
+//    }
+//    
+//    
+//    //NESMA
+//    try {
+//        CPU one ("C:/Users/NesmaBadr/Desktop/Fall 2015/CS 330/330project/input.txt");
+//    }
+//    catch(const inputException & inp)
+//    {
+//        cout << "File input error: \nIncorrect syntax at line: " <<inp.what();
+//        exit(0);
+//    }
     
     //INGY
     try {
