@@ -3,7 +3,7 @@ using namespace std;
 #include <iostream>
 #include <fstream>
 #include <string>
-//#include "inputException.h"
+#include "inputException.h"
 
 CPU::CPU(string name)    // constructor receives the file name 
 {  
@@ -46,10 +46,8 @@ CPU::CPU(string name)    // constructor receives the file name
 		toupper(instName[i]);
 		}  */
 		for(int i=0; i<instName.size();i++)
-		{
 			instName[i]=toupper(instName[i]);
-		}
-     //   try {
+       try {
             if(instName == "ADD")
             {
                 
@@ -144,16 +142,16 @@ CPU::CPU(string name)    // constructor receives the file name
                 getline(in,shit);
                 if(instName.find("NOP")!=-1)
                     temp.setInstNum(0);
-               /* else
+                else
                 {
                     throw inputException(to_string(IM.size()+1));
-                }*/
+                }
             }
-       // }
-       /* catch(const invalid_argument & m)
+       }
+        catch(const invalid_argument & m)
         {
             throw invalid_argument(to_string(IM.size()+1));
-        }*/
+        }
         
         
 
@@ -163,9 +161,10 @@ CPU::CPU(string name)    // constructor receives the file name
 		cout << temp.getRt();
 
 		*/
-		temp.clear();              
+		temp.clear();       
+		}
 	//}
-	//IM.pop_back();
+	IM.pop_back();
 	in.close();
 
 	finalEn = false;
@@ -190,7 +189,7 @@ CPU::CPU(string name)    // constructor receives the file name
 	cout <<"blaaaaa";
 	for (int i = 0; i < btb.size(); i++)
 		cout << btb[i].branchAddress << btb[i].predictedPC << btb[i].taken << endl;
-}
+
 }
 void CPU::test()
 {
@@ -364,7 +363,9 @@ void CPU::fetch()
 
 	if (IM[PC].getInstNum() == 6)    // branch instruction
 	{
-		//branch = true; 
+		branch = true; 
+		buffer2new[11] = buffer2old[11] = true;
+		buffer2old[10] = 1;    // aluop for ble
 		if (Found(PC))   // if branch instruction found in btb
 		{
 			if (branchTaken(PC))  // taken = true in btb
@@ -525,6 +526,7 @@ void CPU:: execute()
 			assignTaken(buffer2old[0],1); // taken = true
 			PC = Predicted(buffer2old[0]);
 			// remove previous fetched instructions  ???????
+			flushThree(); 
 		}
 	}
 	else
@@ -534,6 +536,7 @@ void CPU:: execute()
 		{
 			assignTaken(buffer2old[0],0);  // taken = false
 			// PC++ normal pc increment
+			flushThree();
 			// remove previous fetched instructions  ???????
 		}
 	}
@@ -700,21 +703,21 @@ void CPU::flush()
 
 void CPU::flushThree()
 {
-    for (int i=0; i<8; i++)
+    for (int i=0; i<8; i++) // buffer 1
     {
         buffer1old[i]=0;
         buffer1new[i]=0;
     }
-    for (int i=0; i<20; i++)
+    for (int i=0; i<20; i++)  // buffer 2
     {
         buffer2old[i]=0;
         buffer2new[i]=0;
     }
-    for (int i=0; i<18; i++)
+   /* for (int i=0; i<18; i++)
     {
         buffer3old[i]=0;
         buffer3new[i]=0;
-    }
+    }*/
     
 }
 
