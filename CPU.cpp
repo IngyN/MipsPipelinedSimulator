@@ -200,12 +200,11 @@ void CPU::test()
     
     
     fetch();
-    
     WriteBack();
     execute();
     MemAccess();
     Decode();
-    
+
     for (int i=0; i<8; i++)
         buffer1old[i]=buffer1new[i];
     for (int i=0; i<20; i++)
@@ -324,24 +323,7 @@ void CPU::fetch()
 	if(fetchEn == false)
 		return;
 
-	if (IM[PC].getInstNum() == 6)    // branch instruction
-	{
-		branch = true; 
-		if (Found(PC))   // if branch instruction found in btb
-		{
-			branchFound = true;
-			PC = Predicted(PC);      // returns predicted branch pc 
-		}
-		else  // insert in btb
-		{
-
-			branchFound = false; 
-			InsertInBtb(PC,(IM[PC].getImm() + PC + 1));
-			PC = PC+1+IM[PC].getImm(); 
-
-		}
-	}
-
+	
 	// control signals initialization
 	regWrite= true;
 	regDest= true;
@@ -363,6 +345,23 @@ void CPU::fetch()
 	buffer1new[5] = IM[PC].getImm();
 	buffer1new[6] = IM[PC].getClkAtFet();
     buffer1new[7] = branchFound; 
+
+	if (IM[PC].getInstNum() == 6)    // branch instruction
+	{
+		branch = true; 
+		if (Found(PC))   // if branch instruction found in btb
+		{
+			branchFound = true;
+			PC = Predicted(PC);      // returns predicted branch pc 
+		}
+		else  // insert in btb
+		{
+
+			branchFound = false; 
+			InsertInBtb(PC,(IM[PC].getImm() + PC + 1));
+			PC = PC+1+IM[PC].getImm(); 
+		}
+	}
 
 	if(PC== (IM.size()-1))//final instruction
 	{
@@ -485,7 +484,7 @@ void CPU:: execute()
 		else 
 			secoperand= buffer2old[2];
 	}
-	switch (buffer2old[10])
+	switch (buffer2old[10])   // aluOp 
 	{
 	case 0:   //add  
 
@@ -510,7 +509,7 @@ void CPU:: execute()
 	}
 
 	//input to the Exec/Mem buffer
-	buffer3new[0]= buffer2old[0]; 
+	buffer3new[0]= buffer2old[0];  // pc
 	buffer3new[1]= zeroflag;
 	buffer3new[2]= ALUResult;
 	buffer3new[3]= buffer2old[2];  // rt
