@@ -36,6 +36,10 @@ int main ()
         cout << "File input error: \nIncorrect syntax at line: " <<inp.what();
         exit(0);
     }
+    catch(const invalid_argument & inp)
+    {
+        cout << "File input error: \nInvalid argument at line: " <<inp.what();
+    }
     
     
 	system ("Pause"); 

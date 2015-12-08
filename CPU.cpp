@@ -49,13 +49,11 @@ CPU::CPU(string name)    // constructor receives the file name
 		{
 			instName[i]=toupper(instName[i]);
 		}
-        
+        try {
             if(instName == "ADD")
             {
                 
                 in>>reg1>>reg2>>reg3;
-//                if()
-//                    throw inputException(to_string(lineCount));
                 temp.setRd(nametoNum(reg1));
                 temp.setRt(nametoNum(reg3, 0));
                 temp.setRs(nametoNum(reg2));
@@ -144,13 +142,18 @@ CPU::CPU(string name)    // constructor receives the file name
                 //NOP
                 string shit;
                 getline(in,shit);
-                if(shit.find("NOP")!=string::npos)
+                if(instName.find("NOP")!=-1)
                     temp.setInstNum(0);
                 else
                 {
                     throw inputException(to_string(IM.size()+1));
                 }
             }
+        }
+        catch(const invalid_argument & m)
+        {
+            throw invalid_argument(to_string(IM.size()+1));
+        }
         
         
 
