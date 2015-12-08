@@ -3,7 +3,7 @@ using namespace std;
 #include <iostream>
 #include <fstream>
 #include <string>
-
+#include "inputException.h"
 
 CPU::CPU(string name)    // constructor receives the file name 
 {  
@@ -35,8 +35,10 @@ CPU::CPU(string name)    // constructor receives the file name
 	Instruction temp;
 	string instName, reg1, reg2, reg3, imm;
 
+    
 	while (!in.eof())
 	{
+        
 		in>>instName;
 
 		/*     for (char &i : instName)
@@ -47,101 +49,113 @@ CPU::CPU(string name)    // constructor receives the file name
 		{
 			instName[i]=toupper(instName[i]);
 		}
-
-
-		if(instName == "ADD")
-		{
-			in>>reg1>>reg2>>reg3;
-			temp.setRd(nametoNum(reg1));
-			temp.setRt(nametoNum(reg3, 0));
-			temp.setRs(nametoNum(reg2));
-			temp.setInstNum(1);
-
-		} else if(instName == "ADDI")
-		{
-			in>>reg1>>reg2>>imm;
-			temp.setImm(stoi(imm));
-			temp.setRs(nametoNum(reg2));
-			temp.setRt(nametoNum(reg1));
-
-			temp.setInstNum(2);
-
-		} else if(instName == "XOR")
-		{
-			in>>reg1>>reg2>>reg3;
-			temp.setRd(nametoNum(reg1));
-			temp.setRt(nametoNum(reg3,0));
-			temp.setRs(nametoNum(reg2));
-			temp.setInstNum(3);
-
-		} else if(instName == "LW")
-		{
-			in>> reg1;
-			getline(in, imm, '(');
-			getline(in, reg2, ')');
-
-			temp.setRt(nametoNum(reg1));
-			temp.setImm(stoi(imm));
-			temp.setRs(nametoNum(reg2,0));
-			temp.setInstNum(4);
-
-		} else if(instName == "SW")
-		{
-			in>> reg1;
-			getline(in, imm, '(');
-			getline(in, reg2, ')');
-
-			temp.setRt(nametoNum(reg1));
-			temp.setImm(stoi(imm));
-			temp.setRs(nametoNum(reg2,0));
-			temp.setInstNum(5);
-
-		} else if(instName == "BLE")
-		{
-			in>>reg1>>reg2>>imm;
-
-			temp.setRs(nametoNum(reg1));
-			temp.setRt(nametoNum(reg2));
-			temp.setImm(stoi(imm));
-			temp.setInstNum(6);
-		} else if(instName == "J")
-		{
-			in>>imm;
-
-			temp.setImm(stoi(imm));
-			temp.setInstNum(7);
-
-		} else if(instName == "SLT")
-		{
-			in>>reg1>>reg2>>reg3;
-			temp.setRd(nametoNum(reg1));
-			temp.setRt(nametoNum(reg3, 0));
-			temp.setRs(nametoNum(reg2));
-			temp.setInstNum(8);
-		} else if(instName == "JAL")
-		{
-			in >>imm;
-			temp.setImm(stoi(imm));
-			temp.setInstNum(9);
-		} else if(instName == "JR")
-		{
-			in >>reg1;
-			temp.setRs(nametoNum(reg1,0));
-			temp.setInstNum(10);
-		} else if(instName == "JP")
-		{
-			in >> imm;
-			temp.setImm(stoi(imm));
-			temp.setInstNum(11);
-		} else if(instName == "RP")
-		{
-			temp.setInstNum(12);
-		} else {
-			//NOP
-			string shit;
-			getline(in,shit);
-			temp.setInstNum(0);
-		}
+        try {
+            if(instName == "ADD")
+            {
+                
+                in>>reg1>>reg2>>reg3;
+                temp.setRd(nametoNum(reg1));
+                temp.setRt(nametoNum(reg3, 0));
+                temp.setRs(nametoNum(reg2));
+                temp.setInstNum(1);
+                
+            } else if(instName == "ADDI")
+            {
+                in>>reg1>>reg2>>imm;
+                temp.setImm(stoi(imm));
+                temp.setRs(nametoNum(reg2));
+                temp.setRt(nametoNum(reg1));
+                
+                temp.setInstNum(2);
+                
+            } else if(instName == "XOR")
+            {
+                in>>reg1>>reg2>>reg3;
+                temp.setRd(nametoNum(reg1));
+                temp.setRt(nametoNum(reg3,0));
+                temp.setRs(nametoNum(reg2));
+                temp.setInstNum(3);
+                
+            } else if(instName == "LW")
+            {
+                in>> reg1;
+                getline(in, imm, '(');
+                getline(in, reg2, ')');
+                
+                temp.setRt(nametoNum(reg1));
+                temp.setImm(stoi(imm));
+                temp.setRs(nametoNum(reg2,0));
+                temp.setInstNum(4);
+                
+            } else if(instName == "SW")
+            {
+                in>> reg1;
+                getline(in, imm, '(');
+                getline(in, reg2, ')');
+                
+                temp.setRt(nametoNum(reg1));
+                temp.setImm(stoi(imm));
+                temp.setRs(nametoNum(reg2,0));
+                temp.setInstNum(5);
+                
+            } else if(instName == "BLE")
+            {
+                in>>reg1>>reg2>>imm;
+                
+                temp.setRs(nametoNum(reg1));
+                temp.setRt(nametoNum(reg2));
+                temp.setImm(stoi(imm));
+                temp.setInstNum(6);
+            } else if(instName == "J")
+            {
+                in>>imm;
+                
+                temp.setImm(stoi(imm));
+                temp.setInstNum(7);
+                
+            } else if(instName == "SLT")
+            {
+                in>>reg1>>reg2>>reg3;
+                temp.setRd(nametoNum(reg1));
+                temp.setRt(nametoNum(reg3, 0));
+                temp.setRs(nametoNum(reg2));
+                temp.setInstNum(8);
+            } else if(instName == "JAL")
+            {
+                in >>imm;
+                temp.setImm(stoi(imm));
+                temp.setInstNum(9);
+            } else if(instName == "JR")
+            {
+                in >>reg1;
+                temp.setRs(nametoNum(reg1,0));
+                temp.setInstNum(10);
+            } else if(instName == "JP")
+            {
+                in >> imm;
+                temp.setImm(stoi(imm));
+                temp.setInstNum(11);
+            } else if(instName == "RP")
+            {
+                temp.setInstNum(12);
+            } else {
+                //NOP
+                string shit;
+                getline(in,shit);
+                if(instName.find("NOP")!=-1)
+                    temp.setInstNum(0);
+                else
+                {
+                    throw inputException(to_string(IM.size()+1));
+                }
+            }
+        }
+        catch(const invalid_argument & m)
+        {
+            throw invalid_argument(to_string(IM.size()+1));
+        }
+        
+        
 
 		IM.push_back(temp);
 		/*	cout << temp.getInstNum();
@@ -802,7 +816,10 @@ int CPU:: nametoNum(string  & name, bool cut)
     {
         return 31;
     }
-    else return -1;
+    else
+    {
+        throw inputException(to_string(IM.size()+1));
+    };
 }
 
 bool CPU::Found(int address)
