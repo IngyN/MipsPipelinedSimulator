@@ -1,5 +1,6 @@
 ADD $s3, $s1, $s2
 ADDI $s4, $s3, 30
+<<<<<<< HEAD
 JP 7
 ADDI $s2, $s0, 0
 NOP
@@ -7,3 +8,9 @@ NhjOP
 NOP
 ADDI $s5, $s3, 1
 RP
+=======
+ADDI $s5, $s3, 1
+RP
+
+
+>>>>>>> origin/master
