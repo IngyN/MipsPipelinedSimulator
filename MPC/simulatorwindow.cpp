@@ -11,6 +11,7 @@
 #include <fstream>
 #include <QTextStream>
 #include <QFile>
+#include <QMessageBox>
 
 
 using namespace std;
@@ -72,12 +73,14 @@ SimulatorWindow::~SimulatorWindow()
     delete ui;
 }
 
-void SimulatorWindow::run ()
+void SimulatorWindow::check (string s)
 {
+    QMessageBox error(this);
+
     try {
 
 
-        ingy->loadAndParse("/Users/Ingy/Desktop/github/MipsPipelinedSimulator/MipsPipelined/MipsPipelinedSimulator/MipsPipelinedSimulator/input4.txt");
+        ingy->loadAndParse(s);
 
 
  //       cout <<"blaaaaa";
@@ -88,14 +91,24 @@ void SimulatorWindow::run ()
      catch(const inputException & inp)
      {
         // cout << "File input error: \nIncorrect syntax at line: " <<inp.what();
-        cout << "File input error: \nIncorrect syntax at line: ";
-         exit(0);
+       // cout << "File input error: \nIncorrect syntax at line: ";
+        QString s = "File input error:\n\nIncorrect syntax at line: ";
+        s.append(QString::fromStdString(inp.what()));
+        QString s1= " ";
+        error.critical(0,s1,s);
+        error.show();
+
+         //exit(0);
      }
      catch(const invalid_argument & inp)
      {
          //cout << " " <<inp.what();
         cout <<"File input error: \nInvalid argument at line:";
-         exit(0);
+        QString s = "\nFile input error:\n\nInvalid argument at line: ";
+        s.append(QString::fromStdString(inp.what()));
+        error.critical(0," ",s);
+        error.show();
+         //exit(0);
      }
 }
 
@@ -215,7 +228,7 @@ void SimulatorWindow::on_Edit_clicked()
 
 void SimulatorWindow::on_Save_clicked()
 {
-    ui->disassemblerOut->setReadOnly(true);
+    //ui->disassemblerOut->setReadOnly(true);
     updateT();
 }
 
@@ -233,5 +246,6 @@ void SimulatorWindow::updateT ()
     QTextStream outStream (&output);
     outStream<<text;
     output.close();
-    ingy->loadAndParse("/Users/Ingy/Desktop/github/MipsPipelinedSimulator/MipsPipelined/MipsPipelinedSimulator/MipsPipelinedSimulator/shit.txt");
+    check ("/Users/Ingy/Desktop/github/MipsPipelinedSimulator/MipsPipelined/MipsPipelinedSimulator/MipsPipelinedSimulator/shit.txt");
+    //ingy->loadAndParse("/Users/Ingy/Desktop/github/MipsPipelinedSimulator/MipsPipelined/MipsPipelinedSimulator/MipsPipelinedSimulator/shit.txt");
 }

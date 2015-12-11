@@ -21,7 +21,7 @@ public:
     void setRegistersName();
     void setRegistersContent();
     void setConsoleOut();
-    void run();
+    void check(string);
     void setDataContent();
     void updateT();
     ~SimulatorWindow();
