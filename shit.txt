@@ -1,0 +1,4 @@
+ADD $s3, $s1, $s2
+ADDI $s4, $s3, 30
+ADDI $s5, $s2, 1
+RP
