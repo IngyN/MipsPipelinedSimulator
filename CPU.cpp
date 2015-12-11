@@ -46,10 +46,8 @@ CPU::CPU(string name)    // constructor receives the file name
 		toupper(instName[i]);
 		}  */
 		for(int i=0; i<instName.size();i++)
-		{
 			instName[i]=toupper(instName[i]);
-		}
-        try {
+       try {
             if(instName == "ADD")
             {
                 
@@ -149,7 +147,7 @@ CPU::CPU(string name)    // constructor receives the file name
                     throw inputException(to_string(IM.size()+1));
                 }
             }
-        }
+       }
         catch(const invalid_argument & m)
         {
             throw invalid_argument(to_string(IM.size()+1));
@@ -163,8 +161,9 @@ CPU::CPU(string name)    // constructor receives the file name
 		cout << temp.getRt();
 
 		*/
-		temp.clear();              
-	}
+		temp.clear();       
+		}
+	//}
 	IM.pop_back();
 	in.close();
 
@@ -190,8 +189,8 @@ CPU::CPU(string name)    // constructor receives the file name
 	cout <<"blaaaaa";
 	for (int i = 0; i < btb.size(); i++)
 		cout << btb[i].branchAddress << btb[i].predictedPC << btb[i].taken << endl;
-}
 
+}
 void CPU::test()
 {
     cout << "PC: "<<  PC << endl;
@@ -349,33 +348,41 @@ void CPU::fetch()
 	buffer1new[6] = IM[PC].getClkAtFet();
     buffer1new[7] = branchFound; 
 
-	if (IM[PC].getInstNum() == 6)    // branch instruction
-	{
-		branch = true; 
-		if (Found(PC))   // if branch instruction found in btb
-		{
-			branchFound = true;
-			PC = Predicted(PC);      // returns predicted branch pc 
-		}
-		else  // insert in btb
-		{
-
-			branchFound = false; 
-			InsertInBtb(PC,(IM[PC].getImm() + PC + 1));
-			PC = PC+1+IM[PC].getImm(); 
-		}
-	}
-
-	if(PC== (IM.size()-1))//final instruction
-	{
+    if(PC== (IM.size()-1))//final instruction
+    {
         finalInst=true;
         
         if(!finalfooEn){
             clkAtFinalInst = clk;
             finalfooEn=true;
         }
-		return;
+        if(IM[PC].getInstNum() != 6) return;
+    }
+    
+
+
+	if (IM[PC].getInstNum() == 6)    // branch instruction
+	{
+		branch = true; 
+		buffer2new[11] = buffer2old[11] = true;
+		buffer2old[10] = 1;    // aluop for ble
+		if (Found(PC))   // if branch instruction found in btb
+		{
+			if (branchTaken(PC))  // taken = true in btb
+				PC = Predicted(PC);
+			//else
+				// PC++ noraml execution??????????????
+		}
+		else  // not found in btb
+		{
+			InsertInBtb(PC,PC+1+IM[PC].getImm());
+			// PC++ normal execution  ????????????
+		}
 	}
+
+
+
+
 	programCounter(); // (imm,jump, branch,fetchEn)
 
 }
@@ -511,6 +518,30 @@ void CPU:: execute()
 		ALUResult=-1;
 	}
 
+	// If its a branch instruction
+	if (buffer2old[11] && zeroflag)    // branch is taken 
+	{
+		if (!branchTaken(buffer2old[0]))  // if taken = false
+		{
+			assignTaken(buffer2old[0],1); // taken = true
+			PC = Predicted(buffer2old[0]);
+			// remove previous fetched instructions  ???????
+			flushThree(); 
+		}
+	}
+	else
+	if (buffer2old[11] && !zeroflag)   // branch not taken
+	{
+		if (branchTaken(buffer2old[0]))  // if taken = true
+		{
+			assignTaken(buffer2old[0],0);  // taken = false
+			// PC++ normal pc increment
+			flushThree();
+			// remove previous fetched instructions  ???????
+		}
+	}
+
+
 	//input to the Exec/Mem buffer
 	buffer3new[0]= buffer2old[0];  // pc
 	buffer3new[1]= zeroflag;
@@ -544,21 +575,7 @@ void CPU::MemAccess()
         return;
     
     int MemReadData=0;  // output of data memory
-    int PC;
-
-	if (buffer3old[17] && buffer3old[7] && !buffer3old[1])    // branchFound & branch & !zeroflag 
-	{
-		// mispredict branch, kill fetched inst, restart fetch at other target ???????????????????????
-		PC = buffer3old[0]+1; 
-		DeleteEntry(buffer3old[0]); // prediction state = false 
-	}
-	else  
-		if (!buffer3old[17] && buffer3old[7] && !buffer3old[1])  // !branchFound & branch & !zeroflag 
-	{
-	   DeleteEntry(buffer3old[0]);
-		PC = buffer3old[0]+1; // PC = PC+1
-	}
-
+                        // int PC;
        
     if (buffer3old[9])    // memwrite
         DataMem[buffer3old[2]] = buffer3old[3];      // Datamem[ALUresult]
@@ -575,6 +592,7 @@ void CPU::MemAccess()
     buffer4new[6] = buffer3old[13]; // clk at exec
     buffer4new[7] = buffer3old[15]; //clk at F
     buffer4new[8] = buffer3old[16]; // clk at D
+    
     
     if(clkAtFinalInst==buffer3old[15]&& finalfooEn)
     {
@@ -681,6 +699,26 @@ void CPU::flush()
 		 //buffer4new[i]=0;
 		}
 
+}
+
+void CPU::flushThree()
+{
+    for (int i=0; i<8; i++) // buffer 1
+    {
+        buffer1old[i]=0;
+        buffer1new[i]=0;
+    }
+    for (int i=0; i<20; i++)  // buffer 2
+    {
+        buffer2old[i]=0;
+        buffer2new[i]=0;
+    }
+   /* for (int i=0; i<18; i++)
+    {
+        buffer3old[i]=0;
+        buffer3new[i]=0;
+    }*/
+    
 }
 
 void CPU::flushFetch()
@@ -795,16 +833,16 @@ int CPU:: nametoNum(string  & name, bool cut)
     {
         return 31;
     }
-    else
+ /*   else
     {
         throw inputException(to_string(IM.size()+1));
-    };
+    };*/
 }
 
 bool CPU::Found(int address)
 {
     for (int i = 0; i < btb.size(); i++)
-        if (btb[i].branchAddress == address && (btb[i].taken))
+        if (btb[i].branchAddress == address)
             return true;
     return false;
 }
@@ -816,18 +854,13 @@ int CPU::Predicted(int pc)
             return btb[i].predictedPC;
     return 0;
 }
-void CPU::DeleteEntry(int pc)  // finds brnach address with current pc and sets taken to false
-{
-    for (int i = 0; i < btb.size(); i++)
-        if (btb[i].branchAddress == pc)
-            btb[i].taken = false;
-}
+
 void CPU :: InsertInBtb(int address,int predicted)  // inserts record in btb
 {
     BTB temp;
     temp.branchAddress = address;
     temp.predictedPC = predicted;
-    temp.taken = true;   // assume taken
+    temp.taken = false;   // assume initially not taken
     btb.push_back(temp); 
 }
 
@@ -835,4 +868,23 @@ void CPU :: stall()
 {
 	flush();
 	PC--;
+}
+
+bool CPU:: branchTaken(int pc)
+{
+	for (int i = 0; i < btb.size(); i++) 
+		if (btb[i].branchAddress == pc && (btb[i].taken))
+			return true;
+	return false; 
+
+}
+
+void CPU :: assignTaken(int pc, int n)
+{
+	for (int i = 0; i < btb.size(); i++)
+		if (btb[i].branchAddress == pc)
+			if (n == 1)
+				btb[i].taken = true; 
+			else if( n == 0) 
+				btb[i].taken = false; 
 }

@@ -24,10 +24,12 @@ public:
 	void flush(); 
 	bool Found(int);   // returns true if branch address is found in BTB
 	int Predicted(int);  
-	void DeleteEntry(int);   // prediction state = false
 	void InsertInBtb(int,int);   // inserts record in btb
     void flushFetch();
+    void flushThree();
 	void stall();
+	bool branchTaken(int);   // returns true if taken = true in btb
+	void assignTaken(int,int);  // true/false depending on zeroflag  
 
 private:
 
