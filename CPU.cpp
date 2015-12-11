@@ -5,7 +5,7 @@ using namespace std;
 #include <string>
 #include "inputException.h"
 
-CPU::CPU(string name)    // constructor receives the file name 
+CPU::CPU(string name):filename(name)  // constructor receives the file name
 {  
 	for (int i=0; i<8; i++)
 			buffer1old[i]=0;
@@ -26,146 +26,7 @@ CPU::CPU(string name)    // constructor receives the file name
 
 	RegFile[17] = 5;
 	RegFile[18] = 3;
-	filename = name;
-	ifstream in;
-	in.open(name.c_str());
-    bool fail = in.fail();
-    if(fail)
-        cout << "failed to open file";
-	Instruction temp;
-	string instName, reg1, reg2, reg3, imm;
-
     
-	while (!in.eof())
-	{
-        
-		in>>instName;
-
-		/*     for (char &i : instName)
-		{
-		toupper(instName[i]);
-		}  */
-		for(int i=0; i<instName.size();i++)
-			instName[i]=toupper(instName[i]);
-       try {
-            if(instName == "ADD")
-            {
-                
-                in>>reg1>>reg2>>reg3;
-                temp.setRd(nametoNum(reg1));
-                temp.setRt(nametoNum(reg3, 0));
-                temp.setRs(nametoNum(reg2));
-                temp.setInstNum(1);
-                
-            } else if(instName == "ADDI")
-            {
-                in>>reg1>>reg2>>imm;
-                temp.setImm(stoi(imm));
-                temp.setRs(nametoNum(reg2));
-                temp.setRt(nametoNum(reg1));
-                
-                temp.setInstNum(2);
-                
-            } else if(instName == "XOR")
-            {
-                in>>reg1>>reg2>>reg3;
-                temp.setRd(nametoNum(reg1));
-                temp.setRt(nametoNum(reg3,0));
-                temp.setRs(nametoNum(reg2));
-                temp.setInstNum(3);
-                
-            } else if(instName == "LW")
-            {
-                in>> reg1;
-                getline(in, imm, '(');
-                getline(in, reg2, ')');
-                
-                temp.setRt(nametoNum(reg1));
-                temp.setImm(stoi(imm));
-                temp.setRs(nametoNum(reg2,0));
-                temp.setInstNum(4);
-                
-            } else if(instName == "SW")
-            {
-                in>> reg1;
-                getline(in, imm, '(');
-                getline(in, reg2, ')');
-                
-                temp.setRt(nametoNum(reg1));
-                temp.setImm(stoi(imm));
-                temp.setRs(nametoNum(reg2,0));
-                temp.setInstNum(5);
-                
-            } else if(instName == "BLE")
-            {
-                in>>reg1>>reg2>>imm;
-                
-                temp.setRs(nametoNum(reg1));
-                temp.setRt(nametoNum(reg2));
-                temp.setImm(stoi(imm));
-                temp.setInstNum(6);
-            } else if(instName == "J")
-            {
-                in>>imm;
-                
-                temp.setImm(stoi(imm));
-                temp.setInstNum(7);
-                
-            } else if(instName == "SLT")
-            {
-                in>>reg1>>reg2>>reg3;
-                temp.setRd(nametoNum(reg1));
-                temp.setRt(nametoNum(reg3, 0));
-                temp.setRs(nametoNum(reg2));
-                temp.setInstNum(8);
-            } else if(instName == "JAL")
-            {
-                in >>imm;
-                temp.setImm(stoi(imm));
-                temp.setInstNum(9);
-            } else if(instName == "JR")
-            {
-                in >>reg1;
-                temp.setRs(nametoNum(reg1,0));
-                temp.setInstNum(10);
-            } else if(instName == "JP")
-            {
-                in >> imm;
-                temp.setImm(stoi(imm));
-                temp.setInstNum(11);
-            } else if(instName == "RP")
-            {
-                temp.setInstNum(12);
-            } else {
-                //NOP
-                string shit;
-                getline(in,shit);
-                if(instName.find("NOP")!=-1)
-                    temp.setInstNum(0);
-                else
-                {
-                    throw inputException(to_string(IM.size()+1));
-                }
-            }
-       }
-        catch(const invalid_argument & m)
-        {
-            throw invalid_argument(to_string(IM.size()+1));
-        }
-        
-        
-
-		IM.push_back(temp);
-		/*	cout << temp.getInstNum();
-		cout << temp.getRs();
-		cout << temp.getRt();
-
-		*/
-		temp.clear();       
-		}
-	//}
-	IM.pop_back();
-	in.close();
 
 	finalEn = false;
 	fetchEn =true;
@@ -175,21 +36,11 @@ CPU::CPU(string name)    // constructor receives the file name
 	wbEn = true;
     finalfooEn = false; //so that the clock at final instruction is set only once at fetch, instead of at each stage.
 	finalInst = false;
-	branchFound = false; 
-	clkWAtFinalInst=400000;
+	branchFound = false;
+    boolStall = false;
+	clkWAtFinalInst=clkAtFinalInst=400000;
 
-	PC = 0;
-	clk = 1;
-	do{
-		test();
 	
-	clk++;
-	} while (clk <clkWAtFinalInst);
-
-	cout <<"blaaaaa";
-	for (int i = 0; i < btb.size(); i++)
-		cout << btb[i].branchAddress << btb[i].predictedPC << btb[i].taken << endl;
-
 }
 void CPU::test()
 {
@@ -224,6 +75,7 @@ void CPU::test()
 	
 
 }
+
 
 
 CPU::~CPU()
@@ -322,9 +174,12 @@ void CPU:: control (int instNum) //generates the control signals
 
 void CPU::fetch()
 {
-	if(fetchEn == false)
-		return;
-
+   if( boolStall)
+       boolStall=false;
+    
+       if(fetchEn == false)
+           return;
+    
 	
 	// control signals initialization
 	regWrite= true;
@@ -407,6 +262,8 @@ void CPU::Decode()
    if (buffer2new[12] && ((buffer2new[19]==buffer1old[2]) || (buffer2new[19]==buffer1old[3]))) //memRead AND(rt==rs or rt==rt )  //load hazard
 	{
 		stall();
+        
+        boolStall = true;
 	    		
 	} 
 
@@ -729,7 +586,7 @@ void CPU::flushFetch()
     }
 }
 
-int CPU:: nametoNum(string  & name, bool cut)
+int CPU:: nametoNum(string name, bool cut)
 {
     if(cut){
         string::iterator iter = name.end()-1;
@@ -833,10 +690,10 @@ int CPU:: nametoNum(string  & name, bool cut)
     {
         return 31;
     }
- /*   else
+    else
     {
         throw inputException(to_string(IM.size()+1));
-    };*/
+    };
 }
 
 bool CPU::Found(int address)
@@ -887,4 +744,203 @@ void CPU :: assignTaken(int pc, int n)
 				btb[i].taken = true; 
 			else if( n == 0) 
 				btb[i].taken = false; 
+}
+
+int CPU::getClk()
+{
+    return clk;
+}
+
+void CPU::incrementClk()
+{
+    clk++;
+}
+
+int CPU::getClkWAtFinal()
+{
+    return clkWAtFinalInst;
+}
+
+
+void CPU::loadAndParse()
+{
+    
+    ifstream in;
+    in.open(filename.c_str());
+    bool fail = in.fail();
+    if(fail)
+        cout << "failed to open file";
+    Instruction temp;
+    string instName, reg1, reg2, reg3, imm;
+    string tempText;
+    PC = 0;
+    clk = 1;
+    
+    while (!in.eof())
+    {
+        
+        
+        in>>instName;
+        
+        /*     for (char &i : instName)
+         {
+         toupper(instName[i]);
+         }  */
+        for(int i=0; i<instName.size();i++)
+            instName[i]=toupper(instName[i]);
+        try {
+            if(instName == "ADD")
+            {
+                
+                in>>reg1>>reg2>>reg3;
+                temp.setRd(nametoNum(reg1));
+                temp.setRt(nametoNum(reg3, 0));
+                temp.setRs(nametoNum(reg2));
+                temp.setInstNum(1);
+                
+                tempText = instName + " " + reg1 + " " +reg2 + " " +reg3;
+                
+            } else if(instName == "ADDI")
+            {
+                in>>reg1>>reg2>>imm;
+                temp.setImm(stoi(imm));
+                temp.setRs(nametoNum(reg2));
+                temp.setRt(nametoNum(reg1));
+                
+                tempText = instName + " " + reg1 + " " +reg2 + " " +imm;
+                
+                temp.setInstNum(2);
+                
+            } else if(instName == "XOR")
+            {
+                in>>reg1>>reg2>>reg3;
+                temp.setRd(nametoNum(reg1));
+                temp.setRt(nametoNum(reg3,0));
+                temp.setRs(nametoNum(reg2));
+                temp.setInstNum(3);
+                
+                tempText = instName + " " + reg1 + " " +reg2 + " " +reg3;
+                
+            } else if(instName == "LW")
+            {
+                in>> reg1;
+                getline(in, imm, '(');
+                getline(in, reg2, ')');
+                
+                temp.setRt(nametoNum(reg1));
+                temp.setImm(stoi(imm));
+                temp.setRs(nametoNum(reg2,0));
+                temp.setInstNum(4);
+                
+                tempText = instName + " " + reg1 + " " +imm + "(" +reg2 + ")";
+                
+            } else if(instName == "SW")
+            {
+                in>> reg1;
+                getline(in, imm, '(');
+                getline(in, reg2, ')');
+                
+                temp.setRt(nametoNum(reg1));
+                temp.setImm(stoi(imm));
+                temp.setRs(nametoNum(reg2,0));
+                temp.setInstNum(5);
+                
+                tempText = instName + " " + reg1 + " " +imm + "(" +reg2 + ")";
+                
+            } else if(instName == "BLE")
+            {
+                in>>reg1>>reg2>>imm;
+                
+                temp.setRs(nametoNum(reg1));
+                temp.setRt(nametoNum(reg2));
+                temp.setImm(stoi(imm));
+                temp.setInstNum(6);
+                
+                tempText = instName + " " + reg1 + " " +reg2 + " " +imm;
+                
+            } else if(instName == "J")
+            {
+                in>>imm;
+                
+                temp.setImm(stoi(imm));
+                temp.setInstNum(7);
+                
+                tempText = instName + " " + imm;
+                
+            } else if(instName == "SLT")
+            {
+                in>>reg1>>reg2>>reg3;
+                temp.setRd(nametoNum(reg1));
+                temp.setRt(nametoNum(reg3, 0));
+                temp.setRs(nametoNum(reg2));
+                temp.setInstNum(8);
+                
+                tempText = instName + " " + reg1 + " " +reg2 + " " +reg3;
+                
+            } else if(instName == "JAL")
+            {
+                in >>imm;
+                temp.setImm(stoi(imm));
+                temp.setInstNum(9);
+                
+                tempText = instName + " " + imm;
+                
+            } else if(instName == "JR")
+            {
+                in >>reg1;
+                temp.setRs(nametoNum(reg1,0));
+                temp.setInstNum(10);
+                
+                tempText = instName + " " + reg1;
+            } else if(instName == "JP")
+            {
+                in >> imm;
+                temp.setImm(stoi(imm));
+                temp.setInstNum(11);
+                
+                tempText = instName + " " + imm;
+                
+            } else if(instName == "RP")
+            {
+                temp.setInstNum(12);
+                
+                tempText = instName;
+            } else {
+                //NOP
+                string shit;
+                getline(in,shit);
+                if(instName.find("NOP")!=-1)
+                {
+                    temp.setInstNum(0);
+                    tempText = instName;
+                }
+                
+                else
+                {
+                    throw inputException(to_string(IM.size()+1));
+                }
+            }
+        }
+        catch(const invalid_argument & m)
+        {
+            throw invalid_argument(to_string(IM.size()+1));
+        }
+        
+        
+        
+        IM.push_back(temp);
+        textIM.push_back(tempText);
+        
+        /*	cout << temp.getInstNum();
+         cout << temp.getRs();
+         cout << temp.getRt();
+         
+         */
+        temp.clear();
+        tempText.clear();
+    }
+    //}
+    IM.pop_back();
+    textIM.pop_back();
+    in.close();
 }

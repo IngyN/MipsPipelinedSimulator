@@ -7,7 +7,7 @@ using namespace std;
 int main ()
 {
     //SEBA
-	try {
+	/*try {
         CPU one ("C:/Users/Seba/Documents/330_Project/MipsPipelinedSimulator/MipsPipelinedSimulator/input2.txt");
     }
     catch(const inputException & inp)
@@ -18,7 +18,7 @@ int main ()
     catch(const invalid_argument & inp)
     {
         cout << "File input error: \nInvalid argument at line: " <<inp.what();
-    }
+    }*/
 
 //    
 //    //NESMA
@@ -32,8 +32,22 @@ int main ()
 //    }
     
     //INGY
-   /* try {
+    
+    
+   try {
         CPU ingy ("input4.txt");
+       
+       ingy.loadAndParse();
+       do{
+           ingy.test();
+           
+           ingy.incrementClk();
+       } while (ingy.getClk() < ingy.getClkWAtFinal());
+       
+//       cout <<"blaaaaa";
+//       for (int i = 0; i < btb.size(); i++)
+//           cout << btb[i].branchAddress << btb[i].predictedPC << btb[i].taken << endl;
+
     }
     catch(const inputException & inp)
     {
@@ -43,9 +57,10 @@ int main ()
     catch(const invalid_argument & inp)
     {
         cout << "File input error: \nInvalid argument at line: " <<inp.what();
-    }*/
+    }
 
 
+    
     
     //CPU one ("C:/Users/NesmaBadr/Desktop/Fall 2015/CS 330/330project/input.txt");
 	//CPU one ("C:/Users/Seba/Documents/330_Project/MipsPipelinedSimulator/MipsPipelinedSimulator/input2.txt");
