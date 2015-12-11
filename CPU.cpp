@@ -336,7 +336,11 @@ void CPU:: execute()
 			 firstoperand= wbData;
 		else
 			firstoperand= buffer2old[1];
+	
+	if (buffer2old[9])   // addi or lw or sw
+		secoperand = buffer2old[3];
 
+	else
 	if (buffer3old[5] &&  !buffer2old[12] && buffer3old[4]==buffer2old[19] && buffer3old[4]!=0) //RegWrite AND                  rd=rt
 		secoperand= buffer3old[2]; //ALUResult directly from buffer
 	else 
@@ -346,9 +350,9 @@ void CPU:: execute()
 				 secoperand= wbData;  
 		else
 	{
-		if (buffer2old[9]) //addi or lw or sw, the sec operand is the immediate
-			secoperand= buffer2old[3];
-		else 
+		//if (buffer2old[9]) //addi or lw or sw, the sec operand is the immediate
+			//secoperand = buffer2old[3];
+		//else 
 			secoperand= buffer2old[2];
 	}
 	switch (buffer2old[10])   // aluOp 
