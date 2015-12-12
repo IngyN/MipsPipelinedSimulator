@@ -304,114 +304,118 @@ void CPU::Decode()
 
 void CPU:: execute()
 {
-	int firstoperand;
+    int firstoperand;
     if(execEn == false){
         return;
     }
-		
+
     ALUResult = 0; // initialize to zero so that when it doesn't compute something it doesn't resturn previous result
-	zeroflag=0;
-	int secoperand;  //imm or data from reg
+    zeroflag=0;
+    int secoperand;  //imm or data from reg
 
 
-	//FORWARDING
-	if (buffer3old[5] &&  !buffer2old[12] && buffer3old[4]==buffer2old[18] && buffer3old[4]!=0) //RegWrite AND rd=rs
-		firstoperand= buffer3old[2];				//ALUResult directly from buffer
-	else
-		if (buffer4old[3]  &&(buffer4old[2]== buffer2old[18]) && (buffer4old[2]!=0) &&
-			!(buffer3old[5] && buffer3old[4]!=0 && (buffer3old[4]==buffer2old[18]))) 
-																//RegWrite AND rd=rs AND !(regwrite & rd==rs)   
-			 firstoperand= buffer4old[0];
-		else
-			firstoperand= buffer2old[1];
+    //FORWARDING
+    if (buffer3old[5] &&  !buffer2old[12] && buffer3old[4]==buffer2old[18] && buffer3old[4]!=0) //RegWrite AND rd=rs
+        firstoperand= buffer3old[2];				//ALUResult directly from buffer
+    else
+        if (buffer4old[3]  &&(buffer4old[2]== buffer2old[18]) && (buffer4old[2]!=0) &&
+            !(buffer3old[5] && buffer3old[4]!=0 && (buffer3old[4]==buffer2old[18])))
+                                                                //RegWrite AND rd=rs AND !(regwrite & rd==rs)
+             firstoperand= wbData;
+        else
+            firstoperand= buffer2old[1];
 
-	if (buffer3old[5] &&  !buffer2old[12] && buffer3old[4]==buffer2old[19] && buffer3old[4]!=0) //RegWrite AND                  rd=rt
-		secoperand= buffer3old[2]; //ALUResult directly from buffer
-	else 
-		if ((buffer4old[3] && (buffer4old[2]== buffer2old[19]) && buffer4old[2]!=0 ) && 
-			!(buffer3old[5] && (buffer3old[4]!=0) && (buffer3old[4]==buffer2old[19])))  
-				 //RegWrite AND    rd=rt   AND !(regwrite & rd=rt)
-				 secoperand= buffer4old[0];  
-		else
-	{
-		if (buffer2old[9]) //addi or lw or sw, the sec operand is the immediate
-			secoperand= buffer2old[3];
-		else 
-			secoperand= buffer2old[2];
-	}
-	switch (buffer2old[10])   // aluOp 
-	{
-	case 0:   //add  
+    if (buffer2old[9])   // addi or lw or sw
+        secoperand = buffer2old[3];
 
-		ALUResult = firstoperand+secoperand;  
-		break;
-	case 1:   //sub
-		ALUResult= firstoperand-secoperand;
-		if (firstoperand && ALUResult<=0)  //ble
-			zeroflag=1;
-		break;
-	case 2:   //xor
-		ALUResult= firstoperand^secoperand;
-		break;
-	case 3:   //slt
-		if (firstoperand<secoperand)
-			ALUResult= 1;
-		else 
-			ALUResult=0;
-		break;
-	default:
-		ALUResult=-1;
-	}
+    else
+    if (buffer3old[5] &&  !buffer2old[12] && buffer3old[4]==buffer2old[19] && buffer3old[4]!=0) //RegWrite AND                  rd=rt
+        secoperand= buffer3old[2]; //ALUResult directly from buffer
+    else
+        if ((buffer4old[3] && (buffer4old[2]== buffer2old[19]) && buffer4old[2]!=0 ) &&
+            !(buffer3old[5] && (buffer3old[4]!=0) && (buffer3old[4]==buffer2old[19])))
+                 //RegWrite AND    rd=rt   AND !(regwrite & rd=rt)
+                 secoperand= wbData;
+        else
+    {
+        //if (buffer2old[9]) //addi or lw or sw, the sec operand is the immediate
+            //secoperand = buffer2old[3];
+        //else
+            secoperand= buffer2old[2];
+    }
+    switch (buffer2old[10])   // aluOp
+    {
+    case 0:   //add
 
-	// If its a branch instruction
-	if (buffer2old[11] && zeroflag)    // branch is taken 
-	{
-		if (!branchTaken(buffer2old[0]))  // if taken = false
-		{
-			assignTaken(buffer2old[0],1); // taken = true
-			PC = Predicted(buffer2old[0]);
-			// remove previous fetched instructions  ???????
-			flushThree(); 
-		}
-	}
-	else
-	if (buffer2old[11] && !zeroflag)   // branch not taken
-	{
-		if (branchTaken(buffer2old[0]))  // if taken = true
-		{
-			assignTaken(buffer2old[0],0);  // taken = false
-			// PC++ normal pc increment
-			flushThree();
-			// remove previous fetched instructions  ???????
-		}
-	}
+        ALUResult = firstoperand+secoperand;
+        break;
+    case 1:   //sub
+        ALUResult= firstoperand-secoperand;
+        if (firstoperand && ALUResult<=0)  //ble
+            zeroflag=1;
+        break;
+    case 2:   //xor
+        ALUResult= firstoperand^secoperand;
+        break;
+    case 3:   //slt
+        if (firstoperand<secoperand)
+            ALUResult= 1;
+        else
+            ALUResult=0;
+        break;
+    default:
+        ALUResult=-1;
+    }
+
+    // If its a branch instruction
+    if (buffer2old[11] && zeroflag)    // branch is taken
+    {
+        if (!branchTaken(buffer2old[0]))  // if taken = false
+        {
+            assignTaken(buffer2old[0],1); // taken = true
+            PC = Predicted(buffer2old[0]);
+            // remove previous fetched instructions  ???????
+            flushThree();
+        }
+    }
+    else
+    if (buffer2old[11] && !zeroflag)   // branch not taken
+    {
+        if (branchTaken(buffer2old[0]))  // if taken = true
+        {
+            assignTaken(buffer2old[0],0);  // taken = false
+            // PC++ normal pc increment
+            flushThree();
+            // remove previous fetched instructions  ???????
+        }
+    }
 
 
-	//input to the Exec/Mem buffer
-	buffer3new[0]= buffer2old[0];  // pc
-	buffer3new[1]= zeroflag;
-	buffer3new[2]= ALUResult;
-	buffer3new[3]= buffer2old[2];  // rt
-	buffer3new[4]= buffer2old[4];  // rd
-	buffer3new[5]= buffer2old[7];  // regwrite
-	buffer3new[6]= buffer2old[8];   // regdest
-	buffer3new[7]= buffer2old[11];   // branch 
-	buffer3new[8]= buffer2old[12];   // memread
-	buffer3new[9]= buffer2old[13];   // memwrite
-	buffer3new[10]= buffer2old[14];  // memtoreg
-	buffer3new[11]= buffer2old[15];   // jump
-	buffer3new[12]= buffer2old[16]; //jumpreg
-	buffer3new[13] = clk;
+    //input to the Exec/Mem buffer
+    buffer3new[0]= buffer2old[0];  // pc
+    buffer3new[1]= zeroflag;
+    buffer3new[2]= ALUResult;
+    buffer3new[3]= buffer2old[2];  // rt
+    buffer3new[4]= buffer2old[4];  // rd
+    buffer3new[5]= buffer2old[7];  // regwrite
+    buffer3new[6]= buffer2old[8];   // regdest
+    buffer3new[7]= buffer2old[11];   // branch
+    buffer3new[8]= buffer2old[12];   // memread
+    buffer3new[9]= buffer2old[13];   // memwrite
+    buffer3new[10]= buffer2old[14];  // memtoreg
+    buffer3new[11]= buffer2old[15];   // jump
+    buffer3new[12]= buffer2old[16]; //jumpreg
+    buffer3new[13] = clk;
     buffer3new[14]= buffer2old[3]; //imm
     buffer3new[15]= buffer2old[5]; // Clk at fetch
     buffer3new[16]= buffer2old[6]; // clk at Dec
-	buffer3new[17] = buffer2old[17];     // branchFound 
-    
+    buffer3new[17] = buffer2old[17];     // branchFound
+
     if(clkAtFinalInst==buffer2old[5]&& finalfooEn)
     {
         execEn=false;
     }
-	
+
 }
 
 void CPU::MemAccess()
@@ -458,7 +462,7 @@ void CPU:: WriteBack()
         clkWAtFinalInst=clk;
     }
      
-    int wbData;
+   // int wbData;
     if (buffer4old[4])  // memtoreg
         wbData = buffer4old[0];
     else

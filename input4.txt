@@ -1,10 +1,5 @@
 ADD $s3, $s1, $s2
-ADDI $s4,fkjdghdfg
-JP 7
-ADDI $s2, $s0, 0
-NOP
-NOP
-NOP
+ADDI $s4, $s3, 9
 ADDI $s5, $s3, 1
 RP
 

@@ -44,7 +44,7 @@ int main ()
            ingy.incrementClk();
        } while (ingy.getClk() < ingy.getClkWAtFinal());
        
-//       cout <<"blaaaaa";
+       cout <<"blaaaaa";
 //       for (int i = 0; i < btb.size(); i++)
 //           cout << btb[i].branchAddress << btb[i].predictedPC << btb[i].taken << endl;
 

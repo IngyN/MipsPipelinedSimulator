@@ -1,2 +1,4 @@
-ADD $s3, $s1, $s2
-ADDI $s3, $s2, $s0
+add $s3, $s1, $s2
+ADDI $s4, $s3, 8
+ADDI $s5, $s3, 1
+RP
