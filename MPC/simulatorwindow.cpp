@@ -208,16 +208,13 @@ void SimulatorWindow::setGraphContent()
 
     if(ingy->getFinalFoo())
         on = true;
-//    if(ingy->getPC()<=ingy->IM.size()-1 && !on)
-//    {
-//        s= ingy->textIM[ingy->getPC()-1];
-//    }
-//    else s= ingy->textIM[ingy->getPC()];
 
-//    if(on)
+        s= oldPC;
 
+    if(!on2)
+        model3->setVerticalHeaderItem(ingy->getClk()-1,new QStandardItem(s));
 
-   // if(on) on2 =true;
+    if(on) on2 =true;
 
      ui->graph->setModel(model3);
 }
@@ -229,12 +226,7 @@ void SimulatorWindow::on_commandLinkButton_clicked() // Next button
    {
 
        ui->PCcount->setText(QString::number(ingy->getPC()));
-       instName = ingy->textIM[ingy->getPC()];
-       if(!on)
-        model3->setVerticalHeaderItem(ingy->getClk()-1,new QStandardItem(instName));
-       if(ingy->getPC() == ingy->IM.size()-1)
-           on = true;
-       ui->graph->setModel(model3);
+       this->oldPC = ingy->textIM[ingy->getPC()];
        //finished=S->run1();
        ingy->test();
        this->setGraphContent();
@@ -254,8 +246,8 @@ void SimulatorWindow::on_commandLinkButton_2_clicked() //Run button
      //   this->Disassembler();
             while (ingy->getClk() <= ingy->getClkWAtFinal())
             {
-                ui->PCcount->setText(QString::number(ingy->getPC()));
-                instName = ingy->textIM[ingy->getPC()];
+            ui->PCcount->setText(QString::number(ingy->getPC()));
+                this->oldPC = ingy->textIM[ingy->getPC()];
                 ingy->test();
                 cout << "RUNNING!!!!";
               this->setGraphContent();
@@ -288,12 +280,13 @@ void SimulatorWindow::on_Save_clicked()
    this->setRegistersContent();
     on = false;
     on2=false;
+    oldPC="";
 }
 
 void SimulatorWindow::updateT ()
 {
     QString text = ui->disassemblerOut->toPlainText();
-
+    text.append('\n');
     QFile output ("/Users/Ingy/Desktop/github/MipsPipelinedSimulator/MipsPipelined/MipsPipelinedSimulator/MipsPipelinedSimulator/shit.txt");
 //    std::ofstream out;
 //    out.open("test.txt");

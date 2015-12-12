@@ -42,7 +42,7 @@ private:
     bool ascii;
     bool on;
     bool on2;
-    QString instName;
+    QString oldPC;
     QStandardItemModel * model;
     QStandardItemModel * model2;
     QStandardItemModel * model3;

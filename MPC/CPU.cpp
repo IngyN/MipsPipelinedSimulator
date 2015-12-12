@@ -804,14 +804,15 @@ int CPU::getClkWAtFinal()
 
 void CPU::reset()
 {
+    btb.clear();
     for (int i=0; i<8; i++)
-            buffer1old[i]=0;
+            buffer1old[i]=buffer1new[i]=0;
         for (int i=0; i<20; i++)
-            buffer2old[i]=0;
+            buffer2old[i]=buffer2new[i]=0;
         for (int i=0; i<18; i++)
-            buffer3old[i]=0;
+            buffer3old[i]= buffer3new[i]=0;
         for (int i=0; i<9; i++)
-            buffer4old[i]=0;
+            buffer4old[i]= buffer4new[i]=0;
 
     // initializing regfile
     for (int i = 0; i < 32; i++)
@@ -825,6 +826,8 @@ void CPU::reset()
     RegFile[18] = 3;
 
 
+    for(bool &i : stages)
+        i=0;
     finalEn = false;
     fetchEn =true;
     decodeEn = true;
@@ -842,6 +845,7 @@ void CPU::loadAndParse(string name)
 {
     reset();
     IM.clear();
+    textIM.clear();
     ifstream in;
     if(name=="")
         in.open(filename.c_str());
