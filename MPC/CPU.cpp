@@ -242,10 +242,9 @@ void CPU::fetch()
 
 	programCounter(); // (imm,jump, branch,fetchEn)
 
-    if(validFetch())
-    {
-        stages[0]=1;
-    }
+
+        stages[0]=validFetch();
+
 }
 
 void CPU::Decode()
@@ -285,10 +284,9 @@ void CPU::Decode()
     buffer2new[5] = buffer1old[6];   // clkAtFetch
     buffer2new[6] = clk;
    
-    if(validDecode())
-    {
-        stages[1]=1;
-    }
+
+        stages[1]=validDecode();
+
 
     if(finalfooEn && (jumpReg || jump) )
     {
@@ -440,10 +438,8 @@ void CPU:: execute()
     buffer3new[16]= buffer2old[6]; // clk at Dec
     buffer3new[17] = buffer2old[17];     // branchFound
 
-    if(validExecute())
-    {
-        stages[2]=1;
-    }
+        stages[2]=validExecute();
+
 
     if(clkAtFinalInst==buffer2old[5]&& finalfooEn)
     {
@@ -480,10 +476,9 @@ void CPU::MemAccess()
     buffer4new[7] = buffer3old[15]; //clk at F
     buffer4new[8] = buffer3old[16]; // clk at D
     
-    if(validMemory())
-    {
-        stages[3]=1;
-    }
+
+        stages[3]=validMemory();
+
     if(clkAtFinalInst==buffer3old[15]&& finalfooEn)
     {
         memEn=false;
