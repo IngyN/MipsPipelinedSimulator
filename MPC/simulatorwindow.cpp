@@ -64,7 +64,9 @@ SimulatorWindow::SimulatorWindow(QWidget *parent, Simulator * S, CPU * cpu) :
    ui->DataSegment->setModel(model2);
    setDataContent();
    // run();
+   this->check();
    this->Disassembler();
+
 
 }
 

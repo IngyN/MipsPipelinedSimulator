@@ -1,5 +1,5 @@
 ADD $s3, $s1, $s2
-ADDI $s4, $s3, 30
+ADDI $s4,fkjdghdfg
 JP 7
 ADDI $s2, $s0, 0
 NOP

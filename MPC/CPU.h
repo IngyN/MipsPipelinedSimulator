@@ -21,7 +21,7 @@ public:
 	void MemAccess(); 
 	void WriteBack();
 	int nametoNum(string name, bool cut = true);
-    void loadAndParse(string);
+    void loadAndParse(string name = "");
     void test();
     void reset ();
     int getClk();

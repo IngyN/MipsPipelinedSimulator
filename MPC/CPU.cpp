@@ -42,7 +42,7 @@ CPU::CPU(string name):filename(name)  // constructor receives the file name
     boolStall = false;
 	clkWAtFinalInst=clkAtFinalInst=400000;
 
-    this->loadAndParse(this->filename);
+   // this->loadAndParse(this->filename);
 }
 void CPU::test()
 {
@@ -786,12 +786,14 @@ void CPU::reset()
     clkWAtFinalInst=clkAtFinalInst=400000;
 }
 
-void CPU::loadAndParse(string filename)
+void CPU::loadAndParse(string name)
 {
     reset();
     IM.clear();
     ifstream in;
-    in.open(filename.c_str());
+    if(name=="")
+        in.open(filename.c_str());
+    else in.open(name.c_str());
     bool fail = in.fail();
     if(fail)
         cout << "failed to open file";
