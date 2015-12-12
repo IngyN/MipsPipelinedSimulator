@@ -1,5 +1,5 @@
 #include "simulatorwindow.h"
-#include <Instruction.h>
+//#include <Instruction.h>
 #include "ui_simulatorwindow.h"
 #include <QStringListModel>
 #include <QStandardItemModel>
@@ -16,16 +16,14 @@
 
 using namespace std;
 
-SimulatorWindow::SimulatorWindow(QWidget *parent, Simulator * S, CPU * cpu) :
+SimulatorWindow::SimulatorWindow(QWidget *parent,  CPU * cpu) :
     QMainWindow(parent),
     ui(new Ui::SimulatorWindow)
 {
-    this->S=S;
+
     this->ingy= cpu;
-    finished=false;
+    //finished=false;
     ascii=false;
-    S->readTextFromFile("/Users/Ingy/Desktop/github/AssemblyProject/test3t");
-    S->readMemoryFromFile("/Users/Ingy/Desktop/github/AssemblyProject/test3m");
 
     ui->setupUi(this);
 
@@ -45,6 +43,7 @@ SimulatorWindow::SimulatorWindow(QWidget *parent, Simulator * S, CPU * cpu) :
    }
    ui->registers->setModel(model);
 
+   ui->PCcount->setText("");
 
    this->setRegistersName();
 
@@ -62,9 +61,14 @@ SimulatorWindow::SimulatorWindow(QWidget *parent, Simulator * S, CPU * cpu) :
    }
 
    ui->DataSegment->setModel(model2);
+
+   model3 = new QStandardItemModel(0,0,this);
+   const QModelIndex index = model3->index(0, 0);
+   model3->setData(index, Qt::AlignCenter, Qt::TextAlignmentRole);
    setDataContent();
    // run();
    this->check();
+   on = on2 = false;
    this->Disassembler();
 
 
@@ -77,6 +81,9 @@ SimulatorWindow::~SimulatorWindow()
 
 void SimulatorWindow::check (string s)
 {
+//    delete model3;
+//    model3 = new QStandardItemModel(0,0,this);
+    model3->clear();
     QMessageBox error(this);
 
     try {
@@ -169,18 +176,50 @@ void SimulatorWindow::setDataContent()
 
 }
 
-void SimulatorWindow::setConsoleOut()
+void SimulatorWindow::setGraphContent()
 {
-//    QVector<QString> * v;
-//    v=S->getConsole();
+    if(ingy->stages[4])
+    {
+        // Wb is valid
+        model3->setItem(ingy->getClk()-5,ingy->getClk()-1,new QStandardItem("W"));
+    }
+    if(ingy->stages[3])
+    {
+        //M
+        model3->setItem(ingy->getClk()-4,ingy->getClk()-1,new QStandardItem("M"));
+    }
+    if(ingy->stages[2])
+    {
+        // Ex
+        model3->setItem(ingy->getClk()-3,ingy->getClk()-1,new QStandardItem("E"));
+    }
+    if(ingy->stages[1])
+    {
+        //Decode
+        model3->setItem(ingy->getClk()-2,ingy->getClk()-1,new QStandardItem("D"));
+    }
+    if(ingy->stages[0])
+    {
+        // Fetch
+        model3->setItem(ingy->getClk()-1,ingy->getClk()-1,new QStandardItem("F"));
+    }
+    QString s;
 
-//    QString s="";
-//    for(int i=0; i<v->size(); i++)
-//        s+=v->at(i);
-////    ui->Console->clear();
-////    for(int i=0; i<v->size(); i++)
-////        ui->Console->append(v->at(i));
-//    ui->Console->setText(s);
+
+    if(ingy->getFinalFoo())
+        on = true;
+//    if(ingy->getPC()<=ingy->IM.size()-1 && !on)
+//    {
+//        s= ingy->textIM[ingy->getPC()-1];
+//    }
+//    else s= ingy->textIM[ingy->getPC()];
+
+//    if(on)
+
+
+   // if(on) on2 =true;
+
+     ui->graph->setModel(model3);
 }
 
 void SimulatorWindow::on_commandLinkButton_clicked() // Next button
@@ -188,33 +227,46 @@ void SimulatorWindow::on_commandLinkButton_clicked() // Next button
     // run 1 step
    if(ingy->getClk() <= ingy->getClkWAtFinal())
    {
+
+       ui->PCcount->setText(QString::number(ingy->getPC()));
+       instName = ingy->textIM[ingy->getPC()];
+       if(!on)
+        model3->setVerticalHeaderItem(ingy->getClk()-1,new QStandardItem(instName));
+       if(ingy->getPC() == ingy->IM.size()-1)
+           on = true;
+       ui->graph->setModel(model3);
        //finished=S->run1();
        ingy->test();
+       this->setGraphContent();
         ingy->incrementClk();
        this->setRegistersContent();
        this->setDataContent();
+
 
    }
 
 }
 
+
 void SimulatorWindow::on_commandLinkButton_2_clicked() //Run button
 {
 
-
-
-         //   this->Disassembler();
-            do{
+     //   this->Disassembler();
+            while (ingy->getClk() <= ingy->getClkWAtFinal())
+            {
+                ui->PCcount->setText(QString::number(ingy->getPC()));
+                instName = ingy->textIM[ingy->getPC()];
                 ingy->test();
                 cout << "RUNNING!!!!";
-
+              this->setGraphContent();
                 ingy->incrementClk();
 
 
-            } while (ingy->getClk() < ingy->getClkWAtFinal());
+            }
 
     this->setRegistersContent();
     this->setDataContent();
+
 }
 
 void SimulatorWindow::on_checkBox_toggled(bool checked)
@@ -232,6 +284,10 @@ void SimulatorWindow::on_Save_clicked()
 {
     //ui->disassemblerOut->setReadOnly(true);
     updateT();
+    ui->graph->setModel(new QStandardItemModel(0,0,this));
+   this->setRegistersContent();
+    on = false;
+    on2=false;
 }
 
 void SimulatorWindow::updateT ()
@@ -248,6 +304,7 @@ void SimulatorWindow::updateT ()
     QTextStream outStream (&output);
     outStream<<text;
     output.close();
-    check ("/Users/Ingy/Desktop/github/MipsPipelinedSimulator/MipsPipelined/MipsPipelinedSimulator/MipsPipelinedSimulator/shit.txt");
+    string s = "/Users/Ingy/Desktop/github/MipsPipelinedSimulator/MipsPipelined/MipsPipelinedSimulator/MipsPipelinedSimulator/shit.txt";
+    check (s);
     //ingy->loadAndParse("/Users/Ingy/Desktop/github/MipsPipelinedSimulator/MipsPipelined/MipsPipelinedSimulator/MipsPipelinedSimulator/shit.txt");
 }

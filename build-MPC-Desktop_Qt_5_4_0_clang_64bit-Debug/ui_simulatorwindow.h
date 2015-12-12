@@ -41,8 +41,8 @@ public:
     QPushButton *Edit;
     QWidget *Data;
     QTableView *DataSegment;
-    QTextEdit *Console;
     QCheckBox *checkBox;
+    QTableView *graph;
     QTableView *registers;
     QCommandLinkButton *commandLinkButton;
     QCommandLinkButton *commandLinkButton_2;
@@ -85,9 +85,43 @@ public:
         QBrush brush(QColor(59, 139, 250, 255));
         brush.setStyle(Qt::SolidPattern);
         palette.setBrush(QPalette::Active, QPalette::Button, brush);
+        QBrush brush1(QColor(60, 140, 251, 255));
+        brush1.setStyle(Qt::SolidPattern);
+        palette.setBrush(QPalette::Active, QPalette::Light, brush1);
+        palette.setBrush(QPalette::Active, QPalette::Midlight, brush1);
+        QBrush brush2(QColor(191, 191, 191, 255));
+        brush2.setStyle(Qt::SolidPattern);
+        palette.setBrush(QPalette::Active, QPalette::Dark, brush2);
+        QBrush brush3(QColor(255, 255, 255, 255));
+        brush3.setStyle(Qt::SolidPattern);
+        palette.setBrush(QPalette::Active, QPalette::Base, brush3);
+        QBrush brush4(QColor(129, 243, 255, 255));
+        brush4.setStyle(Qt::SolidPattern);
+        palette.setBrush(QPalette::Active, QPalette::Highlight, brush4);
+        QBrush brush5(QColor(237, 243, 254, 255));
+        brush5.setStyle(Qt::SolidPattern);
+        palette.setBrush(QPalette::Active, QPalette::AlternateBase, brush5);
         palette.setBrush(QPalette::Inactive, QPalette::Button, brush);
+        palette.setBrush(QPalette::Inactive, QPalette::Light, brush1);
+        palette.setBrush(QPalette::Inactive, QPalette::Midlight, brush1);
+        palette.setBrush(QPalette::Inactive, QPalette::Dark, brush1);
+        palette.setBrush(QPalette::Inactive, QPalette::Base, brush1);
+        palette.setBrush(QPalette::Inactive, QPalette::Highlight, brush1);
+        palette.setBrush(QPalette::Inactive, QPalette::AlternateBase, brush1);
         palette.setBrush(QPalette::Disabled, QPalette::Button, brush);
+        palette.setBrush(QPalette::Disabled, QPalette::Light, brush1);
+        palette.setBrush(QPalette::Disabled, QPalette::Midlight, brush1);
+        palette.setBrush(QPalette::Disabled, QPalette::Dark, brush2);
+        QBrush brush6(QColor(237, 237, 237, 255));
+        brush6.setStyle(Qt::SolidPattern);
+        palette.setBrush(QPalette::Disabled, QPalette::Base, brush6);
+        QBrush brush7(QColor(208, 208, 208, 255));
+        brush7.setStyle(Qt::SolidPattern);
+        palette.setBrush(QPalette::Disabled, QPalette::Highlight, brush7);
+        palette.setBrush(QPalette::Disabled, QPalette::AlternateBase, brush5);
         Save->setPalette(palette);
+        Save->setAutoDefault(false);
+        Save->setDefault(true);
         Edit = new QPushButton(DisassemblerTab);
         Edit->setObjectName(QStringLiteral("Edit"));
         Edit->setGeometry(QRect(520, 480, 71, 32));
@@ -102,14 +136,12 @@ public:
         DataSegment->horizontalHeader()->setHighlightSections(true);
         DataSegment->horizontalHeader()->setMinimumSectionSize(4);
         DataSegment->verticalHeader()->setDefaultSectionSize(32);
-        Console = new QTextEdit(Data);
-        Console->setObjectName(QStringLiteral("Console"));
-        Console->setGeometry(QRect(180, 30, 491, 481));
-        Console->setUndoRedoEnabled(false);
-        Console->setReadOnly(true);
         checkBox = new QCheckBox(Data);
         checkBox->setObjectName(QStringLiteral("checkBox"));
         checkBox->setGeometry(QRect(10, 0, 61, 20));
+        graph = new QTableView(Data);
+        graph->setObjectName(QStringLiteral("graph"));
+        graph->setGeometry(QRect(180, 10, 501, 501));
         tabs->addTab(Data, QString());
         registers = new QTableView(centralwidget);
         registers->setObjectName(QStringLiteral("registers"));
@@ -137,6 +169,7 @@ public:
         commandLinkButton_2->setObjectName(QStringLiteral("commandLinkButton_2"));
         commandLinkButton_2->setGeometry(QRect(830, 20, 71, 31));
         commandLinkButton_2->setFont(font1);
+        commandLinkButton_2->setAutoFillBackground(true);
         label = new QLabel(centralwidget);
         label->setObjectName(QStringLiteral("label"));
         label->setGeometry(QRect(730, 540, 59, 16));
@@ -156,7 +189,7 @@ public:
 
         retranslateUi(SimulatorWindow);
 
-        tabs->setCurrentIndex(0);
+        tabs->setCurrentIndex(1);
 
 
         QMetaObject::connectSlotsByName(SimulatorWindow);

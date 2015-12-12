@@ -29,6 +29,10 @@ CPU::CPU(string name):filename(name)  // constructor receives the file name
 	RegFile[17] = 5;
 	RegFile[18] = 3;
     
+    for(bool i : stages)
+    {
+        i=0;
+    }
 
 	finalEn = false;
 	fetchEn =true;
@@ -46,7 +50,11 @@ CPU::CPU(string name):filename(name)  // constructor receives the file name
 }
 void CPU::test()
 {
-    
+    for(int i : stages)
+    {
+        i=0;
+    }
+
     fetch();
     WriteBack();
     execute();
@@ -163,10 +171,16 @@ void CPU:: control (int instNum) //generates the control signals
 void CPU::fetch()
 {
    if( boolStall)
+   {
+        stages[0]=0;
        boolStall=false;
+   }
     
        if(fetchEn == false)
+       {
+           stages[0]=0;
            return;
+       }
     
 	
 	// control signals initialization
@@ -228,13 +242,20 @@ void CPU::fetch()
 
 	programCounter(); // (imm,jump, branch,fetchEn)
 
+    if(validFetch())
+    {
+        stages[0]=1;
+    }
 }
 
 void CPU::Decode()
 {
 	  
     if(decodeEn == false)
+    {
+        stages[1]=0;
         return;
+    }
     
     RD=0;
     // if R-format
@@ -264,6 +285,11 @@ void CPU::Decode()
     buffer2new[5] = buffer1old[6];   // clkAtFetch
     buffer2new[6] = clk;
    
+    if(validDecode())
+    {
+        stages[1]=1;
+    }
+
     if(finalfooEn && (jumpReg || jump) )
     {
         finalfooEn = false;
@@ -285,6 +311,7 @@ void CPU::Decode()
     {
         
         decodeEn=false;
+        stages[0]=0;
         finalEn=true;
         
     }
@@ -305,7 +332,9 @@ void CPU::Decode()
 void CPU:: execute()
 {
     int firstoperand;
-    if(execEn == false){
+    if(execEn == false)
+    {
+        stages[2] = 0;
         return;
     }
 
@@ -411,17 +440,26 @@ void CPU:: execute()
     buffer3new[16]= buffer2old[6]; // clk at Dec
     buffer3new[17] = buffer2old[17];     // branchFound
 
+    if(validExecute())
+    {
+        stages[2]=1;
+    }
+
     if(clkAtFinalInst==buffer2old[5]&& finalfooEn)
     {
         execEn=false;
     }
+
 
 }
 
 void CPU::MemAccess()
 {   
     if(memEn == false)
+    {
+        stages[3] = 0;
         return;
+    }
     
     int MemReadData=0;  // output of data memory
                         // int PC;
@@ -442,7 +480,10 @@ void CPU::MemAccess()
     buffer4new[7] = buffer3old[15]; //clk at F
     buffer4new[8] = buffer3old[16]; // clk at D
     
-    
+    if(validMemory())
+    {
+        stages[3]=1;
+    }
     if(clkAtFinalInst==buffer3old[15]&& finalfooEn)
     {
         memEn=false;
@@ -453,14 +494,11 @@ void CPU::MemAccess()
 void CPU:: WriteBack()
 {
     if(wbEn == false)
-        return;
-    
-    if(finalEn ==true && clkAtFinalInst == buffer4old[7])
     {
-        execEn = false;
-        wbEn=false;
-        clkWAtFinalInst=clk;
+        stages[4] = 0;
+        return;
     }
+
      
    // int wbData;
     if (buffer4old[4])  // memtoreg
@@ -470,7 +508,17 @@ void CPU:: WriteBack()
     if (buffer4old[3] && buffer4old[2]!=0) // regwrite
         RegFile[buffer4old[2]] = wbData;
     
-    
+    if(validWb())
+    {
+        stages[4]=1;
+    }
+
+    if(finalEn ==true && clkAtFinalInst == buffer4old[7])
+    {
+        execEn = false;
+        wbEn=false;
+        clkWAtFinalInst=clk;
+    }
 }
 
 //private functions
@@ -811,7 +859,12 @@ void CPU::loadAndParse(string name)
     while (!in.eof())
     {
         
-        
+         instName="NOP";
+         reg1="0"; reg2="0"; reg3="0";
+
+        imm="";
+        tempText ="";
+
         in>>instName;
         
         /*     for (char &i : instName)
@@ -836,13 +889,23 @@ void CPU::loadAndParse(string name)
             {
                 string tempS;
 
-                temp.setImm(imm.QString::toInt());
+
                 in>>reg1>>reg2>>tempS;
                 imm=QString::fromStdString(tempS);
+                if(imm.QString::toInt()==0)
+                {
+                    if(imm=="0")
+                        temp.setImm(imm.QString::toInt());
+                    else
+                    {
+                        imm = QString::number(IM.size()+1);
+                        throw invalid_argument(imm.QString::toStdString());
+                    }
+                }
                 temp.setImm(imm.QString::toInt());
                 temp.setRs(nametoNum(reg2));
                 temp.setRt(nametoNum(reg1));
-                
+
                 tempText = instName + " " + reg1 + " " +reg2 + " " +imm.QString::toStdString();
                 
                 temp.setInstNum(2);
@@ -863,7 +926,19 @@ void CPU::loadAndParse(string name)
                 in>> reg1;
                 getline(in, tempS, '(');
                 getline(in, reg2, ')');
+
                 imm=QString::fromStdString(tempS);
+
+                if(imm.QString::toInt()==0)
+                {
+                    if(imm=="0")
+                        temp.setImm(imm.QString::toInt());
+                    else
+                    {
+                        imm = QString::number(IM.size()+1);
+                        throw invalid_argument(imm.QString::toStdString());
+                    }
+                }
                 temp.setImm(imm.QString::toInt());
                 temp.setRt(nametoNum(reg1));
                 temp.setRs(nametoNum(reg2,0));
@@ -880,10 +955,19 @@ void CPU::loadAndParse(string name)
                 
                 temp.setRt(nametoNum(reg1));
                 imm=QString::fromStdString(tempS);
-                temp.setImm(imm.QString::toInt());
+                if(imm.QString::toInt()==0)
+                {
+                    if(imm=="0")
+                        temp.setImm(imm.QString::toInt());
+                    else
+                    {
+                        imm = QString::number(IM.size()+1);
+                        throw invalid_argument(imm.QString::toStdString());
+                    }
+                }
                 temp.setRs(nametoNum(reg2,0));
                 temp.setInstNum(5);
-                
+                temp.setImm(imm.QString::toInt());
                 tempText = instName + " " + reg1 + " " +imm.QString::toStdString() + "(" +reg2 + ")";
                 
             } else if(instName == "BLE")
@@ -891,11 +975,20 @@ void CPU::loadAndParse(string name)
                 string tempS;
                 in>>reg1>>reg2>>tempS;
                 imm=QString::fromStdString(tempS);
-                temp.setImm(imm.QString::toInt());
+                if(imm.QString::toInt()==0)
+                {
+                    if(imm=="0")
+                        temp.setImm(imm.QString::toInt());
+                    else
+                    {
+                        imm = QString::number(IM.size()+1);
+                        throw invalid_argument(imm.QString::toStdString());
+                    }
+                }
                 temp.setRs(nametoNum(reg1));
                 temp.setRt(nametoNum(reg2));
                 temp.setInstNum(6);
-                
+                temp.setImm(imm.QString::toInt());
                 tempText = instName + " " + reg1 + " " +reg2 + " " +imm.QString::toStdString();
                 
             } else if(instName == "J")
@@ -903,9 +996,18 @@ void CPU::loadAndParse(string name)
                 string tempS;
                 in>>tempS;
                 imm=QString::fromStdString(tempS);
-                temp.setImm(imm.QString::toInt());
+                if(imm.QString::toInt()==0)
+                {
+                    if(imm=="0")
+                        temp.setImm(imm.QString::toInt());
+                    else
+                    {
+                        imm = QString::number(IM.size()+1);
+                        throw invalid_argument(imm.QString::toStdString());
+                    }
+                }
                 temp.setInstNum(7);
-                
+                temp.setImm(imm.QString::toInt());
                 tempText = instName + " " + imm.QString::toStdString();
                 
             } else if(instName == "SLT")
@@ -923,9 +1025,18 @@ void CPU::loadAndParse(string name)
                 string tempS;
                 in >>tempS;
                 imm=QString::fromStdString(tempS);
-                temp.setImm(imm.QString::toInt());
+                if(imm.QString::toInt()==0)
+                {
+                    if(imm=="0")
+                        temp.setImm(imm.QString::toInt());
+                    else
+                    {
+                        imm = QString::number(IM.size()+1);
+                        throw invalid_argument(imm.QString::toStdString());
+                    }
+                }
                 temp.setInstNum(9);
-                
+                temp.setImm(imm.QString::toInt());
                 tempText = instName + " " + imm.QString::toStdString();
                 
             } else if(instName == "JR")
@@ -940,9 +1051,18 @@ void CPU::loadAndParse(string name)
                 string tempS;
                 in >>tempS;
                 imm=QString::fromStdString(tempS);
-                temp.setImm(imm.QString::toInt());
+                if(imm.QString::toInt()==0)
+                {
+                    if(imm=="0")
+                        temp.setImm(imm.QString::toInt());
+                    else
+                    {
+                        imm = QString::number(IM.size()+1);
+                        throw invalid_argument(imm.QString::toStdString());
+                    }
+                }
                 temp.setInstNum(11);
-                
+                temp.setImm(imm.QString::toInt());
                 tempText = instName + " " + imm.QString::toStdString();
                 
             } else if(instName == "RP")
@@ -990,4 +1110,59 @@ void CPU::loadAndParse(string name)
     IM.pop_back();
     textIM.pop_back();
     in.close();
+}
+
+bool CPU::validFetch ()
+{
+    for (int i: buffer1new)
+    {
+        if(i!=0 && fetchEn)
+            return true;
+    }
+   return false;
+}
+
+bool CPU::validDecode ()
+{
+    for (int i: buffer2new)
+    {
+        if(i!=0 && decodeEn)
+            return true;
+    }
+   return false;
+}
+
+bool CPU::validExecute()
+{
+    for (int i: buffer3new)
+    {
+        if(i!=0 && execEn)
+            return true;
+    }
+   return false;
+}
+
+bool CPU::validMemory()
+{
+    for (int i: buffer4new)
+    {
+        if(i!=0 && memEn)
+            return true;
+    }
+   return false;
+}
+
+bool CPU::validWb()
+{
+    return(!this->wbEn||(!buffer4old[4] && !buffer4old[3]));
+}
+
+int CPU::getPC()
+{
+    return PC;
+}
+
+bool CPU::getFinalFoo()
+{
+    return finalfooEn;
 }

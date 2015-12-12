@@ -27,13 +27,21 @@ public:
     int getClk();
     void incrementClk();
     int getClkWAtFinal();
+    int getPC();
+    bool validFetch();
+    bool validDecode();
+    bool validExecute();
+    bool validMemory();
+    bool validWb();
+    bool getFinalFoo();
+
     
     //variables
     vector <InstructionT> IM; // instruction memory of type Instruction(class)
     vector<QString> textIM;
     int RegFile[RegFile_Size];             // Declaring an array for Register File
     int DataMem[DataMem_Size];          // Declaring an array for Data Memory
-    
+    bool stages [5];
     
 private:
 

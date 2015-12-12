@@ -1,5 +1,9 @@
 ADD $s3, $s1, $s2
+XOR $s4, $s2, $s1
 ADDI $s4, $s3, 9
+SLT $s5, $s2, $s1
 ADDI $s5, $s3, 1
-RP
+
+
+
 

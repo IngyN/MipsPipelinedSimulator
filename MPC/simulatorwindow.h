@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <QStandardItemModel>
-#include<Simulator.h>
+//#include<Simulator.h>
 #include <CPU.h>
 #include <inputException.h>
 
@@ -16,13 +16,13 @@ class SimulatorWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit SimulatorWindow(QWidget *parent = 0, Simulator *S=NULL, CPU * cpu=NULL);
+    explicit SimulatorWindow(QWidget *parent = 0,  CPU * cpu=NULL);
     void Disassembler();
     void setRegistersName();
     void setRegistersContent();
-    void setConsoleOut();
     void check(string s = "");
     void setDataContent();
+    void setGraphContent();
     void updateT();
     ~SimulatorWindow();
 
@@ -39,11 +39,13 @@ private slots:
 
 private:
     Ui::SimulatorWindow *ui;
-    Simulator *S;
-    bool finished;
     bool ascii;
+    bool on;
+    bool on2;
+    QString instName;
     QStandardItemModel * model;
     QStandardItemModel * model2;
+    QStandardItemModel * model3;
     CPU * ingy;
 };
 

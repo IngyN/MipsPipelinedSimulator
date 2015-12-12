@@ -33,7 +33,7 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = MPC1.0.0
-DISTDIR = /Users/Ingy/Desktop/github/MipsPipelinedSimulator/MipsPipelined/MipsPipelinedSimulator/MPC/.tmp/MPC1.0.0
+DISTDIR = /Users/Ingy/Desktop/github/MipsPipelinedSimulator/MipsPipelined/MipsPipelinedSimulator/MipsPipelinedSimulator/MPC/.tmp/MPC1.0.0
 LINK          = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
 LFLAGS        = -headerpad_max_install_names -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk -mmacosx-version-min=10.7 -Wl,-rpath,/Applications/Qt/5.4/clang_64/lib
 LIBS          = $(SUBLIBS) -F/Applications/Qt/5.4/clang_64/lib -framework QtWidgets -framework QtGui -framework QtCore -framework DiskArbitration -framework IOKit -framework OpenGL -framework AGL 
@@ -48,30 +48,18 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = ../MPC/IFormat.cpp \
-		../MPC/Instruction.cpp \
-		../MPC/JFormat.cpp \
+SOURCES       = ../MPC/Instruction.cpp \
 		../MPC/main.cpp \
-		../MPC/mainwindow.cpp \
-		../MPC/RFormat.cpp \
-		../MPC/Simulator.cpp \
 		../MPC/simulatorwindow.cpp \
 		../MPC/CPU.cpp \
 		../MPC/inputException.cpp \
-		../MPC/InstructionT.cpp moc_mainwindow.cpp \
-		moc_simulatorwindow.cpp
-OBJECTS       = IFormat.o \
-		Instruction.o \
-		JFormat.o \
+		../MPC/InstructionT.cpp moc_simulatorwindow.cpp
+OBJECTS       = Instruction.o \
 		main.o \
-		mainwindow.o \
-		RFormat.o \
-		Simulator.o \
 		simulatorwindow.o \
 		CPU.o \
 		inputException.o \
 		InstructionT.o \
-		moc_mainwindow.o \
 		moc_simulatorwindow.o
 DIST          = /Applications/Qt/5.4/clang_64/mkspecs/features/spec_pre.prf \
 		/Applications/Qt/5.4/clang_64/mkspecs/qdevice.pri \
@@ -199,22 +187,12 @@ DIST          = /Applications/Qt/5.4/clang_64/mkspecs/features/spec_pre.prf \
 		/Applications/Qt/5.4/clang_64/mkspecs/features/exceptions.prf \
 		/Applications/Qt/5.4/clang_64/mkspecs/features/yacc.prf \
 		/Applications/Qt/5.4/clang_64/mkspecs/features/lex.prf \
-		../MPC/MPC.pro ../MPC/IFormat.h \
-		../MPC/Instruction.h \
-		../MPC/JFormat.h \
-		../MPC/mainwindow.h \
-		../MPC/RFormat.h \
-		../MPC/Simulator.h \
+		../MPC/MPC.pro ../MPC/Instruction.h \
 		../MPC/simulatorwindow.h \
 		../MPC/CPU.h \
 		../MPC/inputException.h \
-		../MPC/InstructionT.h ../MPC/IFormat.cpp \
-		../MPC/Instruction.cpp \
-		../MPC/JFormat.cpp \
+		../MPC/InstructionT.h ../MPC/Instruction.cpp \
 		../MPC/main.cpp \
-		../MPC/mainwindow.cpp \
-		../MPC/RFormat.cpp \
-		../MPC/Simulator.cpp \
 		../MPC/simulatorwindow.cpp \
 		../MPC/CPU.cpp \
 		../MPC/inputException.cpp \
@@ -550,8 +528,8 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
-	$(COPY_FILE) --parents ../MPC/IFormat.h ../MPC/Instruction.h ../MPC/JFormat.h ../MPC/mainwindow.h ../MPC/RFormat.h ../MPC/Simulator.h ../MPC/simulatorwindow.h ../MPC/CPU.h ../MPC/inputException.h ../MPC/InstructionT.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../MPC/IFormat.cpp ../MPC/Instruction.cpp ../MPC/JFormat.cpp ../MPC/main.cpp ../MPC/mainwindow.cpp ../MPC/RFormat.cpp ../MPC/Simulator.cpp ../MPC/simulatorwindow.cpp ../MPC/CPU.cpp ../MPC/inputException.cpp ../MPC/InstructionT.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../MPC/Instruction.h ../MPC/simulatorwindow.h ../MPC/CPU.h ../MPC/inputException.h ../MPC/InstructionT.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../MPC/Instruction.cpp ../MPC/main.cpp ../MPC/simulatorwindow.cpp ../MPC/CPU.cpp ../MPC/inputException.cpp ../MPC/InstructionT.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../MPC/mainwindow.ui ../MPC/simulatorwindow.ui $(DISTDIR)/
 
 
@@ -577,47 +555,20 @@ compiler_objective_c_make_all:
 compiler_objective_c_clean:
 compiler_rcc_make_all:
 compiler_rcc_clean:
-compiler_moc_header_make_all: moc_mainwindow.cpp moc_simulatorwindow.cpp
+compiler_moc_header_make_all: moc_simulatorwindow.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_mainwindow.cpp moc_simulatorwindow.cpp
-moc_mainwindow.cpp: /Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QMainWindow \
-		/Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qmainwindow.h \
-		../MPC/Simulator.h \
-		../MPC/IFormat.h \
-		../MPC/Instruction.h \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QString \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qstring.h \
-		../MPC/JFormat.h \
-		../MPC/RFormat.h \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QVector \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qvector.h \
-		../MPC/simulatorwindow.h \
-		/Applications/Qt/5.4/clang_64/lib/QtGui.framework/Versions/5/Headers/QStandardItemModel \
-		/Applications/Qt/5.4/clang_64/lib/QtGui.framework/Versions/5/Headers/qstandarditemmodel.h \
-		../MPC/CPU.h \
-		../MPC/InstructionT.h \
-		../MPC/inputException.h \
-		../MPC/mainwindow.h
-	/Applications/Qt/5.4/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -I/Applications/Qt/5.4/clang_64/mkspecs/macx-clang -I/Users/Ingy/Desktop/github/MipsPipelinedSimulator/MipsPipelined/MipsPipelinedSimulator/MPC -I/Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Headers -I/Applications/Qt/5.4/clang_64/lib/QtGui.framework/Headers -I/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Headers -I. -F/Applications/Qt/5.4/clang_64/lib ../MPC/mainwindow.h -o moc_mainwindow.cpp
-
+	-$(DEL_FILE) moc_simulatorwindow.cpp
 moc_simulatorwindow.cpp: /Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QMainWindow \
 		/Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qmainwindow.h \
 		/Applications/Qt/5.4/clang_64/lib/QtGui.framework/Versions/5/Headers/QStandardItemModel \
 		/Applications/Qt/5.4/clang_64/lib/QtGui.framework/Versions/5/Headers/qstandarditemmodel.h \
-		../MPC/Simulator.h \
-		../MPC/IFormat.h \
-		../MPC/Instruction.h \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QString \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qstring.h \
-		../MPC/JFormat.h \
-		../MPC/RFormat.h \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QVector \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qvector.h \
 		../MPC/CPU.h \
 		../MPC/InstructionT.h \
+		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QString \
+		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qstring.h \
 		../MPC/inputException.h \
 		../MPC/simulatorwindow.h
-	/Applications/Qt/5.4/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -I/Applications/Qt/5.4/clang_64/mkspecs/macx-clang -I/Users/Ingy/Desktop/github/MipsPipelinedSimulator/MipsPipelined/MipsPipelinedSimulator/MPC -I/Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Headers -I/Applications/Qt/5.4/clang_64/lib/QtGui.framework/Headers -I/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Headers -I. -F/Applications/Qt/5.4/clang_64/lib ../MPC/simulatorwindow.h -o moc_simulatorwindow.cpp
+	/Applications/Qt/5.4/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -I/Applications/Qt/5.4/clang_64/mkspecs/macx-clang -I/Users/Ingy/Desktop/github/MipsPipelinedSimulator/MipsPipelined/MipsPipelinedSimulator/MipsPipelinedSimulator/MPC -I/Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Headers -I/Applications/Qt/5.4/clang_64/lib/QtGui.framework/Headers -I/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Headers -I. -F/Applications/Qt/5.4/clang_64/lib ../MPC/simulatorwindow.h -o moc_simulatorwindow.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -642,119 +593,58 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 
 ####### Compile
 
-IFormat.o: ../MPC/IFormat.cpp ../MPC/IFormat.h \
-		../MPC/Instruction.h \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QString \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qstring.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o IFormat.o ../MPC/IFormat.cpp
-
 Instruction.o: ../MPC/Instruction.cpp ../MPC/Instruction.h \
 		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QString \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qstring.h \
-		../MPC/RFormat.h \
-		../MPC/JFormat.h \
-		../MPC/IFormat.h
+		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qstring.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Instruction.o ../MPC/Instruction.cpp
 
-JFormat.o: ../MPC/JFormat.cpp ../MPC/JFormat.h \
-		../MPC/Instruction.h \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QString \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qstring.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o JFormat.o ../MPC/JFormat.cpp
-
-main.o: ../MPC/main.cpp ../MPC/mainwindow.h \
-		/Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QMainWindow \
-		/Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qmainwindow.h \
-		../MPC/Simulator.h \
-		../MPC/IFormat.h \
-		../MPC/Instruction.h \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QString \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qstring.h \
-		../MPC/JFormat.h \
-		../MPC/RFormat.h \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QVector \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qvector.h \
-		../MPC/simulatorwindow.h \
-		/Applications/Qt/5.4/clang_64/lib/QtGui.framework/Versions/5/Headers/QStandardItemModel \
-		/Applications/Qt/5.4/clang_64/lib/QtGui.framework/Versions/5/Headers/qstandarditemmodel.h \
+main.o: ../MPC/main.cpp /Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QApplication \
+		/Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qapplication.h \
 		../MPC/CPU.h \
 		../MPC/InstructionT.h \
-		../MPC/inputException.h \
-		/Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QApplication \
-		/Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qapplication.h
+		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QString \
+		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qstring.h \
+		../MPC/simulatorwindow.h \
+		/Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QMainWindow \
+		/Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qmainwindow.h \
+		/Applications/Qt/5.4/clang_64/lib/QtGui.framework/Versions/5/Headers/QStandardItemModel \
+		/Applications/Qt/5.4/clang_64/lib/QtGui.framework/Versions/5/Headers/qstandarditemmodel.h \
+		../MPC/inputException.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../MPC/main.cpp
-
-mainwindow.o: ../MPC/mainwindow.cpp ../MPC/mainwindow.h \
-		/Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QMainWindow \
-		/Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qmainwindow.h \
-		../MPC/Simulator.h \
-		../MPC/IFormat.h \
-		../MPC/Instruction.h \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QString \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qstring.h \
-		../MPC/JFormat.h \
-		../MPC/RFormat.h \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QVector \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qvector.h \
-		../MPC/simulatorwindow.h \
-		/Applications/Qt/5.4/clang_64/lib/QtGui.framework/Versions/5/Headers/QStandardItemModel \
-		/Applications/Qt/5.4/clang_64/lib/QtGui.framework/Versions/5/Headers/qstandarditemmodel.h \
-		../MPC/CPU.h \
-		../MPC/InstructionT.h \
-		../MPC/inputException.h \
-		ui_mainwindow.h \
-		/Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QMessageBox \
-		/Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qmessagebox.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../MPC/mainwindow.cpp
-
-RFormat.o: ../MPC/RFormat.cpp ../MPC/RFormat.h \
-		../MPC/Instruction.h \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QString \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qstring.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o RFormat.o ../MPC/RFormat.cpp
-
-Simulator.o: ../MPC/Simulator.cpp ../MPC/Simulator.h \
-		../MPC/IFormat.h \
-		../MPC/Instruction.h \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QString \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qstring.h \
-		../MPC/JFormat.h \
-		../MPC/RFormat.h \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QVector \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qvector.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Simulator.o ../MPC/Simulator.cpp
 
 simulatorwindow.o: ../MPC/simulatorwindow.cpp ../MPC/simulatorwindow.h \
 		/Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QMainWindow \
 		/Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qmainwindow.h \
 		/Applications/Qt/5.4/clang_64/lib/QtGui.framework/Versions/5/Headers/QStandardItemModel \
 		/Applications/Qt/5.4/clang_64/lib/QtGui.framework/Versions/5/Headers/qstandarditemmodel.h \
-		../MPC/Simulator.h \
-		../MPC/IFormat.h \
-		../MPC/Instruction.h \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QString \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qstring.h \
-		../MPC/JFormat.h \
-		../MPC/RFormat.h \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QVector \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qvector.h \
 		../MPC/CPU.h \
 		../MPC/InstructionT.h \
+		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QString \
+		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qstring.h \
 		../MPC/inputException.h \
+		../MPC/Instruction.h \
 		ui_simulatorwindow.h \
 		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QStringListModel \
 		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qstringlistmodel.h \
 		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QFlags \
 		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qflags.h \
 		/Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QTextEdit \
-		/Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qtextedit.h
+		/Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qtextedit.h \
+		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QVector \
+		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qvector.h \
+		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QTextStream \
+		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qtextstream.h \
+		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QFile \
+		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qfile.h \
+		/Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QMessageBox \
+		/Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qmessagebox.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o simulatorwindow.o ../MPC/simulatorwindow.cpp
 
 CPU.o: ../MPC/CPU.cpp ../MPC/CPU.h \
 		../MPC/InstructionT.h \
-		../MPC/inputException.h \
 		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QString \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qstring.h
+		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qstring.h \
+		../MPC/inputException.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o CPU.o ../MPC/CPU.cpp
 
 inputException.o: ../MPC/inputException.cpp ../MPC/inputException.h \
@@ -762,11 +652,10 @@ inputException.o: ../MPC/inputException.cpp ../MPC/inputException.h \
 		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qstring.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o inputException.o ../MPC/inputException.cpp
 
-InstructionT.o: ../MPC/InstructionT.cpp ../MPC/InstructionT.h
+InstructionT.o: ../MPC/InstructionT.cpp ../MPC/InstructionT.h \
+		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QString \
+		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qstring.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o InstructionT.o ../MPC/InstructionT.cpp
-
-moc_mainwindow.o: moc_mainwindow.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp
 
 moc_simulatorwindow.o: moc_simulatorwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_simulatorwindow.o moc_simulatorwindow.cpp

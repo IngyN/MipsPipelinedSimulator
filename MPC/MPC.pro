@@ -13,13 +13,7 @@ TEMPLATE = app
 
 
 SOURCES += \
-    IFormat.cpp \
-    Instruction.cpp \
-    JFormat.cpp \
     main.cpp \
-    mainwindow.cpp \
-    RFormat.cpp \
-    Simulator.cpp \
     simulatorwindow.cpp \
     CPU.cpp \
     inputException.cpp \
@@ -27,12 +21,7 @@ SOURCES += \
 
 
 HEADERS  += \
-    IFormat.h \
     Instruction.h \
-    JFormat.h \
-    mainwindow.h \
-    RFormat.h \
-    Simulator.h \
     simulatorwindow.h \
     CPU.h \
     inputException.h \

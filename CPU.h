@@ -25,6 +25,12 @@ public:
     int getClk();
     void incrementClk();
     int getClkWAtFinal();
+    int getPC();
+    bool validFetch();
+    bool validDecode();
+    bool validExecute();
+    bool validMemory();
+    bool validWb();
     
     //variables
     vector <Instruction> IM; // instruction memory of type Instruction(class)

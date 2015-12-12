@@ -1,8 +1,5 @@
-BLE $s2, $s1, 2
+BLE $s2, $s1, 3
 ADD $s4, $s5, $s6 
 ADD $s5, $s2, $s6 
 ADD $s3, $s1, $s2
-
-
-
-
+ADDI $s1, $s0, 5

@@ -948,3 +948,53 @@ void CPU::loadAndParse()
     textIM.pop_back();
     in.close();
 }
+
+bool CPU::validFetch ()
+{
+    for (int i: buffer1new)
+    {
+        if(i!=0 && fetchEn)
+            return true;
+    }
+    return false;
+}
+
+bool CPU::validDecode ()
+{
+    for (int i: buffer2new)
+    {
+        if(i!=0 && decodeEn)
+            return true;
+    }
+    return false;
+}
+
+bool CPU::validExecute()
+{
+    for (int i: buffer3new)
+    {
+        if(i!=0 && execEn)
+            return true;
+    }
+    return false;
+}
+
+bool CPU::validMemory()
+{
+    for (int i: buffer4new)
+    {
+        if(i!=0 && memEn)
+            return true;
+    }
+    return false;
+}
+
+bool CPU::validWb()
+{
+    return(!this->wbEn||(!buffer4old[4] && !buffer4old[3]));
+}
+
+int CPU::getPC()
+{
+    return PC;
+}

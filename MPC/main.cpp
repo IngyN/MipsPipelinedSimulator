@@ -1,7 +1,9 @@
-#include "mainwindow.h"
+//#include "mainwindow.h"
 #include <QApplication>
-#include "Simulator.h"
+//#include "Simulator.h"
+#include <CPU.h>
 #include <iostream>
+#include <simulatorwindow.h>
 using namespace std;
 int main(int argc, char *argv[])
 {
@@ -51,9 +53,8 @@ int main(int argc, char *argv[])
 
 //    }
     QApplication a(argc, argv);
-    Simulator * S=new Simulator;
-    CPU * cpu = new CPU("/Users/Ingy/Desktop/github/MipsPipelinedSimulator/MipsPipelined/MipsPipelinedSimulator/MipsPipelinedSimulator/input4.txt");
-    SimulatorWindow w(NULL,S, cpu);
+    CPU * cpu = new CPU("/Users/Ingy/Desktop/github/MipsPipelinedSimulator/MipsPipelined/MipsPipelinedSimulator/MipsPipelinedSimulator/input2.txt");
+    SimulatorWindow w(NULL, cpu);
     w.show();
 
     return a.exec();

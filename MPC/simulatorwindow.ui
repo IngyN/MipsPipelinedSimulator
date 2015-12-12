@@ -29,7 +29,7 @@
      </font>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="DisassemblerTab">
      <attribute name="title">
@@ -314,7 +314,7 @@
        <set>QAbstractItemView::NoEditTriggers</set>
       </property>
       <attribute name="horizontalHeaderDefaultSectionSize">
-       <number>120</number>
+       <number>123</number>
       </attribute>
       <attribute name="horizontalHeaderHighlightSections">
        <bool>true</bool>
@@ -325,22 +325,6 @@
       <attribute name="verticalHeaderDefaultSectionSize">
        <number>32</number>
       </attribute>
-     </widget>
-     <widget class="QTextEdit" name="Console">
-      <property name="geometry">
-       <rect>
-        <x>180</x>
-        <y>30</y>
-        <width>491</width>
-        <height>481</height>
-       </rect>
-      </property>
-      <property name="undoRedoEnabled">
-       <bool>false</bool>
-      </property>
-      <property name="readOnly">
-       <bool>true</bool>
-      </property>
      </widget>
      <widget class="QCheckBox" name="checkBox">
       <property name="geometry">
@@ -354,6 +338,25 @@
       <property name="text">
        <string>ASCII</string>
       </property>
+     </widget>
+     <widget class="QTableView" name="graph">
+      <property name="geometry">
+       <rect>
+        <x>180</x>
+        <y>10</y>
+        <width>501</width>
+        <height>501</height>
+       </rect>
+      </property>
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+      <attribute name="horizontalHeaderDefaultSectionSize">
+       <number>30</number>
+      </attribute>
+      <attribute name="verticalHeaderDefaultSectionSize">
+       <number>30</number>
+      </attribute>
      </widget>
     </widget>
    </widget>
@@ -449,6 +452,19 @@
     </property>
     <property name="text">
      <string>PC</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="PCcount">
+    <property name="geometry">
+     <rect>
+      <x>800</x>
+      <y>540</y>
+      <width>59</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
     </property>
    </widget>
   </widget>

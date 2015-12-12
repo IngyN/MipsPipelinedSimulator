@@ -1,4 +1,5 @@
-add $s3, $s1, $s2
-ADDI $s4, $s3, 8
-ADDI $s5, $s3, 1
-RP
+BLE $s2, $s1, 3
+ADD $s4, $s5, $s6
+ADD $s5, $s2, $s6
+ADD $s3, $s1, $s2
+ADDI $s1, $s0, 5

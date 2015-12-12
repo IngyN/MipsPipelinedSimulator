@@ -1,6 +1,5 @@
 #include <iostream>
 #include "CPU.h"
-#include "Instruction.h"
 #include "inputException.h"
 #include <stdexcept>
 using namespace std;
