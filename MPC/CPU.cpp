@@ -503,10 +503,9 @@ void CPU:: WriteBack()
     if (buffer4old[3] && buffer4old[2]!=0) // regwrite
         RegFile[buffer4old[2]] = wbData;
     
-    if(validWb())
-    {
-        stages[4]=1;
-    }
+
+        stages[4]=validWb();
+
 
     if(finalEn ==true && clkAtFinalInst == buffer4old[7])
     {
