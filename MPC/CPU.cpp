@@ -1114,42 +1114,26 @@ void CPU::loadAndParse(string name)
 
 bool CPU::validFetch ()
 {
-    for (int i: buffer1new)
-    {
-        if(i!=0 && fetchEn)
-            return true;
-    }
-   return false;
+
+        return (buffer1new[1]!=0 && fetchEn);
 }
 
 bool CPU::validDecode ()
 {
-    for (int i: buffer2new)
-    {
-        if(i!=0 && decodeEn)
-            return true;
-    }
-   return false;
+
+        return (buffer2new[10]==4 && decodeEn)
 }
 
 bool CPU::validExecute()
 {
-    for (int i: buffer3new)
-    {
-        if(i!=0 && execEn)
-            return true;
-    }
-   return false;
+    return (buffer3new[2]==-1 && execEn)
 }
 
 bool CPU::validMemory()
 {
-    for (int i: buffer4new)
-    {
-        if(i!=0 && memEn)
-            return true;
-    }
-   return false;
+
+    return( (buffer4new[3] || buffer3old[9] ||buffer4new[4]) && memEn);
+
 }
 
 bool CPU::validWb()
