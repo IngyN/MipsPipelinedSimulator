@@ -47,6 +47,7 @@ public:
     QCommandLinkButton *commandLinkButton;
     QCommandLinkButton *commandLinkButton_2;
     QLabel *label;
+    QLabel *PCcount;
     QMenuBar *menubar;
     QMenu *menuFile;
     QStatusBar *File;
@@ -132,7 +133,7 @@ public:
         DataSegment->setObjectName(QStringLiteral("DataSegment"));
         DataSegment->setGeometry(QRect(10, 30, 151, 481));
         DataSegment->setEditTriggers(QAbstractItemView::NoEditTriggers);
-        DataSegment->horizontalHeader()->setDefaultSectionSize(120);
+        DataSegment->horizontalHeader()->setDefaultSectionSize(123);
         DataSegment->horizontalHeader()->setHighlightSections(true);
         DataSegment->horizontalHeader()->setMinimumSectionSize(4);
         DataSegment->verticalHeader()->setDefaultSectionSize(32);
@@ -142,6 +143,9 @@ public:
         graph = new QTableView(Data);
         graph->setObjectName(QStringLiteral("graph"));
         graph->setGeometry(QRect(180, 10, 501, 501));
+        graph->setEditTriggers(QAbstractItemView::NoEditTriggers);
+        graph->horizontalHeader()->setDefaultSectionSize(30);
+        graph->verticalHeader()->setDefaultSectionSize(30);
         tabs->addTab(Data, QString());
         registers = new QTableView(centralwidget);
         registers->setObjectName(QStringLiteral("registers"));
@@ -173,6 +177,9 @@ public:
         label = new QLabel(centralwidget);
         label->setObjectName(QStringLiteral("label"));
         label->setGeometry(QRect(730, 540, 59, 16));
+        PCcount = new QLabel(centralwidget);
+        PCcount->setObjectName(QStringLiteral("PCcount"));
+        PCcount->setGeometry(QRect(800, 540, 59, 16));
         SimulatorWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(SimulatorWindow);
         menubar->setObjectName(QStringLiteral("menubar"));
@@ -210,6 +217,7 @@ public:
         commandLinkButton->setText(QApplication::translate("SimulatorWindow", "Next", 0));
         commandLinkButton_2->setText(QApplication::translate("SimulatorWindow", "Run", 0));
         label->setText(QApplication::translate("SimulatorWindow", "PC", 0));
+        PCcount->setText(QApplication::translate("SimulatorWindow", "TextLabel", 0));
         menuFile->setTitle(QApplication::translate("SimulatorWindow", "File", 0));
     } // retranslateUi
 

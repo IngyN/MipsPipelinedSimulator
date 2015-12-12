@@ -33,7 +33,7 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = MPC1.0.0
-DISTDIR = /Users/Ingy/Desktop/github/MipsPipelinedSimulator/MipsPipelined/MipsPipelinedSimulator/MipsPipelinedSimulator/MPC/.tmp/MPC1.0.0
+DISTDIR = /Users/Alia/Documents/Xcode/MipsPipelinedSimulator/MipsPipelinedSimulator/MPC/.tmp/MPC1.0.0
 LINK          = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
 LFLAGS        = -headerpad_max_install_names -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk -mmacosx-version-min=10.7 -Wl,-rpath,/Applications/Qt/5.4/clang_64/lib
 LIBS          = $(SUBLIBS) -F/Applications/Qt/5.4/clang_64/lib -framework QtWidgets -framework QtGui -framework QtCore -framework DiskArbitration -framework IOKit -framework OpenGL -framework AGL 
@@ -48,14 +48,12 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = ../MPC/Instruction.cpp \
-		../MPC/main.cpp \
+SOURCES       = ../MPC/main.cpp \
 		../MPC/simulatorwindow.cpp \
 		../MPC/CPU.cpp \
 		../MPC/inputException.cpp \
 		../MPC/InstructionT.cpp moc_simulatorwindow.cpp
-OBJECTS       = Instruction.o \
-		main.o \
+OBJECTS       = main.o \
 		simulatorwindow.o \
 		CPU.o \
 		inputException.o \
@@ -187,12 +185,10 @@ DIST          = /Applications/Qt/5.4/clang_64/mkspecs/features/spec_pre.prf \
 		/Applications/Qt/5.4/clang_64/mkspecs/features/exceptions.prf \
 		/Applications/Qt/5.4/clang_64/mkspecs/features/yacc.prf \
 		/Applications/Qt/5.4/clang_64/mkspecs/features/lex.prf \
-		../MPC/MPC.pro ../MPC/Instruction.h \
-		../MPC/simulatorwindow.h \
+		../MPC/MPC.pro ../MPC/simulatorwindow.h \
 		../MPC/CPU.h \
 		../MPC/inputException.h \
-		../MPC/InstructionT.h ../MPC/Instruction.cpp \
-		../MPC/main.cpp \
+		../MPC/InstructionT.h ../MPC/main.cpp \
 		../MPC/simulatorwindow.cpp \
 		../MPC/CPU.cpp \
 		../MPC/inputException.cpp \
@@ -515,7 +511,7 @@ MPC.app/Contents/Resources/empty.lproj:
 MPC.app/Contents/Info.plist: 
 	@test -d MPC.app/Contents || mkdir -p MPC.app/Contents
 	@$(DEL_FILE) MPC.app/Contents/Info.plist
-	@sed -e "s,@SHORT_VERSION@,1.0,g" -e "s,@FULL_VERSION@,1.0.0,g" -e "s,@TYPEINFO@,????,g" -e "s,@BUNDLEIDENTIFIER@,ingyN.personal.edu.MPC,g" -e "s,@ICON@,,g" -e "s,@EXECUTABLE@,MPC,g" -e "s,@TYPEINFO@,????,g" /Applications/Qt/5.4/clang_64/mkspecs/macx-clang/Info.plist.app >MPC.app/Contents/Info.plist
+	@sed -e "s,@SHORT_VERSION@,1.0,g" -e "s,@FULL_VERSION@,1.0.0,g" -e "s,@TYPEINFO@,????,g" -e "s,@BUNDLEIDENTIFIER@,CS.MPC,g" -e "s,@ICON@,,g" -e "s,@EXECUTABLE@,MPC,g" -e "s,@TYPEINFO@,????,g" /Applications/Qt/5.4/clang_64/mkspecs/macx-clang/Info.plist.app >MPC.app/Contents/Info.plist
 
 all: Makefile \
 		MPC.app/Contents/PkgInfo \
@@ -528,8 +524,8 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
-	$(COPY_FILE) --parents ../MPC/Instruction.h ../MPC/simulatorwindow.h ../MPC/CPU.h ../MPC/inputException.h ../MPC/InstructionT.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../MPC/Instruction.cpp ../MPC/main.cpp ../MPC/simulatorwindow.cpp ../MPC/CPU.cpp ../MPC/inputException.cpp ../MPC/InstructionT.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../MPC/simulatorwindow.h ../MPC/CPU.h ../MPC/inputException.h ../MPC/InstructionT.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../MPC/main.cpp ../MPC/simulatorwindow.cpp ../MPC/CPU.cpp ../MPC/inputException.cpp ../MPC/InstructionT.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../MPC/mainwindow.ui ../MPC/simulatorwindow.ui $(DISTDIR)/
 
 
@@ -568,7 +564,7 @@ moc_simulatorwindow.cpp: /Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/V
 		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qstring.h \
 		../MPC/inputException.h \
 		../MPC/simulatorwindow.h
-	/Applications/Qt/5.4/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -I/Applications/Qt/5.4/clang_64/mkspecs/macx-clang -I/Users/Ingy/Desktop/github/MipsPipelinedSimulator/MipsPipelined/MipsPipelinedSimulator/MipsPipelinedSimulator/MPC -I/Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Headers -I/Applications/Qt/5.4/clang_64/lib/QtGui.framework/Headers -I/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Headers -I. -F/Applications/Qt/5.4/clang_64/lib ../MPC/simulatorwindow.h -o moc_simulatorwindow.cpp
+	/Applications/Qt/5.4/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -I/Applications/Qt/5.4/clang_64/mkspecs/macx-clang -I/Users/Alia/Documents/Xcode/MipsPipelinedSimulator/MipsPipelinedSimulator/MPC -I/Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Headers -I/Applications/Qt/5.4/clang_64/lib/QtGui.framework/Headers -I/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Headers -I. -F/Applications/Qt/5.4/clang_64/lib ../MPC/simulatorwindow.h -o moc_simulatorwindow.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -592,11 +588,6 @@ compiler_lex_clean:
 compiler_clean: compiler_moc_header_clean compiler_uic_clean 
 
 ####### Compile
-
-Instruction.o: ../MPC/Instruction.cpp ../MPC/Instruction.h \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QString \
-		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qstring.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Instruction.o ../MPC/Instruction.cpp
 
 main.o: ../MPC/main.cpp /Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/QApplication \
 		/Applications/Qt/5.4/clang_64/lib/QtWidgets.framework/Versions/5/Headers/qapplication.h \
@@ -622,7 +613,6 @@ simulatorwindow.o: ../MPC/simulatorwindow.cpp ../MPC/simulatorwindow.h \
 		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QString \
 		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qstring.h \
 		../MPC/inputException.h \
-		../MPC/Instruction.h \
 		ui_simulatorwindow.h \
 		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/QStringListModel \
 		/Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/Headers/qstringlistmodel.h \

@@ -21,7 +21,6 @@ SOURCES += \
 
 
 HEADERS  += \
-    Instruction.h \
     simulatorwindow.h \
     CPU.h \
     inputException.h \

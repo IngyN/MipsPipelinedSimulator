@@ -734,6 +734,7 @@ int CPU:: nametoNum(string name, bool cut)
     {
         QString imm= QString::number(IM.size()+1);
         throw inputException(imm.QString::toStdString());
+
     };
 }
 

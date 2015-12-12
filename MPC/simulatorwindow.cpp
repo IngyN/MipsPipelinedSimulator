@@ -46,6 +46,7 @@ SimulatorWindow::SimulatorWindow(QWidget *parent,  CPU * cpu) :
 
    ui->PCcount->setText("");
 
+   canRun = true;
    this->setRegistersName();
 
    //DataSegment
@@ -92,7 +93,7 @@ void SimulatorWindow::check (string s)
 
         ingy->loadAndParse(s);
 
-
+        canRun=1;
  //       cout <<"blaaaaa";
  //       for (int i = 0; i < btb.size(); i++)
  //           cout << btb[i].branchAddress << btb[i].predictedPC << btb[i].taken << endl;
@@ -108,6 +109,7 @@ void SimulatorWindow::check (string s)
         error.critical(0,s1,s);
         error.show();
 
+        canRun = 0;
          //exit(0);
      }
      catch(const invalid_argument & inp)
@@ -119,6 +121,7 @@ void SimulatorWindow::check (string s)
         error.critical(0," ",s);
         error.show();
          //exit(0);
+        canRun =0;
      }
 }
 
@@ -209,6 +212,7 @@ void SimulatorWindow::setGraphContent()
 
     if(ingy->getFinalFoo())
         on = true;
+    else on=false;
 
         s= oldPC;
 
@@ -216,26 +220,39 @@ void SimulatorWindow::setGraphContent()
         model3->setVerticalHeaderItem(ingy->getClk()-1,new QStandardItem(s));
 
     if(on) on2 =true;
+    else on2 = false;
 
      ui->graph->setModel(model3);
 }
 
 void SimulatorWindow::on_commandLinkButton_clicked() // Next button
 {
+    QMessageBox error;
     // run 1 step
-   if(ingy->getClk() <= ingy->getClkWAtFinal())
+   if(canRun)
    {
+       if(ingy->getClk() <= ingy->getClkWAtFinal())
+      {
 
-       ui->PCcount->setText(QString::number(ingy->getPC()));
-       this->oldPC = ingy->textIM[ingy->getPC()];
-       //finished=S->run1();
-       ingy->test();
-       this->setGraphContent();
-        ingy->incrementClk();
-       this->setRegistersContent();
-       this->setDataContent();
+          ui->PCcount->setText(QString::number(ingy->getPC()));
+          this->oldPC = ingy->textIM[ingy->getPC()];
+          //finished=S->run1();
+          ingy->test();
+          this->setGraphContent();
+           ingy->incrementClk();
+          this->setRegistersContent();
+          this->setDataContent();
 
 
+      }
+
+   }
+   else
+   {
+       QString s = "PLEASE CHANGE THE CODE. ";
+       QString s1= " ";
+       error.critical(0,s1,s, "EDIT CODE");
+       error.show();
    }
 
 }
@@ -245,20 +262,32 @@ void SimulatorWindow::on_commandLinkButton_2_clicked() //Run button
 {
 
      //   this->Disassembler();
-            while (ingy->getClk() <= ingy->getClkWAtFinal())
-            {
-            ui->PCcount->setText(QString::number(ingy->getPC()));
-                this->oldPC = ingy->textIM[ingy->getPC()];
-                ingy->test();
-                cout << "RUNNING!!!!";
-              this->setGraphContent();
-                ingy->incrementClk();
+QMessageBox error;
+    if(canRun)
+    {
+        while (ingy->getClk() <= ingy->getClkWAtFinal())
+        {
+        ui->PCcount->setText(QString::number(ingy->getPC()));
+            this->oldPC = ingy->textIM[ingy->getPC()];
+            ingy->test();
+            cout << "RUNNING!!!!";
+          this->setGraphContent();
+            ingy->incrementClk();
 
 
-            }
+        }
 
-    this->setRegistersContent();
-    this->setDataContent();
+        this->setRegistersContent();
+        this->setDataContent();
+
+    }
+    else
+    {
+        QString s = "PLEASE CHANGE THE CODE. ";
+        QString s1= " ";
+        error.critical(0,s1,s, "EDIT CODE");
+        error.show();
+    }
 
 }
 
@@ -288,7 +317,7 @@ void SimulatorWindow::updateT ()
 {
     QString text = ui->disassemblerOut->toPlainText();
     text.append('\n');
-    QFile output ("/Users/Ingy/Desktop/github/MipsPipelinedSimulator/MipsPipelined/MipsPipelinedSimulator/MipsPipelinedSimulator/shit.txt");
+    QFile output ("/Users/Alia/Documents/Xcode/MipsPipelinedSimulator/MipsPipelinedSimulator/shit.txt");
 //    std::ofstream out;
 //    out.open("test.txt");
 //    out<<text.QString::toStdString();
@@ -298,7 +327,7 @@ void SimulatorWindow::updateT ()
     QTextStream outStream (&output);
     outStream<<text;
     output.close();
-    string s = "/Users/Ingy/Desktop/github/MipsPipelinedSimulator/MipsPipelined/MipsPipelinedSimulator/MipsPipelinedSimulator/shit.txt";
+    string s = "/Users/Alia/Documents/Xcode/MipsPipelinedSimulator/MipsPipelinedSimulator/shit.txt";
     check (s);
     //ingy->loadAndParse("/Users/Ingy/Desktop/github/MipsPipelinedSimulator/MipsPipelined/MipsPipelinedSimulator/MipsPipelinedSimulator/shit.txt");
 }

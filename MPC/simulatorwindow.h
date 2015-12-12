@@ -42,6 +42,7 @@ private:
     bool ascii;
     bool on;
     bool on2;
+    bool canRun;
     QString oldPC;
     QStandardItemModel * model;
     QStandardItemModel * model2;
