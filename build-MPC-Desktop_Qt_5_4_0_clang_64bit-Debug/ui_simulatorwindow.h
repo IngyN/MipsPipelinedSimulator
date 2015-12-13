@@ -143,7 +143,7 @@ public:
         graph = new QTableView(Data);
         graph->setObjectName(QStringLiteral("graph"));
         graph->setGeometry(QRect(180, 10, 501, 501));
-        graph->setEditTriggers(QAbstractItemView::NoEditTriggers);
+        graph->setEditTriggers(QAbstractItemView::DoubleClicked);
         graph->horizontalHeader()->setDefaultSectionSize(30);
         graph->verticalHeader()->setDefaultSectionSize(30);
         tabs->addTab(Data, QString());

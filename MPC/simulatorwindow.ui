@@ -349,7 +349,7 @@
        </rect>
       </property>
       <property name="editTriggers">
-       <set>QAbstractItemView::NoEditTriggers</set>
+       <set>QAbstractItemView::DoubleClicked</set>
       </property>
       <attribute name="horizontalHeaderDefaultSectionSize">
        <number>30</number>

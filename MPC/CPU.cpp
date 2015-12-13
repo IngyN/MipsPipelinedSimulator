@@ -50,10 +50,10 @@ CPU::CPU(string name):filename(name)  // constructor receives the file name
 }
 void CPU::test()
 {
-    for(int i : stages)
-    {
-        i=0;
-    }
+//    for(int i : stages)
+//    {
+//        i=0;
+//    }
 
     fetch();
     WriteBack();
@@ -69,6 +69,13 @@ void CPU::test()
         buffer3old[i]=buffer3new[i];
     for (int i=0; i<9; i++)
         buffer4old[i]=buffer4new[i];
+    for(int i=0; i<5; i++)
+    {
+            stagesold[i]= stages[i];
+    }
+
+
+
 
 }
 
@@ -158,7 +165,7 @@ void CPU:: control (int instNum) //generates the control signals
 	buffer2new[10] = ALUOp;
 	buffer2new[11] = branch;
 	buffer2new[12] = memRead;
-	buffer2new[13] = memWrite;
+    buffer2new[13] = memWrite;
 	buffer2new[14] = memToReg;
 	buffer2new[15] = jump;
 	buffer2new[16] = jumpReg;
@@ -170,7 +177,7 @@ void CPU:: control (int instNum) //generates the control signals
 
 void CPU::fetch()
 {
-    stages[0]=1;
+    //stages[0]=1;
 
    if( boolStall)
    {
@@ -246,7 +253,7 @@ void CPU::fetch()
 	programCounter(); // (imm,jump, branch,fetchEn)
 
 
-        //stages[0]=validFetch();
+        stages[0]=validFetch();
 
 }
 
@@ -352,6 +359,7 @@ void CPU:: execute()
             !(buffer3old[5] && buffer3old[4]!=0 && (buffer3old[4]==buffer2old[18])))
                                                                 //RegWrite AND rd=rs AND !(regwrite & rd==rs)
              firstoperand= wbData;
+
         else
             firstoperand= buffer2old[1];
 
@@ -404,6 +412,7 @@ void CPU:: execute()
         {
             assignTaken(buffer2old[0],1); // taken = true
             PC = Predicted(buffer2old[0]);
+            stages[2] = 0;
             // remove previous fetched instructions  ???????
             flushThree();
         }
@@ -473,6 +482,7 @@ void CPU::MemAccess()
     buffer4new[1] = buffer3old[2]; //alu
     buffer4new[2] = buffer3old[4];   // rd
     buffer4new[3] = buffer3old[5];   // regwrite
+
     buffer4new[4] = buffer3old[10];  // memtoreg
     buffer4new[5] = clk;         // clkAtmemAccess
     buffer4new[6] = buffer3old[13]; // clk at exec
@@ -582,16 +592,20 @@ void CPU::flush()
 	}
 		for (int i=0; i<20; i++)
 		{
+
 			buffer2old[i]=0;
 		//	buffer2new[i]=0;
 		}
+
 		for (int i=0; i<18; i++)
 		{
+
 			buffer3old[i]=0;
 		//	buffer3new[i]=0;
 		}
 		for (int i=0; i<9; i++)
 		{
+
 			buffer4old[i]=0;
 		 //buffer4new[i]=0;
 		}
@@ -618,7 +632,9 @@ void CPU::flushThree()
         buffer2new[i]=0;
     }
 
-    stages[0]=stages[1] = 0;
+    buffer1old[1]=1;
+
+   // stages[0]=stages[1] = 0;
 
    /* for (int i=0; i<18; i++)
     {
@@ -634,6 +650,7 @@ void CPU::flushFetch()
     {
         buffer1old[i]=0;
     }
+
     stages[0] = 0;
 }
 
@@ -1140,24 +1157,24 @@ bool CPU::validFetch ()
 bool CPU::validDecode ()
 {
 
-        return (buffer2new[10]!=4 && decodeEn);
+        return (buffer2new[10]!=4 && decodeEn && stagesold[0]);
 }
 
 bool CPU::validExecute()
 {
-    return (buffer3new[2]!=-1  && execEn);
+    return (buffer3new[2]!=-1  && execEn && stagesold[1]);
 }
 
 bool CPU::validMemory()
 {
 
-    return( (buffer3old[9] || buffer3old[10] || buffer4new[2]) && memEn);
+    return( (buffer3old[9] || buffer3old[10] || buffer4new[2]) && memEn &&stagesold[2]);
 
 }
 
 bool CPU::validWb()
 {
-    return( wbEn && (buffer4old[3] )); // (memtoreg|| regwrite) && finalfooEn
+    return( wbEn && (buffer4old[3] && stagesold[3])); // (memtoreg|| regwrite) && finalfooEn
 }
 
 int CPU::getPC()

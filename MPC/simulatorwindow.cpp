@@ -192,7 +192,7 @@ void SimulatorWindow::setGraphContent()
         //M
         model3->setItem(ingy->getClk()-4,ingy->getClk()-1,new QStandardItem("M"));
     }
-    if(ingy->stages[2])
+    if(ingy->stages[2] && ingy->getClk()!=4 )
     {
         // Ex
         model3->setItem(ingy->getClk()-3,ingy->getClk()-1,new QStandardItem("E"));
@@ -202,7 +202,7 @@ void SimulatorWindow::setGraphContent()
         //Decode
         model3->setItem(ingy->getClk()-2,ingy->getClk()-1,new QStandardItem("D"));
     }
-    if(ingy->stages[0])
+    if((ingy->stages[0]|| ingy->getClk()-1!=10) && !ingy->getFinalFoo())
     {
         // Fetch
         model3->setItem(ingy->getClk()-1,ingy->getClk()-1,new QStandardItem("F"));

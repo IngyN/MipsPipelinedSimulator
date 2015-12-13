@@ -42,6 +42,7 @@ public:
     int RegFile[RegFile_Size];             // Declaring an array for Register File
     int DataMem[DataMem_Size];          // Declaring an array for Data Memory
     bool stages [5];
+    bool stagesold[5];
     
 private:
 
