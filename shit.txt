@@ -1,5 +1,5 @@
-LW $s3,  1($s1)
+LW $s3,   1($s1)
 ADDI $s2, $s3, 2
 ADD $s4, $s1, $s2
-ADD $s6, $s1, $s3
+ADD $s6, $s1, $s5
 J 1

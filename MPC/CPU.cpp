@@ -170,6 +170,8 @@ void CPU:: control (int instNum) //generates the control signals
 
 void CPU::fetch()
 {
+    stages[0]=1;
+
    if( boolStall)
    {
         stages[0]=0;
@@ -243,7 +245,7 @@ void CPU::fetch()
 	programCounter(); // (imm,jump, branch,fetchEn)
 
 
-        stages[0]=validFetch();
+        //stages[0]=validFetch();
 
 }
 
@@ -488,11 +490,14 @@ void CPU::MemAccess()
 
 void CPU:: WriteBack()
 {
+
+
     if(wbEn == false)
     {
         stages[4] = 0;
         return;
     }
+
 
      
    // int wbData;
@@ -594,6 +599,8 @@ void CPU::flush()
 //        {
 //            stages[i]= 0;
 //        }
+
+
 
 }
 
@@ -1143,13 +1150,13 @@ bool CPU::validExecute()
 bool CPU::validMemory()
 {
 
-    return( (buffer3old[9] ||buffer4new[4])&& memEn);
+    return( (buffer3old[9] || buffer3old[10] || buffer4new[2]) && memEn);
 
 }
 
 bool CPU::validWb()
 {
-    return(wbEn && ((buffer4old[4]||buffer4old[3]) )); // (memtoreg|| regwrite) && finalfooEn
+    return( wbEn && (buffer4old[3] )); // (memtoreg|| regwrite) && finalfooEn
 }
 
 int CPU::getPC()

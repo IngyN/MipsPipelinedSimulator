@@ -317,7 +317,9 @@ void SimulatorWindow::updateT ()
 {
     QString text = ui->disassemblerOut->toPlainText();
     text.append('\n');
-    QFile output ("/Users/Ingy/Desktop/github/MipsPipelinedSimulator/MipsPipelined/MipsPipelinedSimulator/MipsPipelinedSimulator/shit.txt");
+    QFile output ("/Users/Alia/Documents/Xcode/MipsPipelinedSimulator/MipsPipelinedSimulator/shit.txt");
+   //
+    //QFile output ("/Users/Ingy/Desktop/github/MipsPipelinedSimulator/MipsPipelined/MipsPipelinedSimulator/MipsPipelinedSimulator/shit.txt");
 //    std::ofstream out;
 //    out.open("test.txt");
 //    out<<text.QString::toStdString();
@@ -327,7 +329,7 @@ void SimulatorWindow::updateT ()
     QTextStream outStream (&output);
     outStream<<text;
     output.close();
-    string s = "/Users/Ingy/Desktop/github/MipsPipelinedSimulator/MipsPipelined/MipsPipelinedSimulator/MipsPipelinedSimulator/shit.txt";
+    string s = "/Users/Alia/Documents/Xcode/MipsPipelinedSimulator/MipsPipelinedSimulator/shit.txt";
     check (s);
     //ingy->loadAndParse("/Users/Ingy/Desktop/github/MipsPipelinedSimulator/MipsPipelined/MipsPipelinedSimulator/MipsPipelinedSimulator/shit.txt");
 }
