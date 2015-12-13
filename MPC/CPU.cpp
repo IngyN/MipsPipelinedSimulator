@@ -1143,13 +1143,13 @@ bool CPU::validExecute()
 bool CPU::validMemory()
 {
 
-    return( (buffer4new[3] || buffer3old[9] ||buffer4new[4]) && !finalfooEn&& memEn);
+    return( (buffer3old[9] ||buffer4new[4]) && !finalfooEn&& memEn);
 
 }
 
 bool CPU::validWb()
 {
-    return(!this->wbEn||(!buffer4old[4] && !finalfooEn&& !buffer4old[3]));
+    return(wbEn && ((buffer4old[4]||buffer4old[3])  && !finalfooEn )); // memtoreg && finalfooEn &&  regwrite
 }
 
 int CPU::getPC()
