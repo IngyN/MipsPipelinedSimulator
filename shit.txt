@@ -1,5 +1,14 @@
-LW $s3,   1($s1)
+BLE $s2, $s1, 3
 ADDI $s2, $s3, 2
-ADD $s4, $s1, $s2
-ADD $s6, $s1, $s5
-J 1
+ADD $s7, $s1, $s2
+ADD $s2, $s1, $s2
+ADDI $s7, $zero, 1
+LW $s3, 1($s1)
+XOR $s6, $s3, $s7
+JP 10
+ADD $t0, $s1, $s2
+ADD $t1, $s1, $s2
+ADD $t2, $s1, $s2
+ADD $t8, $s1, $s2
+RP
+

@@ -195,6 +195,7 @@ void CPU::fetch()
 	memToReg= false;  //control signal 
 	jump= false;    //control signal 
 	jumpReg= false; 
+    ALUOp =-1;
 
 
 		IM[PC].setClkAtFet(clk);
