@@ -102,8 +102,8 @@ void SimulatorWindow::check (string s)
      catch(const inputException & inp)
      {
         // cout << "File input error: \nIncorrect syntax at line: " <<inp.what();
-       // cout << "File input error: \nIncorrect syntax at line: ";
-        QString s = "File input error:\n\nIncorrect syntax at line: ";
+       // cout << "File input error: \n ";
+        QString s = "File input error:\n\n";
         s.append(QString::fromStdString(inp.what()));
         QString s1= " ";
         error.critical(0,s1,s);
@@ -317,7 +317,7 @@ void SimulatorWindow::updateT ()
 {
     QString text = ui->disassemblerOut->toPlainText();
     text.append('\n');
-    QFile output ("/Users/Alia/Documents/Xcode/MipsPipelinedSimulator/MipsPipelinedSimulator/shit.txt");
+    QFile output ("/Users/Ingy/Desktop/github/MipsPipelinedSimulator/MipsPipelined/MipsPipelinedSimulator/MipsPipelinedSimulator/shit.txt");
 //    std::ofstream out;
 //    out.open("test.txt");
 //    out<<text.QString::toStdString();
@@ -327,7 +327,7 @@ void SimulatorWindow::updateT ()
     QTextStream outStream (&output);
     outStream<<text;
     output.close();
-    string s = "/Users/Alia/Documents/Xcode/MipsPipelinedSimulator/MipsPipelinedSimulator/shit.txt";
+    string s = "/Users/Ingy/Desktop/github/MipsPipelinedSimulator/MipsPipelined/MipsPipelinedSimulator/MipsPipelinedSimulator/shit.txt";
     check (s);
     //ingy->loadAndParse("/Users/Ingy/Desktop/github/MipsPipelinedSimulator/MipsPipelined/MipsPipelinedSimulator/MipsPipelinedSimulator/shit.txt");
 }

@@ -590,6 +590,11 @@ void CPU::flush()
 		 //buffer4new[i]=0;
 		}
 
+//        for (int i=1; i<4; i++)
+//        {
+//            stages[i]= 0;
+//        }
+
 }
 
 void CPU::flushThree()
@@ -604,6 +609,9 @@ void CPU::flushThree()
         buffer2old[i]=0;
         buffer2new[i]=0;
     }
+
+    stages[0]=stages[1] = 0;
+
    /* for (int i=0; i<18; i++)
     {
         buffer3old[i]=0;
@@ -618,6 +626,7 @@ void CPU::flushFetch()
     {
         buffer1old[i]=0;
     }
+    stages[0] = 0;
 }
 
 int CPU:: nametoNum(string name, bool cut)
@@ -846,8 +855,9 @@ void CPU::loadAndParse(string name)
         in.open(filename.c_str());
     else in.open(name.c_str());
     bool fail = in.fail();
+
     if(fail)
-        cout << "failed to open file";
+        throw inputException("Unable to open file, please check file path");
     InstructionT temp;
     string instName, reg1, reg2, reg3;
             QString imm;
@@ -1082,7 +1092,9 @@ void CPU::loadAndParse(string name)
                 else
                 {
                     imm = QString::number(IM.size()+1);
-                    throw inputException(imm.QString::toStdString());
+                    string s = "Incorrrect syntax at line:";
+                    s+= imm.QString::toStdString();
+                    throw inputException(s);
                 }
             }
         }
@@ -1114,7 +1126,7 @@ void CPU::loadAndParse(string name)
 bool CPU::validFetch ()
 {
 
-        return (buffer1new[1]!=0 && fetchEn);
+        return (buffer1new[1]!=0 && fetchEn); // IM[PC].getInstNum() && fetchEn
 }
 
 bool CPU::validDecode ()
@@ -1125,7 +1137,7 @@ bool CPU::validDecode ()
 
 bool CPU::validExecute()
 {
-    return (buffer3new[2]==-1 && !finalfooEn && execEn);
+    return (buffer3new[2]!=-1 && !finalfooEn && execEn);
 }
 
 bool CPU::validMemory()

@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 
 //    }
     QApplication a(argc, argv);
-    CPU * cpu = new CPU("/Users/Alia/Documents/Xcode/MipsPipelinedSimulator/MipsPipelinedSimulator/shit.txt");
+    CPU * cpu = new CPU("/Users/Ingy/Desktop/github/MipsPipelinedSimulator/MipsPipelined/MipsPipelinedSimulator/MipsPipelinedSimulator/shit.txt");
     SimulatorWindow w(NULL, cpu);
     w.show();
 
