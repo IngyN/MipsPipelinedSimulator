@@ -1132,24 +1132,24 @@ bool CPU::validFetch ()
 bool CPU::validDecode ()
 {
 
-        return (buffer2new[10]!=4 && !finalfooEn && decodeEn);
+        return (buffer2new[10]!=4 && decodeEn);
 }
 
 bool CPU::validExecute()
 {
-    return (buffer3new[2]!=-1 && !finalfooEn && execEn);
+    return (buffer3new[2]!=-1  && execEn);
 }
 
 bool CPU::validMemory()
 {
 
-    return( (buffer3old[9] ||buffer4new[4]) && !finalfooEn&& memEn);
+    return( (buffer3old[9] ||buffer4new[4])&& memEn);
 
 }
 
 bool CPU::validWb()
 {
-    return(wbEn && ((buffer4old[4]||buffer4old[3])  && !finalfooEn )); // memtoreg && finalfooEn &&  regwrite
+    return(wbEn && ((buffer4old[4]||buffer4old[3]) )); // (memtoreg|| regwrite) && finalfooEn
 }
 
 int CPU::getPC()
